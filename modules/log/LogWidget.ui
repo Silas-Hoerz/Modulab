@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* Basis-Stil, gilt IMMER */
+QCheckBox {
+    margin: 0px;                /* Außenabstand: 0 (bündig) */
+    padding: 3px 6px 3px 6px;   /* Dein gewünschter Innenabstand */
+    border-radius: 5px;         /* Abgerundete Ecken */
+    
+    /* Standard-Zustand (entspricht &quot;info&quot;) */
+    background-color: transparent;
+    color: black;
+}
+
+/* Versteckt die Checkbox-Box */
+QCheckBox::indicator {
+    border: none;
+    background: transparent;
+    width: 0px;
+    height: 0px;
+}
+
+/* --- Dynamische Zustände --- */
+
+QCheckBox[logStatus=&quot;info&quot;] {
+    background-color: transparent;
+    color: black;
+}
+
+QCheckBox[logStatus=&quot;warning&quot;] {
+    background-color: #FFC000;  /* Orange */
+    color: black;
+}
+
+QCheckBox[logStatus=&quot;error&quot;] {
+    background-color: #C00000;  /* Rot */
+    color: white;
+}</string>
+  </property>
+  <property name="status" stdset="0">
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QTextEdit" name="history_text"/>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="status_label">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Bereit</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
