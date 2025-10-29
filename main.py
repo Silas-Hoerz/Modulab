@@ -22,7 +22,10 @@ if __name__ == "__main__":
     profile_mgr = ProfileManager(log_manager = log_mgr)
     device_mgr = DeviceManager(log_manager = log_mgr, profile_manager = profile_mgr)
 
-    main_window = MainWindow(log_manager=log_mgr, profile_manager = profile_mgr)
+    # Views initialisieren
+
+
+    main_window = MainWindow(log_manager=log_mgr, profile_manager = profile_mgr, device_manager = device_mgr)
     main_window.show()
 
     print("Profil anlegen")

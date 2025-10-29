@@ -11,9 +11,10 @@ from  modules.profile.ProfileManager import ProfileManager
 
 # View importieren
 from modules.log.LogWidget import LogWidget
+from modules.device.DeviceWidget import DeviceWidget
 
 class MainWindow(QMainWindow):
-    def __init__(self,log_manager, profile_manager, parent=None):
+    def __init__(self,log_manager, profile_manager , device_manager , parent=None):
         
         super().__init__(parent)
         self.ui = Ui_MainWindow()
@@ -22,10 +23,20 @@ class MainWindow(QMainWindow):
         # Manager speichern
         self.log_mgr = log_manager
         self.profile_mgr = profile_manager
+        self.dev_mgr = device_manager
         
         # --- Log Widget ---
         self.log_widget = LogWidget(log_manager = self.log_mgr, parent = self)
         self.ui.statusbar.addWidget(self.log_widget,1)
+
+        # --- Device Widget ---
+        self.device_widget_instance = DeviceWidget(
+            device_manager=self.dev_mgr,
+            log_manager=self.log_mgr
+        )
+        device_dock = QDockWidget("Device Manager", self)
+        device_dock.setWidget(self.device_widget_instance)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, device_dock)
 
 
 
