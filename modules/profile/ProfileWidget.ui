@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
-    <height>206</height>
+    <width>297</width>
+    <height>201</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,28 +23,21 @@
       </font>
      </property>
      <property name="text">
-      <string>Device</string>
+      <string>Profile</string>
      </property>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QListWidget" name="listWidget_devices"/>
+      <widget class="QListWidget" name="listWidget_profiles"/>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="pushButton_new">
          <property name="text">
-          <string>New</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_edit">
-         <property name="text">
-          <string>Edit</string>
+          <string>New </string>
          </property>
         </widget>
        </item>

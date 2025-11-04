@@ -1,3 +1,4 @@
+# modules/device/DeviceManager.py
 # Atrributes of Device:
 # - name: str
 # - tags: custom strings tags for potential filtering 
@@ -8,7 +9,8 @@
 #               radius [m] if geometry = circle
 #               area [m^2]
 
-import math
+import math 
+from PySide6.QtCore import QObject, Signal
 
 class Device:
     """
@@ -25,58 +27,98 @@ class Device:
         """
         Berechnet die Fläche [m²] des Devices
         """
+
+        main_area = 0.0
+        cutout_area = 0.0
+
         try:
             if self.geometry == 'rectangle':
                 length = self.dimensions.get('length',0)
                 width = self.dimensions.get('width', 0)
-                return float(length) * float(width)
+                main_area = float(length) * float(width)
+
+                cutout_length = self.dimensions.get('cutout_length',0)
+                cutout_width = self.dimensions.get('cutout_width', 0)
+                cutout_area = float(cutout_length) * float(cutout_width)
+
             elif self.geometry == 'circle':
                 radius = self.dimensions.get('radius', 0)
-                return math.pi * (float(radius)**2)
-        except (ValueError,TypeError):
-            print("get_area error: invalid dimension values.")
-            return 0.0  
-        print("get_area error: unknown geometry type.")
-        return 0.0
+                main_area = math.pi * (float(radius)**2)
+
+                cutout_radius = self.dimensions.get('cutout_radius', 0)
+                cutout_area = math.pi * (float(cutout_radius)**2)
+            else:
+                print(f"get_area error: unknown geometry type '{self.geometry}' for device '{self.name}'.")
+                return 0.0
+
+            # Sicherstellen, dass Cutout-Maße nicht negativ waren
+            if cutout_area < 0:
+                 print(f"get_area warning: negative cutout dimensions detected for device '{self.name}'. Cutout area set to 0.")
+                 cutout_area = 0.0
+
+            # Constraint: Cutout darf nicht größer als Device sein
+            if cutout_area > main_area:
+                print(f"get_area error: cutout area ({cutout_area}) is larger than main area ({main_area}) for device '{self.name}'. Returning 0.0")
+                return 0.0  
+            
+            return main_area - cutout_area
+        
+        except (ValueError, TypeError):
+            # Fehler bei Umwandlung (z.B. length="abc")
+            print(f"get_area error: invalid (non-numeric) dimension values for device '{self.name}'.")
+            return 0.0
+        
     def to_dict(self) -> dict:
         """
         Konvertiert das Device Objekt in ein Dictionary für JSON
+        (Muss nicht geändert werden, 'dimensions' enthält bereits alles)
         """
-        return{
+        return {
             'name': self.name,
             'geometry': self.geometry,
             'tags': self.tags,
             'dimensions': self.dimensions
         }
+
     @classmethod
     def from_dict(cls, data: dict):
         """
         Erstellt ein Device Objekt aus einem Dictionary
+        (Muss nicht geändert werden, 'dimensions' wird korrekt übergeben)
         """
         if not data:
             return None
         return cls(
-            name = data.get('name', 'Unnamed Device'),
-            geometry = data.get('geometry', 'rectangle'),
-            tags = data.get('tags', []),
+            name=data.get('name', 'Unnamed Device'),
+            geometry=data.get('geometry', 'rectangle'),
+            tags=data.get('tags', []),
             **data.get('dimensions', {})
         )
+
     def __repr__(self):
         return f"Device(name={self.name}, geometry={self.geometry}, tags={self.tags}, dimensions={self.dimensions})"
-    
-class DeviceManager:
+
+
+class DeviceManager (QObject):
     """
     Erstellt, bearbeitet, löscht und verwaltet Device Objekte.
     """
     KEY_DEVICE_LIST = "devices" 
     KEY_ACTIVE_DEVICE = "active_device_name"
 
-    def __init__(self, log_manager = None, profile_manager = None):
+    device_loaded = Signal(str)  # Signal, wenn ein Device geladen wurde
+
+    def __init__(self, log_manager = None, profile_manager = None, parent=None):
+        # Initialize QObject base to ensure signals/ownership are managed by Qt
+        super().__init__(parent)
+
         self.log_mgr = log_manager
         self.profile_mgr = profile_manager
 
         self.devices: list[Device] = []
         self.active_device_name: str = None
+
+ 
     
     def __save_to_profile(self):
         """
@@ -197,6 +239,7 @@ class DeviceManager:
         """
         Gibt eine Liste aller Device-Namen zurück.
         """
+        self.load_from_profile()
         return [dev.name for dev in self.devices]
 
     # --- Active-Device-Funktionen ---
@@ -211,7 +254,8 @@ class DeviceManager:
             
         self.active_device_name = name
         self.__save_to_profile()
-        self.log_mgr.info(f"DeviceManager: Aktives Device ist nun '{name}'.")
+        self.device_loaded.emit(name)
+        self.log_mgr.info(f"Device '{name}' loaded successfully.")
         return True
 
     def get_active_device(self) -> Device | None:
@@ -242,7 +286,3 @@ class DeviceManager:
         if active_dev:
             return active_dev.dimensions
         return {} # Leeres dict statt None ist oft einfacher zu handhaben
-        
-
-        
-# --- Selbsttest ---- #

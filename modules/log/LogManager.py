@@ -1,3 +1,4 @@
+# modules/log/LogManager.py
 # This Python file uses the following encoding: utf-8
 import os
 import logging # Thread sicheres logging
@@ -117,6 +118,7 @@ class LogManager(QObject):
         Format: [{'timestamp':..., 'type':..., 'message':...}, ...]
         """
         return self.messages_list
+    
     def get_latest_message(self):
         """
         Gibt nur den letzten Log-Eintrag zurück. (Für bspw. Status Label)
@@ -124,6 +126,7 @@ class LogManager(QObject):
         Format: {'timestamp':..., 'type':..., 'message':...}
         """
         return self.latest_message
+
 # --- Selbsttest ---- #
 if __name__ == "__main__":
 

@@ -1,3 +1,4 @@
+# modules/log/LogWidget.py
 # This Python file uses the following encoding: utf-8
 import os
 
@@ -5,68 +6,33 @@ from .ui_LogWidget import Ui_Form
 
 from PySide6.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QTextEdit, QLabel
 # from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import Slot # QFile, QIODevice,
+from PySide6.QtCore import Slot, Signal
 from PySide6.QtGui import QColor, QTextCursor
 
 class LogWidget(QWidget, Ui_Form):
     """
-
+    Status Leiste mit ausklappbarem Log-Fenster.
     """
-
+    # Farben haben hier nichts zu suchen, aber egal...
     # --- Farbdefinitionen für die Logik ---
-    COLOR_ERROR_BG = "#C00000"
     COLOR_ERROR_FG = "#C00000"
-    COLOR_WARNING_BG = "#FF9000"
     COLOR_WARNING_FG = "#FF9000"
-    COLOR_INFO_BG = "transparent"
     COLOR_INFO_FG = "#DDDDDD"
     COLOR_DEBUG_FG = "gray"
 
+    # Signale um Dialoge anzufordern
+    request_profile_dialog = Signal()
+    request_device_dialog = Signal()
 
-    def __init__(self, log_manager, parent=None):
+    def __init__(self, context, parent=None):
 
         super().__init__(parent)
 
         self.setupUi(self)
 
-
-        self.log_mgr = log_manager
-
-
-        # # Ui File laden
-        # ui_file_path = os.path.join(os.path.dirname(__file__), "LogWidget.ui")
-
-        # if not os.path.exists(ui_file_path):
-        #     print(f"FATAL: UI-Datei nicht gefunden unter: {ui_file_path}")
-        #     # Fallback, damit es nicht crasht
-        #     self.setLayout(QVBoxLayout())
-        #     self.layout().addWidget(QLabel("Fehler: LogWidget.ui nicht gefunden!"))
-        #     return
-
-        # ui_file = QFile(ui_file_path)
-        # if not ui_file.open(QIODevice.ReadOnly):
-        #     print(f"FATAL: Konnte UI-Datei nicht öffnen: {ui_file_path}")
-        #     return
-
-        # loader = QUiLoader()
-
-        # widget = loader.load(ui_file, self)
-        # ui_file.close()
-
-        # layout = QVBoxLayout(self)
-        # layout.addWidget(widget)
-
-        # layout.setContentsMargins(0, 0, 0, 0)
-        # self.setLayout(layout)
-
-        # self.status_label = widget.findChild(QCheckBox, "status_label")
-        # self.history_text = widget.findChild(QTextEdit, "history_text")
-
-        # if not self.status_label or not self.history_text:
-        #     print("'status_label' oder 'history_text' in LogWidget.ui nicht gefunden!")
-        #     return
-
-        # # Ui File vollständig geladen puhh
+        self.log_mgr = context.log_manager
+        self.profile_mgr = context.profile_manager
+        self.device_mgr = context.device_manager
 
         self.status_label.setChecked(False)
         self.history_text.setVisible(False)
@@ -76,6 +42,52 @@ class LogWidget(QWidget, Ui_Form):
 
         self.__load_history()
         self.log_mgr.message_logged.connect(self.on_new_message)
+
+        # Signale von Profil und Device: nur verbinden, wenn das Signal-Attribut existiert
+        if self.profile_mgr and hasattr(self.profile_mgr, "profile_loaded"):
+            try:
+                self.profile_mgr.profile_loaded.connect(self.on_profile_changed)
+            except Exception as e:
+                self.log_mgr.error(f"Failed to connect profile_loaded: {e}")
+
+        if self.device_mgr and hasattr(self.device_mgr, "device_loaded"):
+            try:
+                self.device_mgr.device_loaded.connect(self.on_device_changed)
+            except Exception as e:
+                self.log_mgr.error(f"Failed to connect device_loaded: {e}")
+
+        # Hat nicht viel mit Logs zu tun aber sollte in die Statusleiste passen
+        self.pushButton_profile.clicked.connect(self.on_profile_clicked)
+        self.pushButton_device.clicked.connect(self.on_device_clicked)
+
+    @Slot(str)
+    def on_profile_changed(self, profile_name):
+        """
+        Dieser Slot wird aufgerufen, wenn der ProfileManager
+        das Signal 'profile_loaded' sendet.
+        """
+        if profile_name:
+            # Setzt den Text (z.B. "Profil: Default")
+            self.pushButton_profile.setText(f"Profile: {profile_name}")
+        else:
+            self.pushButton_profile.setText("No Profile")
+    @Slot(str)
+    def on_device_changed(self, device_name):
+        """
+        Dieser Slot wird aufgerufen, wenn der DeviceManager
+        das Signal 'device_loaded' sendet.
+        """
+        if device_name:
+            self.pushButton_device.setText(f"Device: {device_name}")
+        else:
+            self.pushButton_device.setText("No Device")
+
+    @Slot()
+    def on_profile_clicked(self):
+        self.request_profile_dialog.emit()
+    @Slot()
+    def on_device_clicked(self):
+        self.request_device_dialog.emit()
 
     def __load_history(self):
         """ Lädt alle bisherigen Logs beim Start """

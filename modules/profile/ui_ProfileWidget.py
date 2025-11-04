@@ -1,8 +1,7 @@
-# modules/device/ui_DeviceWidget.py
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'DeviceWidgetyVlGoQ.ui'
+## Form generated from reading UI file 'ProfileWidgetZtsESG.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -24,7 +23,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(299, 206)
+        Form.resize(297, 201)
         self.verticalLayout_2 = QVBoxLayout(Form)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label = QLabel(Form)
@@ -38,10 +37,10 @@ class Ui_Form(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.listWidget_devices = QListWidget(Form)
-        self.listWidget_devices.setObjectName(u"listWidget_devices")
+        self.listWidget_profiles = QListWidget(Form)
+        self.listWidget_profiles.setObjectName(u"listWidget_profiles")
 
-        self.horizontalLayout_2.addWidget(self.listWidget_devices)
+        self.horizontalLayout_2.addWidget(self.listWidget_profiles)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -49,11 +48,6 @@ class Ui_Form(object):
         self.pushButton_new.setObjectName(u"pushButton_new")
 
         self.verticalLayout.addWidget(self.pushButton_new)
-
-        self.pushButton_edit = QPushButton(Form)
-        self.pushButton_edit.setObjectName(u"pushButton_edit")
-
-        self.verticalLayout.addWidget(self.pushButton_edit)
 
         self.pushButton_delete = QPushButton(Form)
         self.pushButton_delete.setObjectName(u"pushButton_delete")
@@ -83,9 +77,8 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle("")
-        self.label.setText(QCoreApplication.translate("Form", u"Device", None))
-        self.pushButton_new.setText(QCoreApplication.translate("Form", u"New", None))
-        self.pushButton_edit.setText(QCoreApplication.translate("Form", u"Edit", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Profile", None))
+        self.pushButton_new.setText(QCoreApplication.translate("Form", u"New ", None))
         self.pushButton_delete.setText(QCoreApplication.translate("Form", u"Delete", None))
         self.pushButton_done.setText(QCoreApplication.translate("Form", u"Done", None))
     # retranslateUi
