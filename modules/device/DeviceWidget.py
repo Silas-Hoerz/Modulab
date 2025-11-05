@@ -14,7 +14,7 @@ except ImportError:
 
 
 from PySide6.QtWidgets import QDialog, QMessageBox
-from PySide6.QtCore import Slot, Qt
+from PySide6.QtCore import Slot, Qt, QEvent
 from PySide6.QtGui import QCloseEvent, QShowEvent, QDoubleValidator, QPalette, QColor
 
 # --- Device Selection Dialog ---
@@ -170,6 +170,11 @@ except ImportError:
         def setupUi(self, Form):
             Form.setObjectName("DeviceEdit")
 
+# (Deine bestehenden Importe)
+from PySide6.QtWidgets import QDialog, QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem
+from PySide6.QtGui import QPen, QBrush, QPainter, QPalette
+from PySide6.QtCore import Qt
+
 class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
     """
     Ein Dialog zur Erstellung und Bearbeitung von Device-Daten.
@@ -202,33 +207,38 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         self.device_data = device_data if device_data else {}
         
         self.new_device_data = None # Hier wird das Ergebnis gespeichert
+        self.dim_fields = [
+            self.lineEdit_length, self.lineEdit_width, self.lineEdit_radius,
+            self.lineEdit_cutout_length, self.lineEdit_cutout_width, self.lineEdit_cutout_radius
+        ]
 
         self.__setup_ui()
         self.__connect_signals()
+        for field in self.dim_fields:
+            field.installEventFilter(self)
         self.__populate_form()
-        
-        # Initiale Validierung beim Öffnen
         self.__validate_and_update()
+      
 
     # --- Setup-Methoden ---
 
     def __setup_ui(self):
-        """Konfiguriert die UI-Elemente (Validatoren, ComboBox etc.)"""
-        
-        # Validatoren für nm-Eingaben (z.B. 0 bis 1 km in nm)
-        validator = QDoubleValidator(0.0, 1e12, 3, self)
-        self.lineEdit_length.setValidator(validator)
-        self.lineEdit_width.setValidator(validator)
-        self.lineEdit_radius.setValidator(validator)
-        self.lineEdit_cutout_length.setValidator(validator)
-        self.lineEdit_cutout_width.setValidator(validator)
-        self.lineEdit_cutout_radius.setValidator(validator)
-
+        """Konfiguriert die UI-Elemente (ComboBox etc.)"""
         # Geometrie-Optionen
         self.comboBox_geometry.addItems(["Rectangle", "Circle"])
-        
+
+        self.lineEdit_name.setMaxLength(80)
+
         # Standard-Error-Stylesheet (wird für ungültige Felder verwendet)
         self.error_style = "border: 1px solid red;"
+
+        self.scene = QGraphicsScene(self)
+        self.graphicsView.setScene(self.scene)
+
+        self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        
+        self.graphicsView.setRenderHint(QPainter.Antialiasing)
 
     def __connect_signals(self):
         """Verbindet alle Signale mit den entsprechenden Slots."""
@@ -237,43 +247,100 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         # Echtzeit-Validierung und Berechnung
         self.lineEdit_name.textChanged.connect(self.__validate_and_update)
         self.comboBox_geometry.currentTextChanged.connect(self.__validate_and_update)
-        self.lineEdit_length.textChanged.connect(self.__validate_and_update)
-        self.lineEdit_width.textChanged.connect(self.__validate_and_update)
-        self.lineEdit_radius.textChanged.connect(self.__validate_and_update)
+        
+        # FIX: textChanged wird weiterhin für die Echtzeit-Validierung verwendet
+        for field in self.dim_fields:
+            field.textChanged.connect(self.__validate_and_update)
+            
         self.checkBox_cutout.toggled.connect(self.__validate_and_update)
-        self.lineEdit_cutout_length.textChanged.connect(self.__validate_and_update)
-        self.lineEdit_cutout_width.textChanged.connect(self.__validate_and_update)
-        self.lineEdit_cutout_radius.textChanged.connect(self.__validate_and_update)
 
     def __populate_form(self):
         """Füllt das Formular mit den Daten aus self.device_data (Edit-Modus)."""
         if not self.device_data:
             return # "Neu"-Modus
 
-        self.lineEdit_name.setText(self.device_data.get("name", ""))
-        self.comboBox_geometry.setCurrentText(self.device_data.get("geometry", "Rectangle"))
-
-        dims = self.device_data.get("dimensions", {})
-
-        # Umrechnung von Meter (dict) zu Nanometer (Feld)
-        def set_nm_field(field_widget, dict_key_m):
-            value_m = dims.get(dict_key_m)
-            if value_m is not None:
-                field_widget.setText(str(value_m * self.M_TO_NM))
-
-        set_nm_field(self.lineEdit_length, "length")
-        set_nm_field(self.lineEdit_width, "width")
-        set_nm_field(self.lineEdit_radius, "radius")
-
-        # Prüfen, ob Cutout-Daten vorhanden sind
-        has_cutout = any(k in dims for k in ["cutout_length", "cutout_width", "cutout_radius"])
-        self.checkBox_cutout.setChecked(has_cutout)
+        # --- NEU: Signal-Blocking ---
+        # Verhindert, dass __validate_and_update bei jedem setText feuert
+        widgets_to_block = [
+            self.lineEdit_name, self.comboBox_geometry, self.checkBox_cutout
+        ] + self.dim_fields
         
-        if has_cutout:
-            set_nm_field(self.lineEdit_cutout_length, "cutout_length")
-            set_nm_field(self.lineEdit_cutout_width, "cutout_width")
-            set_nm_field(self.lineEdit_cutout_radius, "cutout_radius")
+        for widget in widgets_to_block:
+            widget.blockSignals(True)
+        # --- Ende NEU ---
 
+        try:
+            self.lineEdit_name.setText(self.device_data.get("name", ""))
+            self.comboBox_geometry.setCurrentText(self.device_data.get("geometry", "Rectangle"))
+
+            dims = self.device_data.get("dimensions", {})
+
+            def set_nm_field(field_widget, dict_key_m):
+                value_m = dims.get(dict_key_m)
+                if value_m is not None:
+                    value_nm = value_m * self.M_TO_NM
+                    field_widget.setText(f"{value_nm:g} nm")
+                else:
+                    field_widget.clear()
+
+            set_nm_field(self.lineEdit_length, "length")
+            set_nm_field(self.lineEdit_width, "width")
+            set_nm_field(self.lineEdit_radius, "radius")
+
+            has_cutout = any(k in dims for k in ["cutout_length", "cutout_width", "cutout_radius"])
+            self.checkBox_cutout.setChecked(has_cutout)
+            
+            if has_cutout:
+                set_nm_field(self.lineEdit_cutout_length, "cutout_length")
+                set_nm_field(self.lineEdit_cutout_width, "cutout_width")
+                set_nm_field(self.lineEdit_cutout_radius, "cutout_radius")
+        
+        finally:
+            for widget in widgets_to_block:
+                widget.blockSignals(False)
+     
+     
+
+    def eventFilter(self, obj, event):
+        """
+        FIX: Fängt Fokus-Events der Dimensionsfelder ab, 
+        um das " nm"-Suffix dynamisch hinzuzufügen oder zu entfernen.
+        """
+        
+        # Prüfen, ob das Objekt eines unserer Dimensionsfelder ist
+        if obj in self.dim_fields:
+            
+            if event.type() == QEvent.FocusIn:
+                # --- Fokus erhalten: Suffix entfernen ---
+                current_text = obj.text()
+                # Entferne ' nm' und Leerzeichen
+                clean_text = current_text.replace(" nm", "").strip()
+                obj.setText(clean_text)
+                
+            elif event.type() == QEvent.FocusOut:
+                # --- Fokus verloren: Suffix hinzufügen ---
+                # Wert validieren und sauber formatieren
+                
+                # Ersetze Komma durch Punkt
+                current_text = obj.text().replace(',', '.').strip()
+                
+                if not current_text:
+                    # Feld ist leer, nichts tun
+                    return super().eventFilter(obj, event) 
+                
+                try:
+                    val = float(current_text)
+                    # 'g' Format für Präzision (z.B. 3 statt 3.0)
+                    formatted_text = f"{val:g} nm"
+                    obj.setText(formatted_text)
+                except ValueError:
+                    # Ungültiger Text (z.B. 'abc')
+                    # Nichts tun, __validate_form wird es rot markieren
+                    pass
+        
+        # Events an die Basisklasse weiterleiten
+        return super().eventFilter(obj, event)
+    
     # --- Echtzeit-Logik ---
 
     @Slot()
@@ -285,6 +352,7 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         self.__update_ui_visibility()
         self.__update_area()
         self.__validate_form()
+        self.__update_graphics_preview()
 
     def __update_ui_visibility(self):
         """Passt die Sichtbarkeit von Feldern basierend auf der Geometrie an."""
@@ -316,8 +384,11 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         if not field.isVisible():
             return 0.0
         try:
-            # Ersetze Komma durch Punkt für deutsche/internationale Eingabe
-            return float(field.text().replace(',', '.'))
+            # FIX: Komma ersetzen, Suffix entfernen, Leerzeichen entfernen
+            text = field.text().replace(',', '.').replace(' nm', '').strip()
+            if not text:
+                return 0.0 # Leeres Feld als 0.0 interpretieren
+            return float(text)
         except (ValueError, TypeError):
             return 0.0
 
@@ -375,10 +446,18 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         # Helfer zur Validierung von sichtbaren Feldern
         def validate_field(field):
             if not field.isVisible():
-                return True # Unsichtbare Felder sind gültig
-            if not field.text() or not self.__is_valid_float(field.text()):
+                return True 
+            
+            text_to_check = field.text()
+            
+            if not text_to_check.replace(' nm', '').strip():
                 field.setStyleSheet(self.error_style)
                 return False
+                
+            if not self.__is_valid_float(text_to_check):
+                field.setStyleSheet(self.error_style)
+                return False
+                
             field.setStyleSheet(default_style)
             return True
 
@@ -400,13 +479,12 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
     
         # 4. Logische Validierung (Cutout darf nicht größer als Hauptgeometrie sein)
         if is_valid: 
-            if geometry == "rectangle":
+            if geometry == "Rectangle": 
                 l = self.__get_nm(self.lineEdit_length)
                 w = self.__get_nm(self.lineEdit_width)
                 if self.checkBox_cutout.isChecked():
                     cl = self.__get_nm(self.lineEdit_cutout_length)
                     cw = self.__get_nm(self.lineEdit_cutout_width)
-                    
                     if cl > l:
                         is_valid = False
                         self.lineEdit_cutout_length.setStyleSheet(self.error_style)
@@ -414,7 +492,7 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
                         is_valid = False
                         self.lineEdit_cutout_width.setStyleSheet(self.error_style)
             
-            elif geometry == "circle":
+            elif geometry == "Circle":
                 r = self.__get_nm(self.lineEdit_radius)
                 if self.checkBox_cutout.isChecked():
                     cr = self.__get_nm(self.lineEdit_cutout_radius)
@@ -426,11 +504,125 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         return is_valid
 
     def __is_valid_float(self, text):
+        """
+        Prüft, ob ein Text (mit Komma oder Suffix) ein gültiger Float ist.
+        """
+        text_to_check = text.replace(',', '.').replace(' nm', '').strip()
+        
+        if not text_to_check:
+            return False
+            
         try:
-            float(text.replace(',', '.'))
+            float(text_to_check)
             return True
         except ValueError:
             return False
+        
+    def __update_graphics_preview(self):
+        """
+        Zeichnet die ausgewählte Geometrie (normiert auf max. 1.0) 
+        inklusive Cutout im QGraphicsView.
+        Simuliert ein "Loch", indem es die Hintergrundfarbe des Views malt.
+        """
+        # 1. Alte Zeichnungen entfernen
+        self.scene.clear()
+
+        # 2. Pinsel und Stift für Hauptform definieren
+        # Wunsch: Hellgrau mit weißem Rand
+        main_pen = QPen(Qt.white)
+        main_pen.setCosmetic(True) 
+        main_brush = QBrush(Qt.lightGray)
+
+        # 3. Werte sicher auslesen (mit deiner __get_nm Funktion)
+        shape = self.comboBox_geometry.currentText()
+        has_cutout = self.checkBox_cutout.isChecked()
+
+        # Rohwerte in nm
+        l_raw = self.__get_nm(self.lineEdit_length)
+        w_raw = self.__get_nm(self.lineEdit_width)
+        r_raw = self.__get_nm(self.lineEdit_radius)
+        
+        cl_raw = self.__get_nm(self.lineEdit_cutout_length) if has_cutout else 0.0
+        cw_raw = self.__get_nm(self.lineEdit_cutout_width) if has_cutout else 0.0
+        cr_raw = self.__get_nm(self.lineEdit_cutout_radius) if has_cutout else 0.0
+
+        # 4. Form-Logik, Normierung und Items erstellen
+        item_to_draw = None
+        cutout_item = None
+        max_dim = 1.0 
+        is_cutout_valid = True 
+
+        if shape == "Rectangle":
+            max_dim = max(l_raw, w_raw, 1.0) 
+            
+            if has_cutout and (cl_raw > l_raw or cw_raw > w_raw):
+                is_cutout_valid = False
+
+            # Normierte Werte
+            l_norm = l_raw / max_dim
+            w_norm = w_raw / max_dim
+            cl_norm = cl_raw / max_dim
+            cw_norm = cw_raw / max_dim
+
+            item_to_draw = QGraphicsRectItem(0, 0, w_norm, l_norm)
+            
+            if has_cutout and cl_norm > 0 and cw_norm > 0:
+                x_offset = (w_norm - cw_norm) / 2
+                y_offset = (l_norm - cl_norm) / 2
+                cutout_item = QGraphicsRectItem(x_offset, y_offset, cw_norm, cl_norm)
+
+        elif shape == "Circle":
+            max_dim = max(r_raw, 1.0) 
+
+            if has_cutout and (cr_raw > r_raw):
+                is_cutout_valid = False
+                
+            # Normierte Werte
+            r_norm = r_raw / max_dim
+            cr_norm = cr_raw / max_dim
+            d_norm = r_norm * 2  
+            cd_norm = cr_norm * 2 
+
+            item_to_draw = QGraphicsEllipseItem(0, 0, d_norm, d_norm)
+            
+            if has_cutout and cd_norm > 0:
+                x_offset = (d_norm - cd_norm) / 2
+                y_offset = (d_norm - cd_norm) / 2
+                cutout_item = QGraphicsEllipseItem(x_offset, y_offset, cd_norm, cd_norm)
+
+        # 5. Items zur Szene hinzufügen (mit neuer Logik)
+        if item_to_draw:
+            item_to_draw.setPen(main_pen)
+            item_to_draw.setBrush(main_brush)
+            self.scene.addItem(item_to_draw)
+
+            if cutout_item:
+                cutout_pen = QPen()
+                cutout_pen.setCosmetic(True)
+                
+                viewport_bg_brush = self.graphicsView.viewport().palette().brush(QPalette.Window)
+                cutout_item.setBrush(viewport_bg_brush)
+                # --- ENDE MAGIE ---
+
+                if is_cutout_valid:
+                    cutout_pen.setColor(Qt.darkGray)
+                    cutout_pen.setStyle(Qt.DashLine) 
+                else:
+
+                    cutout_pen.setColor(Qt.red)
+                    cutout_pen.setStyle(Qt.DashLine) 
+                    item_to_draw.setPen(main_pen)
+                    item_to_draw.setBrush(main_brush)
+                    self.scene.addItem(item_to_draw)
+
+                cutout_item.setPen(cutout_pen)
+                self.scene.addItem(cutout_item) # Wird über die Hauptform gemalt
+
+            # 6. Ansicht auf das Haupt-Objekt zentrieren und zoomen
+            self.graphicsView.fitInView(item_to_draw, Qt.KeepAspectRatio)
+        else:
+            pass # Leere Szene
+        
 
     # --- Speichern & Rückgabe ---
 
@@ -450,7 +642,8 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         # Helfer, um nm-Wert zu lesen und als Meter zu speichern
         def set_m_from_nm(field, dict_key):
             if field.isVisible() and field.text():
-                data[dict_key] = float(field.text()) * self.NM_TO_M
+                value_nm = self.__get_nm(field)
+                data[dict_key] = value_nm * self.NM_TO_M
 
         if data["geometry"] == "Rectangle":
             set_m_from_nm(self.lineEdit_length, "length")
@@ -479,11 +672,6 @@ class DeviceWidgetEdit(QDialog, Ui_DeviceWidgetEdit):
         """
         Öffnet den Dialog und gibt bei Erfolg das neue/aktualisierte 
         Device-Dictionary zurück, ansonsten None.
-        
-        :param dev_mgr: Der DeviceManager.
-        :param device_data: Bestehende Daten für den Edit-Modus (optional).
-        :param parent: Das übergeordnete Widget.
-        :return: Ein Dictionary oder None.
         """
         dialog = DeviceWidgetEdit(dev_mgr, device_data, parent)
         result = dialog.exec()

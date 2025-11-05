@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'DeviceWidgetEditKcluXv.ui'
+## Form generated from reading UI file 'DeviceWidgetEditPXufEP.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -23,12 +23,14 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(434, 328)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        Form.resize(428, 334)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
+        Form.setMinimumSize(QSize(428, 300))
+        Form.setMaximumSize(QSize(800, 334))
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()
@@ -97,6 +99,10 @@ class Ui_Form(object):
 
         self.graphicsView = QGraphicsView(Form)
         self.graphicsView.setObjectName(u"graphicsView")
+        sizePolicy.setHeightForWidth(self.graphicsView.sizePolicy().hasHeightForWidth())
+        self.graphicsView.setSizePolicy(sizePolicy)
+        self.graphicsView.setMinimumSize(QSize(250, 250))
+        self.graphicsView.setMaximumSize(QSize(250, 250))
 
         self.horizontalLayout.addWidget(self.graphicsView)
 
