@@ -5,7 +5,7 @@
 from modules.log.LogManager import LogManager
 from modules.profile.ProfileManager import ProfileManager
 from modules.device.DeviceManager import DeviceManager, Device
-
+from modules.experiment.ExperimentManager import ExperimentManager
 class ApplicationContext:
     """
     Ein zentraler "Service-Container", der alle Manager bündelt.
@@ -23,6 +23,19 @@ class ApplicationContext:
         self.device_manager = DeviceManager(
             log_manager=self.log_manager, 
             profile_manager=self.profile_manager
+        )
+
+
+
+
+
+
+
+        self.experiment_manager = ExperimentManager(
+            # Alles einbinden was die API unterstützen soll/muss
+            log_manager= self.log_manager,
+            profile_manager=self.profile_manager,
+            device_manager = self.device_manager
         )
         
         

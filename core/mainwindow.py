@@ -11,6 +11,7 @@ from core.context import ApplicationContext
 from modules.log.LogWidget import LogWidget
 from modules.device.DeviceWidget import DeviceWidget
 from modules.profile.ProfileWidget import ProfileWidget
+from modules.experiment.ExperimentWidget import ExperimentWidget
 
 class MainWindow(QMainWindow):
     
@@ -36,6 +37,19 @@ class MainWindow(QMainWindow):
         # --- Device Widget ---
         # Das DeviceWidget bekommt AUCH den gesamten Kontext
         self.device_widget_dialog = DeviceWidget(context=self.context, parent=self)
+        
+
+        # --- Experiment Widget ---
+        self.experiment_widget = ExperimentWidget(context=self.context, parent=self)
+        self.experiment_dock = QDockWidget("Experiments", self)
+        self.experiment_dock.setObjectName("Experiments") 
+        self.experiment_dock.setWidget(self.experiment_widget)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.experiment_dock)
+
+        # --- Menu Bar ---
+        menu_bar = self.menuBar()
+        self.view_menu = menu_bar.addMenu("Ansicht")
+        self.view_menu.addAction(self.experiment_dock.toggleViewAction())
 
         # Signale verbinden
         self.log_widget.request_profile_dialog.connect(self.show_profile_dialog)
