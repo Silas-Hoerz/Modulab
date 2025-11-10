@@ -3,14 +3,14 @@
 
 import sys
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Slot, Signal
+from PySide6.QtCore import Slot, Signal, QEvent
 
 # Importiere die generierte UI-Klasse
 try:
     # Stelle sicher, dass deine UI-Datei "ui_ExperimentWidget.py" heißt
     from .ui_ExperimentWidget import Ui_Form 
 except ImportError:
-    print("Fehler: Konnte 'ui_ExperimentWidget.py' nicht finden.")
+    print("Error: Could not find 'ui_ExperimentWidget.py'.")
     # Notfall-Fallback, damit der Code nicht crasht
     from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
     class Ui_Form:
@@ -42,12 +42,15 @@ class ExperimentWidget(QWidget, Ui_Form):
         self.__setup_ui()
         self.__connect_signals()
 
+        # Nur weil die Comboboxen kein opened Event haben ):
+        self.comboBox_experiments.installEventFilter(self)
+
         # Beim Start sofort nach Experimenten suchen
         self.exp_mgr.search_experiments()
 
     def __setup_ui(self):
         """Setzt den anfänglichen Zustand der UI-Elemente."""
-        self.label_progress.setText("Bereit.")
+        self.label_progress.setText("Ready.")
         self.pushButton_start.setEnabled(True)
         self.pushButton_pause.setEnabled(False)
         self.pushButton_stop.setEnabled(False)
@@ -62,11 +65,12 @@ class ExperimentWidget(QWidget, Ui_Form):
         self.pushButton_pause.clicked.connect(self.on_pause_clicked)
         self.pushButton_stop.clicked.connect(self.exp_mgr.stop_experiment)
 
+        self.exp_mgr.experiments_found.connect(self.on_experiments_found)
+
         # 2. Manager-Signale an UI-Slots (diese Klasse)
         self.exp_mgr.experiments_found.connect(self.on_experiments_found)
         self.exp_mgr.experiment_started.connect(self.on_experiment_started)
         
-        # WICHTIG: Den korrigierten Signalnamen verwenden!
         self.exp_mgr.experiment_finished.connect(self.on_experiment_finished) 
         
         self.exp_mgr.experiment_error.connect(self.on_experiment_error)
@@ -77,13 +81,22 @@ class ExperimentWidget(QWidget, Ui_Form):
     # --- Slots für UI-Aktionen ---
 
     @Slot()
+    def on_combobox_clicked(self):
+        """
+        Wenn Combobox geöffnet wird dann soll die liste aktualisiert werden
+        """
+        self.exp_mgr.search_experiments()
+
+
+
+    @Slot()
     def on_start_clicked(self):
         """Wird aufgerufen, wenn der Start-Button geklickt wird."""
         selected_script = self.comboBox_experiments.currentText()
         
         if not selected_script:
-            self.log_mgr.warning("Kein Experiment-Skript ausgewählt.")
-            self.label_progress.setText("Bitte ein Skript auswählen.")
+            self.log_mgr.warning("No experiment script selected.")
+            self.label_progress.setText("Please select a script.")
             return
         
         # Den Manager anweisen, das Experiment zu starten
@@ -96,13 +109,13 @@ class ExperimentWidget(QWidget, Ui_Form):
             # Zustand war "Paused", also jetzt "Resuming"
             self.exp_mgr.resume_experiment()
             self.pushButton_pause.setText("Pause")
-            self.label_progress.setText("Setze fort...")
+            self.label_progress.setText("Resuming...")
             self.is_paused = False
         else:
             # Zustand war "Running", also jetzt "Pausing"
             self.exp_mgr.pause_experiment()
             self.pushButton_pause.setText("Resume")
-            self.label_progress.setText("Pausiert.")
+            self.label_progress.setText("Paused.")
             self.is_paused = True
 
     # --- Slots für Signale vom ExperimentManager ---
@@ -113,16 +126,16 @@ class ExperimentWidget(QWidget, Ui_Form):
         self.comboBox_experiments.clear()
         self.comboBox_experiments.addItems(script_names)
         if script_names:
-            self.label_progress.setText(f"{len(script_names)} Experimente gefunden.")
+            self.label_progress.setText(f"{len(script_names)} experiment(s) found.")
             self.pushButton_start.setEnabled(True)
         else:
-            self.label_progress.setText("Keine Experimente im Ordner gefunden.")
+            self.label_progress.setText("No experiments found in folder.")
             self.pushButton_start.setEnabled(False)
 
     @Slot()
     def on_experiment_started(self):
         """Aktualisiert die UI, wenn ein Experiment startet."""
-        self.label_progress.setText("Experiment gestartet...")
+        self.label_progress.setText("Experiment started...")
         self.pushButton_start.setEnabled(False)
         self.comboBox_experiments.setEnabled(False) # Auswahl sperren
         self.pushButton_pause.setEnabled(True)
@@ -135,7 +148,7 @@ class ExperimentWidget(QWidget, Ui_Form):
     @Slot()
     def on_experiment_finished(self):
         """Setzt die UI zurück, wenn ein Experiment beendet ist."""
-        self.label_progress.setText("Experiment erfolgreich beendet.")
+        self.label_progress.setText("Experiment finished successfully.")
         self.pushButton_start.setEnabled(True)
         self.comboBox_experiments.setEnabled(True) # Auswahl freigeben
         self.pushButton_pause.setEnabled(False)
@@ -146,7 +159,7 @@ class ExperimentWidget(QWidget, Ui_Form):
     @Slot(str)
     def on_experiment_error(self, error_msg):
         """Setzt die UI zurück und zeigt eine Fehlermeldung an."""
-        self.label_progress.setText(f"Fehler: {error_msg}")
+        self.label_progress.setText(f"Error: {error_msg}")
         # UI zurücksetzen (fast wie bei "finished")
         self.pushButton_start.setEnabled(True)
         self.comboBox_experiments.setEnabled(True)
@@ -164,3 +177,26 @@ class ExperimentWidget(QWidget, Ui_Form):
                 self.label_progress.setText(f"[{percent}%] {message}")
             else:
                 self.label_progress.setText(message)
+
+
+    ## Bitte ignorieren DAS IST NUR FÜR DIE COMBOBOX 
+    def eventFilter(self, watched_object, event):
+        """
+        Fängt Events ab, bevor sie das beobachtete Widget erreichen.
+        """
+        # 1. Prüfen, ob das Event von unserer ComboBox kommt
+        if watched_object == self.comboBox_experiments:
+            
+            # 2. Prüfen, ob das Event ein Mausklick ist
+            if event.type() == QEvent.Type.MouseButtonPress:
+                
+                # 3. Prüfen, ob die Popup-Liste aktuell NICHT sichtbar ist
+                #    (Wir wollen das Signal nur beim Öffnen, nicht beim Schließen)
+                if not self.comboBox_experiments.view().isVisible():
+                    # 4. Jetzt den Slot manuell aufrufen
+                    self.on_combobox_clicked()
+
+        # Wichtig: Das Event an die Basisklasse weiterleiten,
+        # damit der Klick weiterhin verarbeitet wird (und das Popup öffnet).
+        return super().eventFilter(watched_object, event)
+

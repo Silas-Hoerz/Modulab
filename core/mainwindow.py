@@ -11,7 +11,10 @@ from core.context import ApplicationContext
 from modules.log.LogWidget import LogWidget
 from modules.device.DeviceWidget import DeviceWidget
 from modules.profile.ProfileWidget import ProfileWidget
+from modules.spectrometer.SpectrometerWidget import SpectrometerWidget
+
 from modules.experiment.ExperimentWidget import ExperimentWidget
+
 
 class MainWindow(QMainWindow):
     
@@ -37,7 +40,13 @@ class MainWindow(QMainWindow):
         # --- Device Widget ---
         # Das DeviceWidget bekommt AUCH den gesamten Kontext
         self.device_widget_dialog = DeviceWidget(context=self.context, parent=self)
-        
+
+        # --- Spectrometer Widget ---
+        self.spectrometer_widget = SpectrometerWidget(context = self.context, parent=self)
+        self.spectrometer_dock = QDockWidget("Spectrometer",self)
+        self.spectrometer_dock.setObjectName("Spectrometer")
+        self.spectrometer_dock.setWidget(self.spectrometer_widget)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.spectrometer_dock)
 
         # --- Experiment Widget ---
         self.experiment_widget = ExperimentWidget(context=self.context, parent=self)
@@ -48,7 +57,8 @@ class MainWindow(QMainWindow):
 
         # --- Menu Bar ---
         menu_bar = self.menuBar()
-        self.view_menu = menu_bar.addMenu("Ansicht")
+        self.view_menu = menu_bar.addMenu("View")
+        self.view_menu.addAction(self.spectrometer_dock.toggleViewAction())
         self.view_menu.addAction(self.experiment_dock.toggleViewAction())
 
         # Signale verbinden
