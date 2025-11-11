@@ -200,3 +200,5 @@ class ExperimentWidget(QWidget, Ui_Form):
         # damit der Klick weiterhin verarbeitet wird (und das Popup öffnet).
         return super().eventFilter(watched_object, event)
 
+
+

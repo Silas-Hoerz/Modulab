@@ -5,6 +5,10 @@ import seabreeze
 seabreeze.use('cseabreeze')
 from seabreeze.spectrometers import Spectrometer, list_devices
 
+# ==========================================================================================
+# Manager
+# ==========================================================================================
+
 class SpectrometerManager(QObject):
     """
     Manager zu Steuerung und Verwaltung von Ocean Optics Spektrometern über seabreeze

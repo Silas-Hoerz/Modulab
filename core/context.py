@@ -8,6 +8,7 @@ from modules.device.DeviceManager import DeviceManager, Device
 from modules.experiment.ExperimentManager import ExperimentManager
 
 from modules.spectrometer.SpectrometerManager import SpectrometerManager
+from modules.smu.SmuManager import SmuManager
 
 class ApplicationContext:
     """
@@ -29,6 +30,11 @@ class ApplicationContext:
         )
 
         self.spectrometer_manager = SpectrometerManager(
+            log_manager=self.log_manager, 
+            profile_manager=self.profile_manager
+        )
+
+        self.smu_manager = SmuManager(
             log_manager=self.log_manager, 
             profile_manager=self.profile_manager
         )

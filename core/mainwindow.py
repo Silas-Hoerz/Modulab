@@ -12,6 +12,7 @@ from modules.log.LogWidget import LogWidget
 from modules.device.DeviceWidget import DeviceWidget
 from modules.profile.ProfileWidget import ProfileWidget
 from modules.spectrometer.SpectrometerWidget import SpectrometerWidget
+from modules.smu.SmuWidget import SmuWidget
 
 from modules.experiment.ExperimentWidget import ExperimentWidget
 
@@ -24,7 +25,8 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+
+
         # Den Kontext für später speichern
         self.context = context
         
@@ -48,6 +50,13 @@ class MainWindow(QMainWindow):
         self.spectrometer_dock.setWidget(self.spectrometer_widget)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.spectrometer_dock)
 
+        # --- Smu Widget ---
+        self.smu_widget = SmuWidget(context = self.context, parent=self)
+        self.smu_dock = QDockWidget("SMU",self)
+        self.smu_dock.setObjectName("SMU")
+        self.smu_dock.setWidget(self.smu_widget)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.smu_dock)
+
         # --- Experiment Widget ---
         self.experiment_widget = ExperimentWidget(context=self.context, parent=self)
         self.experiment_dock = QDockWidget("Experiments", self)
@@ -59,6 +68,7 @@ class MainWindow(QMainWindow):
         menu_bar = self.menuBar()
         self.view_menu = menu_bar.addMenu("View")
         self.view_menu.addAction(self.spectrometer_dock.toggleViewAction())
+        self.view_menu.addAction(self.smu_dock.toggleViewAction())
         self.view_menu.addAction(self.experiment_dock.toggleViewAction())
 
         # Signale verbinden

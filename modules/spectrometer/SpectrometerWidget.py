@@ -135,12 +135,12 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.pushButton_connect.setText("Disconnect")
             
             # UI-Bereiche anzeigen (statt nur zu aktivieren)
-            self.label_integrationTime.setVisible(True)
-            self.spinBox_integrationTime.setVisible(True)
-            self.checkBox_correctDarkCounts.setVisible(True)
-            self.checkBox_correctNonLinearity.setVisible(True)
-            self.pushButton_acquire.setVisible(True)
-            self.widget_plot.setVisible(True)
+            self.label_integrationTime.setEnabled(True)
+            self.spinBox_integrationTime.setEnabled(True)
+            self.checkBox_correctDarkCounts.setEnabled(True)
+            self.checkBox_correctNonLinearity.setEnabled(True)
+            self.pushButton_acquire.setEnabled(True)
+            self.widget_plot.setEnabled(True)
             
             # UI-Bereiche aktivieren (HINWEIS: Dies ist der fehlerhafte Code aus deinem Original)
             # self.verticalLayout_settings.setEnabled(True) # -> Ersetzt
@@ -163,12 +163,12 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.pushButton_connect.setText("Connect")
             
             # UI-Bereiche ausblenden (statt nur zu deaktivieren)
-            self.label_integrationTime.setVisible(False)
-            self.spinBox_integrationTime.setVisible(False)
-            self.checkBox_correctDarkCounts.setVisible(False)
-            self.checkBox_correctNonLinearity.setVisible(False)
-            self.pushButton_acquire.setVisible(False)
-            self.widget_plot.setVisible(False)
+            self.label_integrationTime.setEnabled(False)
+            self.spinBox_integrationTime.setEnabled(False)
+            self.checkBox_correctDarkCounts.setEnabled(False)
+            self.checkBox_correctNonLinearity.setEnabled(False)
+            self.pushButton_acquire.setEnabled(False)
+            self.widget_plot.setEnabled(False)
 
             # UI-Bereiche deaktivieren (HINWEIS: Dies ist der fehlerhafte Code aus deinem Original)
             # self.verticalLayout_settings.setEnabled(False) # -> Ersetzt
