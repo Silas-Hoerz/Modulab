@@ -2,8 +2,14 @@
 # This Python file uses the following encoding: utf-8
 
 import sys
+import os
+import webbrowser
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Slot, Signal, QEvent
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
+DOC_PATH = os.path.join(PROJECT_ROOT, 'build', 'html', 'index.html')
 
 # Importiere die generierte UI-Klasse
 try:
@@ -64,7 +70,7 @@ class ExperimentWidget(QWidget, Ui_Form):
         self.pushButton_start.clicked.connect(self.on_start_clicked)
         self.pushButton_pause.clicked.connect(self.on_pause_clicked)
         self.pushButton_stop.clicked.connect(self.exp_mgr.stop_experiment)
-
+        self.pushButton_docs.clicked.connect(self.on_docs_clicked)
         self.exp_mgr.experiments_found.connect(self.on_experiments_found)
 
         # 2. Manager-Signale an UI-Slots (diese Klasse)
@@ -118,6 +124,18 @@ class ExperimentWidget(QWidget, Ui_Form):
             self.label_progress.setText("Paused.")
             self.is_paused = True
 
+    @Slot()
+    def on_docs_clicked(self):
+        """
+        Öffnet die generierte Sphinx-Dokumentation im Standard-Webbrowser.
+        """
+        if not os.path.exists(DOC_PATH):
+            print(f"Fehler: Dokumentation nicht gefunden unter {DOC_PATH}")
+            print("Bitte zuerst die Doku mit Sphinx generieren (z.B. 'cd docs && make html').")
+            return
+            
+        # 'file://' ist wichtig, um dem Browser zu sagen, dass es eine lokale Datei ist.
+        webbrowser.open_new_tab(f"file://{DOC_PATH}")
     # --- Slots für Signale vom ExperimentManager ---
 
     @Slot(list)

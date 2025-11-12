@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ExperimentWidgetrEqxAI.ui'
+## Form generated from reading UI file 'ExperimentWidgetipBJFG.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -23,8 +23,8 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(263, 74)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        Form.resize(359, 84)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
@@ -53,8 +53,11 @@ class Ui_Form(object):
 
         self.pushButton_start = QPushButton(self.frame)
         self.pushButton_start.setObjectName(u"pushButton_start")
-        sizePolicy.setHeightForWidth(self.pushButton_start.sizePolicy().hasHeightForWidth())
-        self.pushButton_start.setSizePolicy(sizePolicy)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.pushButton_start.sizePolicy().hasHeightForWidth())
+        self.pushButton_start.setSizePolicy(sizePolicy2)
         self.pushButton_start.setMinimumSize(QSize(50, 0))
         self.pushButton_start.setMaximumSize(QSize(50, 16777215))
 
@@ -62,8 +65,8 @@ class Ui_Form(object):
 
         self.pushButton_pause = QPushButton(self.frame)
         self.pushButton_pause.setObjectName(u"pushButton_pause")
-        sizePolicy.setHeightForWidth(self.pushButton_pause.sizePolicy().hasHeightForWidth())
-        self.pushButton_pause.setSizePolicy(sizePolicy)
+        sizePolicy2.setHeightForWidth(self.pushButton_pause.sizePolicy().hasHeightForWidth())
+        self.pushButton_pause.setSizePolicy(sizePolicy2)
         self.pushButton_pause.setMinimumSize(QSize(50, 0))
         self.pushButton_pause.setMaximumSize(QSize(50, 16777215))
 
@@ -71,8 +74,8 @@ class Ui_Form(object):
 
         self.pushButton_stop = QPushButton(self.frame)
         self.pushButton_stop.setObjectName(u"pushButton_stop")
-        sizePolicy.setHeightForWidth(self.pushButton_stop.sizePolicy().hasHeightForWidth())
-        self.pushButton_stop.setSizePolicy(sizePolicy)
+        sizePolicy2.setHeightForWidth(self.pushButton_stop.sizePolicy().hasHeightForWidth())
+        self.pushButton_stop.setSizePolicy(sizePolicy2)
         self.pushButton_stop.setMinimumSize(QSize(50, 0))
         self.pushButton_stop.setMaximumSize(QSize(50, 16777215))
 
@@ -81,10 +84,35 @@ class Ui_Form(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.pushButton_edit = QPushButton(self.frame)
+        self.pushButton_edit.setObjectName(u"pushButton_edit")
+        sizePolicy2.setHeightForWidth(self.pushButton_edit.sizePolicy().hasHeightForWidth())
+        self.pushButton_edit.setSizePolicy(sizePolicy2)
+        self.pushButton_edit.setMinimumSize(QSize(50, 0))
+        self.pushButton_edit.setMaximumSize(QSize(50, 16777215))
+
+        self.horizontalLayout_2.addWidget(self.pushButton_edit)
+
+        self.pushButton_docs = QPushButton(self.frame)
+        self.pushButton_docs.setObjectName(u"pushButton_docs")
+        sizePolicy2.setHeightForWidth(self.pushButton_docs.sizePolicy().hasHeightForWidth())
+        self.pushButton_docs.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_2.addWidget(self.pushButton_docs)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
         self.label_progress = QLabel(self.frame)
         self.label_progress.setObjectName(u"label_progress")
 
-        self.verticalLayout.addWidget(self.label_progress)
+        self.horizontalLayout_2.addWidget(self.label_progress)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -105,6 +133,8 @@ class Ui_Form(object):
         self.pushButton_start.setText(QCoreApplication.translate("Form", u"Start", None))
         self.pushButton_pause.setText(QCoreApplication.translate("Form", u"Pause", None))
         self.pushButton_stop.setText(QCoreApplication.translate("Form", u"Stop", None))
+        self.pushButton_edit.setText(QCoreApplication.translate("Form", u"Edit", None))
+        self.pushButton_docs.setText(QCoreApplication.translate("Form", u"Documentation", None))
         self.label_progress.setText(QCoreApplication.translate("Form", u"TextLabel", None))
     # retranslateUi
 
