@@ -1,5 +1,0 @@
-[project]
-name = "PySide Widgets Project"
-
-[tool.pyside6-project]
-files = ["dialog.ui", "form.ui", "main.py", "mainwindow.py", "modules/log/LogManager.py", "modules/log/LogWidget.py", "modules/log/LogWidget.ui", "modules/log/ui_LogWidget.py", "modules/profile/ProfileManager.py", "modules/profile/ProfileView.py"]

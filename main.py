@@ -1,11 +1,17 @@
 # main.py
 # This Python file uses the following encoding: utf-8
+
+__title__ = "MODULAB"
+__version__ = "0.1.0"
+
 import sys
 from PySide6.QtWidgets import QApplication
 
 # Importiere nur noch den Context und die MainWindow
 from core.context import ApplicationContext
 from core.mainwindow import MainWindow
+
+
 
 if __name__ == "__main__":
 

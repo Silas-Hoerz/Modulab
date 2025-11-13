@@ -1,1 +1,4 @@
-PySide6, pyserial, QScintilla
+PySide6
+pyserial
+QScintilla
+furo

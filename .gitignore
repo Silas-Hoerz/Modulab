@@ -1,0 +1,7 @@
+#Utiliy
+__pycache__/
+.qtcreator/
+.venv/
+.vscode/
+docs/_build/
+tools/
