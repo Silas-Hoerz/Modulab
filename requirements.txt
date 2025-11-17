@@ -2,3 +2,6 @@ PySide6
 pyserial
 QScintilla
 furo
+numpy                                                                                                           │▄
+seabreeze                                                                                                       │█
+matplotlib       

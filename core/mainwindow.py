@@ -44,25 +44,27 @@ class MainWindow(QMainWindow):
         self.device_widget_dialog = DeviceWidget(context=self.context, parent=self)
 
         # --- Spectrometer Widget ---
-        self.spectrometer_widget = SpectrometerWidget(context = self.context, parent=self)
-        self.spectrometer_dock = QDockWidget("Spectrometer",self)
+        self.spectrometer_widget = SpectrometerWidget(context=self.context, parent=self)
+        self.spectrometer_dock = QDockWidget("Spectrometer", self)
         self.spectrometer_dock.setObjectName("Spectrometer")
         self.spectrometer_dock.setWidget(self.spectrometer_widget)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.spectrometer_dock)
-
-        # --- Smu Widget ---
-        self.smu_widget = SmuWidget(context = self.context, parent=self)
-        self.smu_dock = QDockWidget("SMU",self)
-        self.smu_dock.setObjectName("SMU")
-        self.smu_dock.setWidget(self.smu_widget)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.smu_dock)
 
         # --- Experiment Widget ---
         self.experiment_widget = ExperimentWidget(context=self.context, parent=self)
         self.experiment_dock = QDockWidget("Experiments", self)
-        self.experiment_dock.setObjectName("Experiments") 
+        self.experiment_dock.setObjectName("Experiments")
         self.experiment_dock.setWidget(self.experiment_widget)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.experiment_dock)
+
+        # --- Smu Widget ---
+        self.smu_widget = SmuWidget(context=self.context, parent=self)
+        self.smu_dock = QDockWidget("SMU", self)
+        self.smu_dock.setObjectName("SMU")
+        self.smu_dock.setWidget(self.smu_widget)
+
+        # Docks hinzufügen
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.experiment_dock)  # Experiment links oben
+        self.splitDockWidget(self.experiment_dock, self.spectrometer_dock, Qt.Vertical)  # Spectrometer unter Experiment
+        self.addDockWidget(Qt.RightDockWidgetArea, self.smu_dock)  # SMU rechts
 
         # --- Menu Bar ---
         menu_bar = self.menuBar()
@@ -75,9 +77,8 @@ class MainWindow(QMainWindow):
         self.log_widget.request_profile_dialog.connect(self.show_profile_dialog)
         self.log_widget.request_device_dialog.connect(self.show_device_dialog)
 
-        # --- Startup Aktionen ---
-        self.show_profile_dialog()
-        self.show_device_dialog()
+   
+    
 
 
     def show_profile_dialog(self):

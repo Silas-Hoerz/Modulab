@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
-    <height>570</height>
+    <width>393</width>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,13 +36,126 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Port:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_port">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_connect">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Connect</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Policy::MinimumExpanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_status">
+          <property name="text">
+           <string>No connection</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="Line" name="line_5">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QLabel" name="label">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Channel A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_3">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_channelA">
+            <item row="10" column="1">
+             <widget class="QPushButton" name="pushButton_measureA">
+              <property name="text">
+               <string>Measure</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="lineEdit_levelA">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_limitA">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                 <horstretch>0</horstretch>
@@ -50,130 +163,159 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Port:</string>
+               <string>Limit [A]</string>
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QComboBox" name="comboBox_port">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>250</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
+            <item row="5" column="1">
+             <widget class="QLineEdit" name="lineEdit_limitA"/>
             </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="sizeConstraint">
-             <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
-            </property>
-            <item>
-             <widget class="QLabel" name="label_status">
+            <item row="2" column="1">
+             <widget class="QPushButton" name="pushButton_currentA">
               <property name="text">
-               <string>not connected</string>
+               <string>Current</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Policy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_connect">
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_levelA">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string/>
               </property>
               <property name="text">
-               <string>Connect</string>
+               <string>Level [V]</string>
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QGridLayout" name="gridLayout">
-            <property name="sizeConstraint">
-             <enum>QLayout::SizeConstraint::SetFixedSize</enum>
-            </property>
-            <item row="5" column="0" colspan="2">
-             <widget class="QLineEdit" name="lineEdit_level">
+            <item row="8" column="1">
+             <widget class="QPushButton" name="pushButton_outputA">
+              <property name="text">
+               <string>OFF</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="0">
+             <widget class="QLabel" name="label_voltageA">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>250</width>
-                <height>16777215</height>
-               </size>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    color: palette(dark);             /* Akzentfarbe */
+    background-color: palette(accent);     /* Standard Hintergrund */
+    border: 0px solid palette(light);       /* Standard dunkler Rahmen */
+    border-radius: 5px;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 14px;
+}
+</string>
+              </property>
+              <property name="text">
+               <string>--- V</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
               </property>
              </widget>
             </item>
-            <item row="7" column="0" colspan="2">
-             <widget class="QLineEdit" name="lineEdit_limit">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+            <item row="7" column="1">
+             <widget class="QPushButton" name="pushButton_remoteA">
+              <property name="text">
+               <string>Remote 4 Wire</string>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>250</width>
-                <height>16777215</height>
-               </size>
+              <property name="checkable">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_source">
+             <widget class="QPushButton" name="pushButton_voltageA">
+              <property name="text">
+               <string>Voltage</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="1">
+             <widget class="QLabel" name="label_currentA">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    color: palette(dark);             /* Akzentfarbe */
+    background-color: palette(accent);     /* Standard Hintergrund */
+    border: 0px solid palette(light);       /* Standard dunkler Rahmen */
+    border-radius: 5px;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 14px;
+}
+</string>
+              </property>
+              <property name="text">
+               <string>--- A</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0" colspan="2">
+             <widget class="Line" name="line_2">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QPushButton" name="pushButton_localA">
+              <property name="text">
+               <string>Local 2 Wire</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_6">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                 <horstretch>0</horstretch>
@@ -185,198 +327,235 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QRadioButton" name="radioButton_voltage">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Voltage</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_channelA">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>A</string>
-              </property>
-             </widget>
-            </item>
             <item row="8" column="0">
-             <widget class="QRadioButton" name="radioButton_local">
+             <widget class="QPushButton" name="pushButton_resetA">
               <property name="text">
-               <string>Local 2 Wire</string>
+               <string>Reset</string>
               </property>
              </widget>
-            </item>
-            <item row="8" column="1">
-             <widget class="QRadioButton" name="radioButton_remote">
-              <property name="text">
-               <string>Remote 4 Wire</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_level">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string>Level:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QRadioButton" name="radioButton_current">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Current</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_channel">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Channel:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QRadioButton" name="radioButton_channelB">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>B</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QLabel" name="label_limit">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Limit:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="0" colspan="2">
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <property name="sizeConstraint">
-               <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
-              </property>
-              <item>
-               <widget class="QPushButton" name="pushButton_reset">
-                <property name="text">
-                 <string>Reset</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_output">
-                <property name="text">
-                 <string>Output</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableView_measurementsA">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
-         <spacer name="horizontalSpacer_3">
+         <widget class="Line" name="line_6">
           <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Policy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_measure">
-        <property name="text">
-         <string>Measure</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <widget class="QLabel" name="label_voltage">
-          <property name="text">
-           <string>--- V</string>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_current">
-          <property name="text">
-           <string>--- A</string>
-          </property>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_channel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Channel B</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_4">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_channelB">
+            <item row="10" column="1">
+             <widget class="QLabel" name="label_currentB">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    color: palette(dark);             /* Akzentfarbe */
+    background-color: palette(accent);     /* Standard Hintergrund */
+    border: 0px solid palette(light);       /* Standard dunkler Rahmen */
+    border-radius: 5px;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 14px;
+}
+</string>
+              </property>
+              <property name="text">
+               <string>--- A</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1">
+             <widget class="QPushButton" name="pushButton_measureB">
+              <property name="text">
+               <string>Measure</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QPushButton" name="pushButton_remoteB">
+              <property name="text">
+               <string>Remote 4 Wire</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0" colspan="2">
+             <widget class="Line" name="line">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="pushButton_currentB">
+              <property name="text">
+               <string>Current</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_limitB">
+              <property name="text">
+               <string>Limit [A]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="0">
+             <widget class="QLabel" name="label_voltageB">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    color: palette(dark);             /* Akzentfarbe */
+    background-color: palette(accent);     /* Standard Hintergrund */
+    border: 0px solid palette(light);       /* Standard dunkler Rahmen */
+    border-radius: 5px;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 14px;
+}
+</string>
+              </property>
+              <property name="text">
+               <string>--- V</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_levelB">
+              <property name="text">
+               <string>Level [V]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="pushButton_voltageB">
+              <property name="text">
+               <string>Voltage</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QPushButton" name="pushButton_localB">
+              <property name="text">
+               <string>Local 2 Wire</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QPushButton" name="pushButton_resetB">
+              <property name="text">
+               <string>Reset</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QPushButton" name="pushButton_outputB">
+              <property name="text">
+               <string>OFF</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Source</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_levelB"/>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLineEdit" name="lineEdit_limitB"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableView_measurementsB"/>
+          </item>
+         </layout>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QTableView" name="tableView_measurements">
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>

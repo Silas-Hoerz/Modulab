@@ -9,7 +9,7 @@ from PySide6.QtCore import Slot, Signal, QEvent
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
-DOC_PATH = os.path.join(PROJECT_ROOT, 'build', 'html', 'index.html')
+DOC_PATH = os.path.join(PROJECT_ROOT, 'docs','_build', 'html', 'index.html')
 
 # Importiere die generierte UI-Klasse
 try:

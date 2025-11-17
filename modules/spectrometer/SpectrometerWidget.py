@@ -132,6 +132,7 @@ class SpectrometerWidget(QWidget, Ui_Form):
         """
         if connected:
             self.label_device.setText(device_name)
+            self.label_device.setStyleSheet("color: green;")
             self.pushButton_connect.setText("Disconnect")
             
             # UI-Bereiche anzeigen (statt nur zu aktivieren)
@@ -160,6 +161,7 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
         else: # Nicht verbunden
             self.label_device.setText("Not Connected")
+            self.label_device.setStyleSheet("color: red;")
             self.pushButton_connect.setText("Connect")
             
             # UI-Bereiche ausblenden (statt nur zu deaktivieren)

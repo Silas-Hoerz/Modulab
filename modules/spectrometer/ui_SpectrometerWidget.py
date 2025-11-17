@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SpectrometerWidgetUdjLIV.ui'
+## Form generated from reading UI file 'SpectrometerWidgetiKZbEv.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -24,13 +24,13 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(503, 347)
+        Form.resize(400, 530)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
-        Form.setMinimumSize(QSize(400, 0))
+        Form.setMinimumSize(QSize(0, 0))
         Form.setAutoFillBackground(False)
         self.gridLayout = QGridLayout(Form)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -44,17 +44,12 @@ class Ui_Form(object):
         self.verticalLayout = QVBoxLayout(self.frame)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(9, 9, -1, -1)
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.verticalLayout_connection = QVBoxLayout()
-        self.verticalLayout_connection.setObjectName(u"verticalLayout_connection")
-        self.verticalLayout_connection.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
-        self.label_device = QLabel(self.frame)
-        self.label_device.setObjectName(u"label_device")
-        sizePolicy.setHeightForWidth(self.label_device.sizePolicy().hasHeightForWidth())
-        self.label_device.setSizePolicy(sizePolicy)
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.label = QLabel(self.frame)
+        self.label.setObjectName(u"label")
 
-        self.verticalLayout_connection.addWidget(self.label_device)
+        self.horizontalLayout_4.addWidget(self.label)
 
         self.comboBox_deviceList = QComboBox(self.frame)
         self.comboBox_deviceList.setObjectName(u"comboBox_deviceList")
@@ -63,16 +58,10 @@ class Ui_Form(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.comboBox_deviceList.sizePolicy().hasHeightForWidth())
         self.comboBox_deviceList.setSizePolicy(sizePolicy1)
-        self.comboBox_deviceList.setMinimumSize(QSize(200, 0))
+        self.comboBox_deviceList.setMinimumSize(QSize(150, 0))
+        self.comboBox_deviceList.setMaximumSize(QSize(250, 16777215))
 
-        self.verticalLayout_connection.addWidget(self.comboBox_deviceList)
-
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_3.addItem(self.horizontalSpacer)
+        self.horizontalLayout_4.addWidget(self.comboBox_deviceList)
 
         self.pushButton_connect = QPushButton(self.frame)
         self.pushButton_connect.setObjectName(u"pushButton_connect")
@@ -80,17 +69,27 @@ class Ui_Form(object):
         self.pushButton_connect.setSizePolicy(sizePolicy)
         self.pushButton_connect.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
 
-        self.horizontalLayout_3.addWidget(self.pushButton_connect)
+        self.horizontalLayout_4.addWidget(self.pushButton_connect)
+
+        self.horizontalSpacer = QSpacerItem(0, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer)
+
+        self.label_device = QLabel(self.frame)
+        self.label_device.setObjectName(u"label_device")
+        sizePolicy.setHeightForWidth(self.label_device.sizePolicy().hasHeightForWidth())
+        self.label_device.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_4.addWidget(self.label_device)
 
 
-        self.verticalLayout_connection.addLayout(self.horizontalLayout_3)
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-
-        self.horizontalLayout.addLayout(self.verticalLayout_connection)
-
-        self.verticalLayout_settings = QVBoxLayout()
-        self.verticalLayout_settings.setObjectName(u"verticalLayout_settings")
-        self.verticalLayout_settings.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout_connection = QVBoxLayout()
+        self.verticalLayout_connection.setObjectName(u"verticalLayout_connection")
+        self.verticalLayout_connection.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.label_integrationTime = QLabel(self.frame)
         self.label_integrationTime.setObjectName(u"label_integrationTime")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
@@ -99,18 +98,25 @@ class Ui_Form(object):
         sizePolicy2.setHeightForWidth(self.label_integrationTime.sizePolicy().hasHeightForWidth())
         self.label_integrationTime.setSizePolicy(sizePolicy2)
 
-        self.verticalLayout_settings.addWidget(self.label_integrationTime)
+        self.verticalLayout_connection.addWidget(self.label_integrationTime)
 
         self.spinBox_integrationTime = QSpinBox(self.frame)
         self.spinBox_integrationTime.setObjectName(u"spinBox_integrationTime")
         sizePolicy2.setHeightForWidth(self.spinBox_integrationTime.sizePolicy().hasHeightForWidth())
         self.spinBox_integrationTime.setSizePolicy(sizePolicy2)
         self.spinBox_integrationTime.setMinimumSize(QSize(0, 0))
+        self.spinBox_integrationTime.setMaximumSize(QSize(250, 16777215))
         self.spinBox_integrationTime.setMaximum(100000)
         self.spinBox_integrationTime.setValue(100000)
 
-        self.verticalLayout_settings.addWidget(self.spinBox_integrationTime)
+        self.verticalLayout_connection.addWidget(self.spinBox_integrationTime)
 
+
+        self.horizontalLayout.addLayout(self.verticalLayout_connection)
+
+        self.verticalLayout_settings = QVBoxLayout()
+        self.verticalLayout_settings.setObjectName(u"verticalLayout_settings")
+        self.verticalLayout_settings.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         self.checkBox_correctDarkCounts = QCheckBox(self.frame)
         self.checkBox_correctDarkCounts.setObjectName(u"checkBox_correctDarkCounts")
         sizePolicy2.setHeightForWidth(self.checkBox_correctDarkCounts.sizePolicy().hasHeightForWidth())
@@ -161,7 +167,7 @@ class Ui_Form(object):
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.widget_plot.sizePolicy().hasHeightForWidth())
         self.widget_plot.setSizePolicy(sizePolicy3)
-        self.widget_plot.setMinimumSize(QSize(300, 100))
+        self.widget_plot.setMinimumSize(QSize(380, 200))
 
         self.verticalLayout.addWidget(self.widget_plot)
 
@@ -176,11 +182,12 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Spectrometer", None))
-        self.label_device.setText(QCoreApplication.translate("Form", u"No_Spectrometer", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Device:", None))
         self.pushButton_connect.setText(QCoreApplication.translate("Form", u"Connect", None))
-        self.label_integrationTime.setText(QCoreApplication.translate("Form", u"Integration Time [us]", None))
+        self.label_device.setText(QCoreApplication.translate("Form", u"No connection", None))
+        self.label_integrationTime.setText(QCoreApplication.translate("Form", u"Integration Time [us]:", None))
         self.checkBox_correctDarkCounts.setText(QCoreApplication.translate("Form", u"Correct dark counts", None))
         self.checkBox_correctNonLinearity.setText(QCoreApplication.translate("Form", u"Correct non linearity", None))
-        self.pushButton_acquire.setText(QCoreApplication.translate("Form", u"Single measurement", None))
+        self.pushButton_acquire.setText(QCoreApplication.translate("Form", u"Measure", None))
     # retranslateUi
 

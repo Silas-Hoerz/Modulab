@@ -42,12 +42,6 @@ class SmuManager(QObject):
     new_measurement_acquired = Signal(str, float, float)
 
     def __init__(self, log_manager, profile_manager):
-        """
-        Initialisiert den SmuManager.
-        
-        Versucht sofort, basierend auf gespeicherten Profil-Einstellungen,
-        eine Verbindung zum zuletzt verwendeten Gerät herzustellen.
-        """
         super().__init__()
         self.log_mgr = log_manager
         self.profile_mgr = profile_manager
@@ -156,7 +150,6 @@ class SmuManager(QObject):
             return False
 
         try:
-            # --- BUGFIX: .connect() muss aufgerufen werden, nicht das Objekt selbst ---
             is_connected, idn_msg = driver_to_use.connect(port=port_name) 
 
             if is_connected:

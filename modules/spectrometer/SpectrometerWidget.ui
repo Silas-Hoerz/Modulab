@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>503</width>
-    <height>347</height>
+    <width>400</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
+    <width>0</width>
     <height>0</height>
    </size>
   </property>
@@ -63,83 +63,89 @@
        <number>9</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_connection">
-          <property name="sizeConstraint">
-           <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Device:</string>
           </property>
-          <item>
-           <widget class="QLabel" name="label_device">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>No_Spectrometer</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_deviceList">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <property name="sizeConstraint">
-             <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-            </property>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_connect">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LayoutDirection::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>Connect</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
+         </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_settings">
+         <widget class="QComboBox" name="comboBox_deviceList">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_connect">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Connect</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Policy::MinimumExpanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_device">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>No connection</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_connection" stretch="0,0">
           <property name="sizeConstraint">
-           <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+           <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
           </property>
           <item>
            <widget class="QLabel" name="label_integrationTime">
@@ -150,7 +156,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Integration Time [us]</string>
+             <string>Integration Time [us]:</string>
             </property>
            </widget>
           </item>
@@ -168,6 +174,12 @@
               <height>0</height>
              </size>
             </property>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="maximum">
              <number>100000</number>
             </property>
@@ -176,6 +188,13 @@
             </property>
            </widget>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_settings">
+          <property name="sizeConstraint">
+           <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+          </property>
           <item>
            <widget class="QCheckBox" name="checkBox_correctDarkCounts">
             <property name="sizePolicy">
@@ -241,7 +260,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Single measurement</string>
+             <string>Measure</string>
             </property>
            </widget>
           </item>
@@ -259,8 +278,8 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>300</width>
-          <height>100</height>
+          <width>380</width>
+          <height>200</height>
          </size>
         </property>
        </widget>

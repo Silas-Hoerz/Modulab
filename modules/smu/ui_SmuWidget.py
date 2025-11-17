@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SmuWidgetcdQyDD.ui'
+## Form generated from reading UI file 'SmuWidgeteXuXir.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -16,15 +16,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLayout,
-    QLineEdit, QPushButton, QRadioButton, QSizePolicy,
-    QSpacerItem, QTableView, QVBoxLayout, QWidget)
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QPushButton, QSizePolicy, QSpacerItem, QTableView,
+    QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(231, 570)
+        Form.resize(393, 411)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -34,10 +34,6 @@ class Ui_Form(object):
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.frame)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.label = QLabel(self.frame)
@@ -61,25 +57,6 @@ class Ui_Form(object):
 
         self.horizontalLayout_6.addWidget(self.comboBox_port)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_6.addItem(self.horizontalSpacer_2)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
-
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
-        self.label_status = QLabel(self.frame)
-        self.label_status.setObjectName(u"label_status")
-
-        self.horizontalLayout.addWidget(self.label_status)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
         self.pushButton_connect = QPushButton(self.frame)
         self.pushButton_connect.setObjectName(u"pushButton_connect")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
@@ -88,165 +65,338 @@ class Ui_Form(object):
         sizePolicy2.setHeightForWidth(self.pushButton_connect.sizePolicy().hasHeightForWidth())
         self.pushButton_connect.setSizePolicy(sizePolicy2)
 
-        self.horizontalLayout.addWidget(self.pushButton_connect)
+        self.horizontalLayout_6.addWidget(self.pushButton_connect)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer)
+
+        self.label_status = QLabel(self.frame)
+        self.label_status.setObjectName(u"label_status")
+
+        self.horizontalLayout_6.addWidget(self.label_status)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_6)
 
-        self.line = QFrame(self.frame)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.HLine)
-        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+        self.line_5 = QFrame(self.frame)
+        self.line_5.setObjectName(u"line_5")
+        self.line_5.setFrameShape(QFrame.Shape.HLine)
+        self.line_5.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout_2.addWidget(self.line)
+        self.verticalLayout_3.addWidget(self.line_5)
 
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.gridLayout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
-        self.lineEdit_level = QLineEdit(self.frame)
-        self.lineEdit_level.setObjectName(u"lineEdit_level")
-        sizePolicy1.setHeightForWidth(self.lineEdit_level.sizePolicy().hasHeightForWidth())
-        self.lineEdit_level.setSizePolicy(sizePolicy1)
-        self.lineEdit_level.setMaximumSize(QSize(250, 16777215))
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.label_2 = QLabel(self.frame)
+        self.label_2.setObjectName(u"label_2")
 
-        self.gridLayout.addWidget(self.lineEdit_level, 5, 0, 1, 2)
+        self.verticalLayout_2.addWidget(self.label_2)
 
-        self.lineEdit_limit = QLineEdit(self.frame)
-        self.lineEdit_limit.setObjectName(u"lineEdit_limit")
-        sizePolicy1.setHeightForWidth(self.lineEdit_limit.sizePolicy().hasHeightForWidth())
-        self.lineEdit_limit.setSizePolicy(sizePolicy1)
-        self.lineEdit_limit.setMaximumSize(QSize(250, 16777215))
+        self.line_3 = QFrame(self.frame)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.gridLayout.addWidget(self.lineEdit_limit, 7, 0, 1, 2)
+        self.verticalLayout_2.addWidget(self.line_3)
 
-        self.label_source = QLabel(self.frame)
-        self.label_source.setObjectName(u"label_source")
-        sizePolicy.setHeightForWidth(self.label_source.sizePolicy().hasHeightForWidth())
-        self.label_source.setSizePolicy(sizePolicy)
+        self.gridLayout_channelA = QGridLayout()
+        self.gridLayout_channelA.setObjectName(u"gridLayout_channelA")
+        self.pushButton_measureA = QPushButton(self.frame)
+        self.pushButton_measureA.setObjectName(u"pushButton_measureA")
 
-        self.gridLayout.addWidget(self.label_source, 2, 0, 1, 1)
+        self.gridLayout_channelA.addWidget(self.pushButton_measureA, 10, 1, 1, 1)
 
-        self.radioButton_voltage = QRadioButton(self.frame)
-        self.radioButton_voltage.setObjectName(u"radioButton_voltage")
-        sizePolicy.setHeightForWidth(self.radioButton_voltage.sizePolicy().hasHeightForWidth())
-        self.radioButton_voltage.setSizePolicy(sizePolicy)
+        self.lineEdit_levelA = QLineEdit(self.frame)
+        self.lineEdit_levelA.setObjectName(u"lineEdit_levelA")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.lineEdit_levelA.sizePolicy().hasHeightForWidth())
+        self.lineEdit_levelA.setSizePolicy(sizePolicy3)
+        self.lineEdit_levelA.setMaximumSize(QSize(16777215, 16777215))
 
-        self.gridLayout.addWidget(self.radioButton_voltage, 3, 0, 1, 1)
+        self.gridLayout_channelA.addWidget(self.lineEdit_levelA, 3, 1, 1, 1)
 
-        self.radioButton_channelA = QRadioButton(self.frame)
-        self.radioButton_channelA.setObjectName(u"radioButton_channelA")
-        sizePolicy.setHeightForWidth(self.radioButton_channelA.sizePolicy().hasHeightForWidth())
-        self.radioButton_channelA.setSizePolicy(sizePolicy)
+        self.label_limitA = QLabel(self.frame)
+        self.label_limitA.setObjectName(u"label_limitA")
+        sizePolicy.setHeightForWidth(self.label_limitA.sizePolicy().hasHeightForWidth())
+        self.label_limitA.setSizePolicy(sizePolicy)
 
-        self.gridLayout.addWidget(self.radioButton_channelA, 1, 0, 1, 1)
+        self.gridLayout_channelA.addWidget(self.label_limitA, 5, 0, 1, 1)
 
-        self.radioButton_local = QRadioButton(self.frame)
-        self.radioButton_local.setObjectName(u"radioButton_local")
+        self.lineEdit_limitA = QLineEdit(self.frame)
+        self.lineEdit_limitA.setObjectName(u"lineEdit_limitA")
 
-        self.gridLayout.addWidget(self.radioButton_local, 8, 0, 1, 1)
+        self.gridLayout_channelA.addWidget(self.lineEdit_limitA, 5, 1, 1, 1)
 
-        self.radioButton_remote = QRadioButton(self.frame)
-        self.radioButton_remote.setObjectName(u"radioButton_remote")
+        self.pushButton_currentA = QPushButton(self.frame)
+        self.pushButton_currentA.setObjectName(u"pushButton_currentA")
+        self.pushButton_currentA.setCheckable(True)
 
-        self.gridLayout.addWidget(self.radioButton_remote, 8, 1, 1, 1)
+        self.gridLayout_channelA.addWidget(self.pushButton_currentA, 2, 1, 1, 1)
 
-        self.label_level = QLabel(self.frame)
-        self.label_level.setObjectName(u"label_level")
-        sizePolicy.setHeightForWidth(self.label_level.sizePolicy().hasHeightForWidth())
-        self.label_level.setSizePolicy(sizePolicy)
+        self.label_levelA = QLabel(self.frame)
+        self.label_levelA.setObjectName(u"label_levelA")
+        sizePolicy.setHeightForWidth(self.label_levelA.sizePolicy().hasHeightForWidth())
+        self.label_levelA.setSizePolicy(sizePolicy)
 
-        self.gridLayout.addWidget(self.label_level, 4, 0, 1, 1)
+        self.gridLayout_channelA.addWidget(self.label_levelA, 3, 0, 1, 1)
 
-        self.radioButton_current = QRadioButton(self.frame)
-        self.radioButton_current.setObjectName(u"radioButton_current")
-        sizePolicy.setHeightForWidth(self.radioButton_current.sizePolicy().hasHeightForWidth())
-        self.radioButton_current.setSizePolicy(sizePolicy)
+        self.pushButton_outputA = QPushButton(self.frame)
+        self.pushButton_outputA.setObjectName(u"pushButton_outputA")
+        self.pushButton_outputA.setCheckable(True)
 
-        self.gridLayout.addWidget(self.radioButton_current, 3, 1, 1, 1)
+        self.gridLayout_channelA.addWidget(self.pushButton_outputA, 8, 1, 1, 1)
 
+        self.label_voltageA = QLabel(self.frame)
+        self.label_voltageA.setObjectName(u"label_voltageA")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.label_voltageA.sizePolicy().hasHeightForWidth())
+        self.label_voltageA.setSizePolicy(sizePolicy4)
+        self.label_voltageA.setAutoFillBackground(False)
+        self.label_voltageA.setStyleSheet(u"QLabel {\n"
+"    color: palette(dark);             /* Akzentfarbe */\n"
+"    background-color: palette(accent);     /* Standard Hintergrund */\n"
+"    border: 0px solid palette(light);       /* Standard dunkler Rahmen */\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    font-family: monospace;\n"
+"    font-size: 14px;\n"
+"}\n"
+"")
+        self.label_voltageA.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_channelA.addWidget(self.label_voltageA, 11, 0, 1, 1)
+
+        self.pushButton_remoteA = QPushButton(self.frame)
+        self.pushButton_remoteA.setObjectName(u"pushButton_remoteA")
+        self.pushButton_remoteA.setCheckable(True)
+
+        self.gridLayout_channelA.addWidget(self.pushButton_remoteA, 7, 1, 1, 1)
+
+        self.pushButton_voltageA = QPushButton(self.frame)
+        self.pushButton_voltageA.setObjectName(u"pushButton_voltageA")
+        self.pushButton_voltageA.setCheckable(True)
+        self.pushButton_voltageA.setChecked(True)
+
+        self.gridLayout_channelA.addWidget(self.pushButton_voltageA, 2, 0, 1, 1)
+
+        self.label_currentA = QLabel(self.frame)
+        self.label_currentA.setObjectName(u"label_currentA")
+        sizePolicy4.setHeightForWidth(self.label_currentA.sizePolicy().hasHeightForWidth())
+        self.label_currentA.setSizePolicy(sizePolicy4)
+        self.label_currentA.setStyleSheet(u"QLabel {\n"
+"    color: palette(dark);             /* Akzentfarbe */\n"
+"    background-color: palette(accent);     /* Standard Hintergrund */\n"
+"    border: 0px solid palette(light);       /* Standard dunkler Rahmen */\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    font-family: monospace;\n"
+"    font-size: 14px;\n"
+"}\n"
+"")
+        self.label_currentA.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_channelA.addWidget(self.label_currentA, 11, 1, 1, 1)
+
+        self.line_2 = QFrame(self.frame)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setMinimumSize(QSize(0, 20))
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.gridLayout_channelA.addWidget(self.line_2, 9, 0, 1, 2)
+
+        self.pushButton_localA = QPushButton(self.frame)
+        self.pushButton_localA.setObjectName(u"pushButton_localA")
+        self.pushButton_localA.setCheckable(True)
+        self.pushButton_localA.setChecked(True)
+
+        self.gridLayout_channelA.addWidget(self.pushButton_localA, 7, 0, 1, 1)
+
+        self.label_6 = QLabel(self.frame)
+        self.label_6.setObjectName(u"label_6")
+        sizePolicy.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
+        self.label_6.setSizePolicy(sizePolicy)
+
+        self.gridLayout_channelA.addWidget(self.label_6, 1, 0, 1, 1)
+
+        self.pushButton_resetA = QPushButton(self.frame)
+        self.pushButton_resetA.setObjectName(u"pushButton_resetA")
+
+        self.gridLayout_channelA.addWidget(self.pushButton_resetA, 8, 0, 1, 1)
+
+
+        self.verticalLayout_2.addLayout(self.gridLayout_channelA)
+
+        self.tableView_measurementsA = QTableView(self.frame)
+        self.tableView_measurementsA.setObjectName(u"tableView_measurementsA")
+        self.tableView_measurementsA.setAutoFillBackground(False)
+
+        self.verticalLayout_2.addWidget(self.tableView_measurementsA)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+
+        self.line_6 = QFrame(self.frame)
+        self.line_6.setObjectName(u"line_6")
+        self.line_6.setFrameShape(QFrame.Shape.VLine)
+        self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.horizontalLayout.addWidget(self.line_6)
+
+        self.verticalLayout_4 = QVBoxLayout()
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.label_channel = QLabel(self.frame)
         self.label_channel.setObjectName(u"label_channel")
         sizePolicy.setHeightForWidth(self.label_channel.sizePolicy().hasHeightForWidth())
         self.label_channel.setSizePolicy(sizePolicy)
 
-        self.gridLayout.addWidget(self.label_channel, 0, 0, 1, 1)
+        self.verticalLayout_4.addWidget(self.label_channel)
 
-        self.radioButton_channelB = QRadioButton(self.frame)
-        self.radioButton_channelB.setObjectName(u"radioButton_channelB")
-        sizePolicy.setHeightForWidth(self.radioButton_channelB.sizePolicy().hasHeightForWidth())
-        self.radioButton_channelB.setSizePolicy(sizePolicy)
+        self.line_4 = QFrame(self.frame)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.Shape.HLine)
+        self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.gridLayout.addWidget(self.radioButton_channelB, 1, 1, 1, 1)
+        self.verticalLayout_4.addWidget(self.line_4)
 
-        self.label_limit = QLabel(self.frame)
-        self.label_limit.setObjectName(u"label_limit")
-        sizePolicy.setHeightForWidth(self.label_limit.sizePolicy().hasHeightForWidth())
-        self.label_limit.setSizePolicy(sizePolicy)
+        self.gridLayout_channelB = QGridLayout()
+        self.gridLayout_channelB.setObjectName(u"gridLayout_channelB")
+        self.label_currentB = QLabel(self.frame)
+        self.label_currentB.setObjectName(u"label_currentB")
+        sizePolicy4.setHeightForWidth(self.label_currentB.sizePolicy().hasHeightForWidth())
+        self.label_currentB.setSizePolicy(sizePolicy4)
+        self.label_currentB.setStyleSheet(u"QLabel {\n"
+"    color: palette(dark);             /* Akzentfarbe */\n"
+"    background-color: palette(accent);     /* Standard Hintergrund */\n"
+"    border: 0px solid palette(light);       /* Standard dunkler Rahmen */\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    font-family: monospace;\n"
+"    font-size: 14px;\n"
+"}\n"
+"")
+        self.label_currentB.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout.addWidget(self.label_limit, 6, 0, 1, 1)
+        self.gridLayout_channelB.addWidget(self.label_currentB, 10, 1, 1, 1)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
-        self.pushButton_reset = QPushButton(self.frame)
-        self.pushButton_reset.setObjectName(u"pushButton_reset")
+        self.pushButton_measureB = QPushButton(self.frame)
+        self.pushButton_measureB.setObjectName(u"pushButton_measureB")
 
-        self.horizontalLayout_4.addWidget(self.pushButton_reset)
+        self.gridLayout_channelB.addWidget(self.pushButton_measureB, 9, 1, 1, 1)
 
-        self.pushButton_output = QPushButton(self.frame)
-        self.pushButton_output.setObjectName(u"pushButton_output")
-        self.pushButton_output.setCheckable(True)
+        self.pushButton_remoteB = QPushButton(self.frame)
+        self.pushButton_remoteB.setObjectName(u"pushButton_remoteB")
+        self.pushButton_remoteB.setCheckable(True)
 
-        self.horizontalLayout_4.addWidget(self.pushButton_output)
+        self.gridLayout_channelB.addWidget(self.pushButton_remoteB, 6, 1, 1, 1)
+
+        self.line = QFrame(self.frame)
+        self.line.setObjectName(u"line")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
+        self.line.setSizePolicy(sizePolicy5)
+        self.line.setMinimumSize(QSize(0, 20))
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.gridLayout_channelB.addWidget(self.line, 8, 0, 1, 2)
+
+        self.pushButton_currentB = QPushButton(self.frame)
+        self.pushButton_currentB.setObjectName(u"pushButton_currentB")
+        self.pushButton_currentB.setCheckable(True)
+
+        self.gridLayout_channelB.addWidget(self.pushButton_currentB, 1, 1, 1, 1)
+
+        self.label_limitB = QLabel(self.frame)
+        self.label_limitB.setObjectName(u"label_limitB")
+
+        self.gridLayout_channelB.addWidget(self.label_limitB, 4, 0, 1, 1)
+
+        self.label_voltageB = QLabel(self.frame)
+        self.label_voltageB.setObjectName(u"label_voltageB")
+        sizePolicy4.setHeightForWidth(self.label_voltageB.sizePolicy().hasHeightForWidth())
+        self.label_voltageB.setSizePolicy(sizePolicy4)
+        self.label_voltageB.setStyleSheet(u"QLabel {\n"
+"    color: palette(dark);             /* Akzentfarbe */\n"
+"    background-color: palette(accent);     /* Standard Hintergrund */\n"
+"    border: 0px solid palette(light);       /* Standard dunkler Rahmen */\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    font-family: monospace;\n"
+"    font-size: 14px;\n"
+"}\n"
+"")
+        self.label_voltageB.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_channelB.addWidget(self.label_voltageB, 10, 0, 1, 1)
+
+        self.label_levelB = QLabel(self.frame)
+        self.label_levelB.setObjectName(u"label_levelB")
+
+        self.gridLayout_channelB.addWidget(self.label_levelB, 2, 0, 1, 1)
+
+        self.pushButton_voltageB = QPushButton(self.frame)
+        self.pushButton_voltageB.setObjectName(u"pushButton_voltageB")
+        self.pushButton_voltageB.setCheckable(True)
+        self.pushButton_voltageB.setChecked(True)
+
+        self.gridLayout_channelB.addWidget(self.pushButton_voltageB, 1, 0, 1, 1)
+
+        self.pushButton_localB = QPushButton(self.frame)
+        self.pushButton_localB.setObjectName(u"pushButton_localB")
+        self.pushButton_localB.setCheckable(True)
+        self.pushButton_localB.setChecked(True)
+
+        self.gridLayout_channelB.addWidget(self.pushButton_localB, 6, 0, 1, 1)
+
+        self.pushButton_resetB = QPushButton(self.frame)
+        self.pushButton_resetB.setObjectName(u"pushButton_resetB")
+
+        self.gridLayout_channelB.addWidget(self.pushButton_resetB, 7, 0, 1, 1)
+
+        self.pushButton_outputB = QPushButton(self.frame)
+        self.pushButton_outputB.setObjectName(u"pushButton_outputB")
+        self.pushButton_outputB.setCheckable(True)
+
+        self.gridLayout_channelB.addWidget(self.pushButton_outputB, 7, 1, 1, 1)
+
+        self.label_3 = QLabel(self.frame)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout_channelB.addWidget(self.label_3, 0, 0, 1, 1)
+
+        self.lineEdit_levelB = QLineEdit(self.frame)
+        self.lineEdit_levelB.setObjectName(u"lineEdit_levelB")
+
+        self.gridLayout_channelB.addWidget(self.lineEdit_levelB, 2, 1, 1, 1)
+
+        self.lineEdit_limitB = QLineEdit(self.frame)
+        self.lineEdit_limitB.setObjectName(u"lineEdit_limitB")
+
+        self.gridLayout_channelB.addWidget(self.lineEdit_limitB, 4, 1, 1, 1)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_4, 9, 0, 1, 2)
+        self.verticalLayout_4.addLayout(self.gridLayout_channelB)
+
+        self.tableView_measurementsB = QTableView(self.frame)
+        self.tableView_measurementsB.setObjectName(u"tableView_measurementsB")
+
+        self.verticalLayout_4.addWidget(self.tableView_measurementsB)
 
 
-        self.verticalLayout_2.addLayout(self.gridLayout)
+        self.horizontalLayout.addLayout(self.verticalLayout_4)
 
 
-        self.horizontalLayout_3.addLayout(self.verticalLayout_2)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
-
-
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
-
-        self.line_2 = QFrame(self.frame)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.Shape.HLine)
-        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_3.addWidget(self.line_2)
-
-        self.pushButton_measure = QPushButton(self.frame)
-        self.pushButton_measure.setObjectName(u"pushButton_measure")
-
-        self.verticalLayout_3.addWidget(self.pushButton_measure)
-
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_voltage = QLabel(self.frame)
-        self.label_voltage.setObjectName(u"label_voltage")
-
-        self.horizontalLayout_5.addWidget(self.label_voltage)
-
-        self.label_current = QLabel(self.frame)
-        self.label_current.setObjectName(u"label_current")
-
-        self.horizontalLayout_5.addWidget(self.label_current)
-
-
-        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
-
-        self.tableView_measurements = QTableView(self.frame)
-        self.tableView_measurements.setObjectName(u"tableView_measurements")
-        self.tableView_measurements.setAutoFillBackground(False)
-
-        self.verticalLayout_3.addWidget(self.tableView_measurements)
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
 
 
         self.verticalLayout.addWidget(self.frame)
@@ -260,25 +410,36 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.label.setText(QCoreApplication.translate("Form", u"Port:", None))
-        self.label_status.setText(QCoreApplication.translate("Form", u"not connected", None))
         self.pushButton_connect.setText(QCoreApplication.translate("Form", u"Connect", None))
-        self.label_source.setText(QCoreApplication.translate("Form", u"Source:", None))
-        self.radioButton_voltage.setText(QCoreApplication.translate("Form", u"Voltage", None))
-        self.radioButton_channelA.setText(QCoreApplication.translate("Form", u"A", None))
-        self.radioButton_local.setText(QCoreApplication.translate("Form", u"Local 2 Wire", None))
-        self.radioButton_remote.setText(QCoreApplication.translate("Form", u"Remote 4 Wire", None))
+        self.label_status.setText(QCoreApplication.translate("Form", u"No connection", None))
+        self.label_2.setText(QCoreApplication.translate("Form", u"Channel A", None))
+        self.pushButton_measureA.setText(QCoreApplication.translate("Form", u"Measure", None))
+        self.label_limitA.setText(QCoreApplication.translate("Form", u"Limit [A]", None))
+        self.pushButton_currentA.setText(QCoreApplication.translate("Form", u"Current", None))
 #if QT_CONFIG(tooltip)
-        self.label_level.setToolTip("")
+        self.label_levelA.setToolTip("")
 #endif // QT_CONFIG(tooltip)
-        self.label_level.setText(QCoreApplication.translate("Form", u"Level:", None))
-        self.radioButton_current.setText(QCoreApplication.translate("Form", u"Current", None))
-        self.label_channel.setText(QCoreApplication.translate("Form", u"Channel:", None))
-        self.radioButton_channelB.setText(QCoreApplication.translate("Form", u"B", None))
-        self.label_limit.setText(QCoreApplication.translate("Form", u"Limit:", None))
-        self.pushButton_reset.setText(QCoreApplication.translate("Form", u"Reset", None))
-        self.pushButton_output.setText(QCoreApplication.translate("Form", u"Output", None))
-        self.pushButton_measure.setText(QCoreApplication.translate("Form", u"Measure", None))
-        self.label_voltage.setText(QCoreApplication.translate("Form", u"--- V", None))
-        self.label_current.setText(QCoreApplication.translate("Form", u"--- A", None))
+        self.label_levelA.setText(QCoreApplication.translate("Form", u"Level [V]", None))
+        self.pushButton_outputA.setText(QCoreApplication.translate("Form", u"OFF", None))
+        self.label_voltageA.setText(QCoreApplication.translate("Form", u"--- V", None))
+        self.pushButton_remoteA.setText(QCoreApplication.translate("Form", u"Remote 4 Wire", None))
+        self.pushButton_voltageA.setText(QCoreApplication.translate("Form", u"Voltage", None))
+        self.label_currentA.setText(QCoreApplication.translate("Form", u"--- A", None))
+        self.pushButton_localA.setText(QCoreApplication.translate("Form", u"Local 2 Wire", None))
+        self.label_6.setText(QCoreApplication.translate("Form", u"Source:", None))
+        self.pushButton_resetA.setText(QCoreApplication.translate("Form", u"Reset", None))
+        self.label_channel.setText(QCoreApplication.translate("Form", u"Channel B", None))
+        self.label_currentB.setText(QCoreApplication.translate("Form", u"--- A", None))
+        self.pushButton_measureB.setText(QCoreApplication.translate("Form", u"Measure", None))
+        self.pushButton_remoteB.setText(QCoreApplication.translate("Form", u"Remote 4 Wire", None))
+        self.pushButton_currentB.setText(QCoreApplication.translate("Form", u"Current", None))
+        self.label_limitB.setText(QCoreApplication.translate("Form", u"Limit [A]", None))
+        self.label_voltageB.setText(QCoreApplication.translate("Form", u"--- V", None))
+        self.label_levelB.setText(QCoreApplication.translate("Form", u"Level [V]", None))
+        self.pushButton_voltageB.setText(QCoreApplication.translate("Form", u"Voltage", None))
+        self.pushButton_localB.setText(QCoreApplication.translate("Form", u"Local 2 Wire", None))
+        self.pushButton_resetB.setText(QCoreApplication.translate("Form", u"Reset", None))
+        self.pushButton_outputB.setText(QCoreApplication.translate("Form", u"OFF", None))
+        self.label_3.setText(QCoreApplication.translate("Form", u"Source", None))
     # retranslateUi
 

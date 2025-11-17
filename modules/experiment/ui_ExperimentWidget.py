@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ExperimentWidgetipBJFG.ui'
+## Form generated from reading UI file 'ExperimentWidgetbPClqt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -23,7 +23,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(359, 84)
+        Form.resize(400, 84)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -108,6 +108,11 @@ class Ui_Form(object):
 
         self.label_progress = QLabel(self.frame)
         self.label_progress.setObjectName(u"label_progress")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label_progress.sizePolicy().hasHeightForWidth())
+        self.label_progress.setSizePolicy(sizePolicy3)
 
         self.horizontalLayout_2.addWidget(self.label_progress)
 
