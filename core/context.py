@@ -6,6 +6,7 @@ from modules.log.LogManager import LogManager
 from modules.profile.ProfileManager import ProfileManager
 from modules.device.DeviceManager import DeviceManager, Device
 from modules.experiment.ExperimentManager import ExperimentManager
+from modules.export.ExportManager import ExportManager
 
 from modules.spectrometer.SpectrometerManager import SpectrometerManager
 from modules.smu.SmuManager import SmuManager
@@ -39,13 +40,15 @@ class ApplicationContext:
             profile_manager=self.profile_manager
         )
 
-        self.experiment_manager = ExperimentManager(
-            # Alles einbinden was die API unterstützen soll/muss
-            log_manager= self.log_manager,
-            profile_manager=self.profile_manager,
-            device_manager = self.device_manager
+        self.export_manager = ExportManager(
+            log_manager=self.log_manager, 
+            profile_manager=self.profile_manager
         )
-        
+
+        # Wir übergeben einfach den ganzen Kontext (self).
+        # Damit hat der ExperimentManager Zugriff auf ALLES, was hier definiert ist.
+        self.experiment_manager = ExperimentManager(context=self)
+    
         
         
         self.log_manager.debug("ApplicationContext successfully initialized.")

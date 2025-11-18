@@ -1,0 +1,8 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Log Manager}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Profile Manager}{5}{chapter.2}%
+\contentsline {chapter}{\numberline {3}Device Manager}{9}{chapter.3}%
+\contentsline {chapter}{\numberline {4}SMU Manager}{15}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Spectrometer Manager}{19}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Export Manager}{25}{chapter.6}%
+\contentsline {chapter}{Python Module Index}{29}{section*.91}%

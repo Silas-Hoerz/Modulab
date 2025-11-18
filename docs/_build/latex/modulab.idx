@@ -1,0 +1,100 @@
+\indexentry{module@\spxentry{module}!modules.log.LogManager@\spxentry{modules.log.LogManager}|hyperpage}{1}
+\indexentry{modules.log.LogManager@\spxentry{modules.log.LogManager}!module@\spxentry{module}|hyperpage}{1}
+\indexentry{LogManager (class in modules.log.LogManager)@\spxentry{LogManager}\spxextra{class in modules.log.LogManager}|hyperpage}{1}
+\indexentry{INFO (modules.log.LogManager.LogManager attribute)@\spxentry{INFO}\spxextra{modules.log.LogManager.LogManager attribute}|hyperpage}{1}
+\indexentry{WARNING (modules.log.LogManager.LogManager attribute)@\spxentry{WARNING}\spxextra{modules.log.LogManager.LogManager attribute}|hyperpage}{1}
+\indexentry{ERROR (modules.log.LogManager.LogManager attribute)@\spxentry{ERROR}\spxextra{modules.log.LogManager.LogManager attribute}|hyperpage}{1}
+\indexentry{DEBUG (modules.log.LogManager.LogManager attribute)@\spxentry{DEBUG}\spxextra{modules.log.LogManager.LogManager attribute}|hyperpage}{1}
+\indexentry{\_\_init\_\_() (modules.log.LogManager.LogManager method)@\spxentry{\_\_init\_\_()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{1}
+\indexentry{info() (modules.log.LogManager.LogManager method)@\spxentry{info()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{2}
+\indexentry{warning() (modules.log.LogManager.LogManager method)@\spxentry{warning()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{2}
+\indexentry{error() (modules.log.LogManager.LogManager method)@\spxentry{error()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{2}
+\indexentry{debug() (modules.log.LogManager.LogManager method)@\spxentry{debug()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{3}
+\indexentry{get\_all\_messages() (modules.log.LogManager.LogManager method)@\spxentry{get\_all\_messages()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{3}
+\indexentry{get\_latest\_message() (modules.log.LogManager.LogManager method)@\spxentry{get\_latest\_message()}\spxextra{modules.log.LogManager.LogManager method}|hyperpage}{3}
+\indexentry{module@\spxentry{module}!modules.profile.ProfileManager@\spxentry{modules.profile.ProfileManager}|hyperpage}{5}
+\indexentry{modules.profile.ProfileManager@\spxentry{modules.profile.ProfileManager}!module@\spxentry{module}|hyperpage}{5}
+\indexentry{ProfileManager (class in modules.profile.ProfileManager)@\spxentry{ProfileManager}\spxextra{class in modules.profile.ProfileManager}|hyperpage}{5}
+\indexentry{CONFIG\_FILE\_NAME (modules.profile.ProfileManager.ProfileManager attribute)@\spxentry{CONFIG\_FILE\_NAME}\spxextra{modules.profile.ProfileManager.ProfileManager attribute}|hyperpage}{5}
+\indexentry{KEY\_LAST\_PROFILE (modules.profile.ProfileManager.ProfileManager attribute)@\spxentry{KEY\_LAST\_PROFILE}\spxextra{modules.profile.ProfileManager.ProfileManager attribute}|hyperpage}{5}
+\indexentry{\_\_init\_\_() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{\_\_init\_\_()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{5}
+\indexentry{create\_profile() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{create\_profile()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{5}
+\indexentry{load\_profile() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{load\_profile()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{6}
+\indexentry{delete\_profile() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{delete\_profile()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{6}
+\indexentry{list\_profiles() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{list\_profiles()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{7}
+\indexentry{write() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{write()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{7}
+\indexentry{read() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{read()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{7}
+\indexentry{get\_current\_profile\_name() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{get\_current\_profile\_name()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{8}
+\indexentry{get\_last\_profile\_name() (modules.profile.ProfileManager.ProfileManager method)@\spxentry{get\_last\_profile\_name()}\spxextra{modules.profile.ProfileManager.ProfileManager method}|hyperpage}{8}
+\indexentry{module@\spxentry{module}!modules.device.DeviceManager@\spxentry{modules.device.DeviceManager}|hyperpage}{9}
+\indexentry{modules.device.DeviceManager@\spxentry{modules.device.DeviceManager}!module@\spxentry{module}|hyperpage}{9}
+\indexentry{Device (class in modules.device.DeviceManager)@\spxentry{Device}\spxextra{class in modules.device.DeviceManager}|hyperpage}{9}
+\indexentry{\_\_init\_\_() (modules.device.DeviceManager.Device method)@\spxentry{\_\_init\_\_()}\spxextra{modules.device.DeviceManager.Device method}|hyperpage}{9}
+\indexentry{get\_area() (modules.device.DeviceManager.Device method)@\spxentry{get\_area()}\spxextra{modules.device.DeviceManager.Device method}|hyperpage}{10}
+\indexentry{to\_dict() (modules.device.DeviceManager.Device method)@\spxentry{to\_dict()}\spxextra{modules.device.DeviceManager.Device method}|hyperpage}{10}
+\indexentry{from\_dict() (modules.device.DeviceManager.Device class method)@\spxentry{from\_dict()}\spxextra{modules.device.DeviceManager.Device class method}|hyperpage}{10}
+\indexentry{\_\_repr\_\_() (modules.device.DeviceManager.Device method)@\spxentry{\_\_repr\_\_()}\spxextra{modules.device.DeviceManager.Device method}|hyperpage}{10}
+\indexentry{DeviceManager (class in modules.device.DeviceManager)@\spxentry{DeviceManager}\spxextra{class in modules.device.DeviceManager}|hyperpage}{10}
+\indexentry{KEY\_DEVICE\_LIST (modules.device.DeviceManager.DeviceManager attribute)@\spxentry{KEY\_DEVICE\_LIST}\spxextra{modules.device.DeviceManager.DeviceManager attribute}|hyperpage}{11}
+\indexentry{KEY\_ACTIVE\_DEVICE (modules.device.DeviceManager.DeviceManager attribute)@\spxentry{KEY\_ACTIVE\_DEVICE}\spxextra{modules.device.DeviceManager.DeviceManager attribute}|hyperpage}{11}
+\indexentry{\_\_init\_\_() (modules.device.DeviceManager.DeviceManager method)@\spxentry{\_\_init\_\_()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{11}
+\indexentry{load\_from\_profile() (modules.device.DeviceManager.DeviceManager method)@\spxentry{load\_from\_profile()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{11}
+\indexentry{create\_device() (modules.device.DeviceManager.DeviceManager method)@\spxentry{create\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{11}
+\indexentry{delete\_device() (modules.device.DeviceManager.DeviceManager method)@\spxentry{delete\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{12}
+\indexentry{edit\_device() (modules.device.DeviceManager.DeviceManager method)@\spxentry{edit\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{12}
+\indexentry{get\_device\_by\_name() (modules.device.DeviceManager.DeviceManager method)@\spxentry{get\_device\_by\_name()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{13}
+\indexentry{list\_device\_names() (modules.device.DeviceManager.DeviceManager method)@\spxentry{list\_device\_names()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{13}
+\indexentry{set\_active\_device() (modules.device.DeviceManager.DeviceManager method)@\spxentry{set\_active\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{13}
+\indexentry{get\_active\_device() (modules.device.DeviceManager.DeviceManager method)@\spxentry{get\_active\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{13}
+\indexentry{get\_active\_device\_area() (modules.device.DeviceManager.DeviceManager method)@\spxentry{get\_active\_device\_area()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{14}
+\indexentry{get\_active\_device\_dimensions() (modules.device.DeviceManager.DeviceManager method)@\spxentry{get\_active\_device\_dimensions()}\spxextra{modules.device.DeviceManager.DeviceManager method}|hyperpage}{14}
+\indexentry{module@\spxentry{module}!modules.smu.SmuManager@\spxentry{modules.smu.SmuManager}|hyperpage}{15}
+\indexentry{modules.smu.SmuManager@\spxentry{modules.smu.SmuManager}!module@\spxentry{module}|hyperpage}{15}
+\indexentry{SmuManager (class in modules.smu.SmuManager)@\spxentry{SmuManager}\spxextra{class in modules.smu.SmuManager}|hyperpage}{15}
+\indexentry{get\_deviceList() (modules.smu.SmuManager.SmuManager method)@\spxentry{get\_deviceList()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{15}
+\indexentry{connect() (modules.smu.SmuManager.SmuManager method)@\spxentry{connect()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{15}
+\indexentry{connect\_LastDevice() (modules.smu.SmuManager.SmuManager method)@\spxentry{connect\_LastDevice()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{16}
+\indexentry{disconnect() (modules.smu.SmuManager.SmuManager method)@\spxentry{disconnect()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{16}
+\indexentry{get\_activeDeviceName() (modules.smu.SmuManager.SmuManager method)@\spxentry{get\_activeDeviceName()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{16}
+\indexentry{is\_connected() (modules.smu.SmuManager.SmuManager method)@\spxentry{is\_connected()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{16}
+\indexentry{reset\_channel() (modules.smu.SmuManager.SmuManager method)@\spxentry{reset\_channel()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_source\_voltage() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_source\_voltage()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_source\_current() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_source\_current()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_sense\_local() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_sense\_local()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_sense\_remote() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_sense\_remote()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_source\_level() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_source\_level()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_source\_limit() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_source\_limit()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{17}
+\indexentry{set\_output\_state() (modules.smu.SmuManager.SmuManager method)@\spxentry{set\_output\_state()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{18}
+\indexentry{measure\_iv() (modules.smu.SmuManager.SmuManager method)@\spxentry{measure\_iv()}\spxextra{modules.smu.SmuManager.SmuManager method}|hyperpage}{18}
+\indexentry{module@\spxentry{module}!modules.spectrometer.SpectrometerManager@\spxentry{modules.spectrometer.SpectrometerManager}|hyperpage}{19}
+\indexentry{modules.spectrometer.SpectrometerManager@\spxentry{modules.spectrometer.SpectrometerManager}!module@\spxentry{module}|hyperpage}{19}
+\indexentry{SpectrometerManager (class in modules.spectrometer.SpectrometerManager)@\spxentry{SpectrometerManager}\spxextra{class in modules.spectrometer.SpectrometerManager}|hyperpage}{19}
+\indexentry{\_\_init\_\_() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{\_\_init\_\_()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{19}
+\indexentry{get\_deviceList() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_deviceList()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{19}
+\indexentry{connect() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{connect()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{20}
+\indexentry{connect\_LastDevice() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{connect\_LastDevice()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{20}
+\indexentry{disconnect() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{disconnect()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{21}
+\indexentry{get\_activeDeviceName() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_activeDeviceName()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{21}
+\indexentry{is\_connected() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{is\_connected()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{21}
+\indexentry{set\_correction\_dark\_count() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{set\_correction\_dark\_count()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{21}
+\indexentry{get\_correction\_dark\_count() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_correction\_dark\_count()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{21}
+\indexentry{set\_correction\_non\_linearity() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{set\_correction\_non\_linearity()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{21}
+\indexentry{get\_correction\_non\_linearity() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_correction\_non\_linearity()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{22}
+\indexentry{set\_integrationtime() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{set\_integrationtime()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{22}
+\indexentry{get\_integrationtime() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_integrationtime()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{22}
+\indexentry{get\_integrationtime\_limits\_us() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_integrationtime\_limits\_us()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{22}
+\indexentry{get\_max\_intensity() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{get\_max\_intensity()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{23}
+\indexentry{acquire\_spectrum() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)@\spxentry{acquire\_spectrum()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}|hyperpage}{23}
+\indexentry{module@\spxentry{module}!modules.export.ExportManager@\spxentry{modules.export.ExportManager}|hyperpage}{25}
+\indexentry{modules.export.ExportManager@\spxentry{modules.export.ExportManager}!module@\spxentry{module}|hyperpage}{25}
+\indexentry{ExportManager (class in modules.export.ExportManager)@\spxentry{ExportManager}\spxextra{class in modules.export.ExportManager}|hyperpage}{25}
+\indexentry{\_\_init\_\_() (modules.export.ExportManager.ExportManager method)@\spxentry{\_\_init\_\_()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{26}
+\indexentry{select\_directory\_dialog() (modules.export.ExportManager.ExportManager method)@\spxentry{select\_directory\_dialog()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{26}
+\indexentry{set\_export\_directory() (modules.export.ExportManager.ExportManager method)@\spxentry{set\_export\_directory()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{26}
+\indexentry{get\_export\_directory() (modules.export.ExportManager.ExportManager method)@\spxentry{get\_export\_directory()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{26}
+\indexentry{new() (modules.export.ExportManager.ExportManager method)@\spxentry{new()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{26}
+\indexentry{add() (modules.export.ExportManager.ExportManager method)@\spxentry{add()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{27}
+\indexentry{add\_static() (modules.export.ExportManager.ExportManager method)@\spxentry{add\_static()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{27}
+\indexentry{add\_group\_attribute() (modules.export.ExportManager.ExportManager method)@\spxentry{add\_group\_attribute()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{28}
+\indexentry{commit() (modules.export.ExportManager.ExportManager method)@\spxentry{commit()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{28}
+\indexentry{stop() (modules.export.ExportManager.ExportManager method)@\spxentry{stop()}\spxextra{modules.export.ExportManager.ExportManager method}|hyperpage}{28}

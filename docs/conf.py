@@ -12,12 +12,12 @@ from datetime import date
 
 sys.path.insert(0, os.path.abspath("../"))
 
-from main import __version__, __title__
+from core.constants import APP_TITLE, APP_VERSION
 
-project = __title__
+project = APP_TITLE
 copyright = f'{date.today().year}, Silas Hörz'
 author = 'Silas Hörz'
-release = __version__
+release = APP_VERSION
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

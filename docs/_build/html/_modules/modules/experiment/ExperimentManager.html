@@ -5,9 +5,10 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>modules.experiment.ExperimentManager - MODULAB 0.1.0 documentation</title>
+        <title>modules.experiment.ExperimentManager - MODULAB 0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
@@ -160,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">MODULAB 0.1.0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">MODULAB 0.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -181,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">MODULAB 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">MODULAB 0.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -191,7 +192,11 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modulab/api.html">API-Referenz der Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/log_manager.html">Log Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/profile_manager.html">Profile Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/device_manager.html">Device Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/smu_manager.html">SMU Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/spectrometer_manager.html">Spectrometer Manager</a></li>
 </ul>
 
 </div>
@@ -225,10 +230,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for modules.experiment.ExperimentManager</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">context:</span>
-<span class="sd">Ich entwickle eine Software für das Labor eines instituts an einer Universität. Diese Software ist möglichst modular wartbar und erwiterbar. Sie besitzt ein pySide6 UI. Ich habe bereits einige Module entwickelt, das wäre ein ProfileManager dieser legt kann Profile anlegen und laden. Ein Profil bietet die möglichkeit Profilspezifische informationen zu speichern, bspw. gibt es ein Modul devices dies kümmert sich um die geometrische abmessungen und sonstige eigenschaften des zu vermessenen bauttiels diese werden auch im Profil gespeichert. Es gibt bereits ein Modul Log das sich um alle logging dinge kümmert. es fängt alle infos errors ab und hat auch eine ansicht im UI. Der erste Use case der software ist folgender: Wir nehmen elektroluminiszenz messungen an bautteilen auf einem wafer vor. dazu muss das Device mit Piezos positioniert werden (später HAL Position) dann wird eine spannung oder stromvon einer SMU via nadeln auf dem device eingeprägt, dann wir das emittierte spektrum des devices gemessen. Dieses soll verarbeitet werden mit allen nötigen infos und in einem Origin kompatiblen Format abgespeichert werden.Das ist aktuell die Basis. Ich möchte eine sauber Kapselung zwischen den Modulen, sprich keine große python datei wo keiner mehr durchblickt. Der Ablauf eines Experiments sollte möglichst abstrakt sein (set_pos(x,y,z), set_SMU(v,i), get_spectrum(), get_realVI(), export(data)) dazu möchte ich custom python scripte laden können die dann nach anwendung schnell und einfach angepasst werden können. diese sollen dann ausführbar sein. wichtig ist mir wissenschaftlich zu arbeiten sprich die erhobenen daten sollen repräsentativ sein. wie sieht es mit mehrfach messungen aus. nur der durchschnitt würde evtl. das ergebniss verfälschen... Das müssen wir sauber ausarbeiten. Wie soll die modulstruktur sein. Jedes Modul hat bei mir einen Manager. dieser hat get set funktionen etc. und kümmert sich geschlossen um seine aufgabe er hat nach ausßen kaum schnittstellen. bspw. der SmuManager soll sich nur um die ansteuerung initialisierung des SMU kümmer er kennt kein UI sondern erfüllt nur die Kernaufgabe. ich habe dann noch bspw. SmuWidget das noch eine grafische benutzeroberfläche zu der SMU bietet und die öffentlichen Funktionen des Managers nutzt. Das ist aktuell meine Struktur. Ich habe jetzt mit dem ExperimentManager begonnen dieser soll ein dateiverzeichnis anlegen, User scripte suchen können. und auch user scripte laden und abspielen können mit pausier funktion etc. das User script soll dann später möglichst abstrakt die Experimente durchführen analysen machen und auch exportieren.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1"># modules/experiment/ExperimentManager.py</span>
 
 
 
@@ -246,7 +248,7 @@
 <span class="c1"># ==========================================================================================</span>
 
 <div class="viewcode-block" id="ExperimentManager">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentManager</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verantwortlich für das Laden und Ausführen von Experiment-Skripten in einem separaten Thread.</span>
@@ -261,13 +263,14 @@
     <span class="c1"># Pause / Resume??? Progress??? vllt später</span>
     <span class="n">progress_updated</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_manager</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">profile_manager</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device_manager</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span> <span class="o">=</span> <span class="n">log_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span> <span class="o">=</span> <span class="n">profile_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">device_mgr</span> <span class="o">=</span> <span class="n">device_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">log_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">profile_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">device_manager</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">ExperimentAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_mgr</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">ExperimentAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span><span class="s1">&#39;Modulab&#39;</span><span class="p">,</span><span class="s1">&#39;Experiments&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_files</span> <span class="o">=</span> <span class="p">{}</span>
@@ -281,7 +284,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory could not be created: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         
 <div class="viewcode-block" id="ExperimentManager.search_experiments">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.search_experiments">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.search_experiments">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">search_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sucht nach Python-Skripten im Arbeitsverzeichnis</span>
@@ -306,7 +309,7 @@
 
 
 <div class="viewcode-block" id="ExperimentManager.start_experiment">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.start_experiment">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.start_experiment">[docs]</a>
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -339,7 +342,7 @@
 
 
 <div class="viewcode-block" id="ExperimentManager.on_worker_finished">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">[docs]</a>
     <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_worker_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Aufrämen nach Beendigung des Experiments &quot;&quot;&quot;</span>
@@ -352,7 +355,7 @@
 
      
 <div class="viewcode-block" id="ExperimentManager.on_worker_error">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error">[docs]</a>
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_worker_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Fehlerbehandlung &quot;&quot;&quot;</span>
@@ -404,7 +407,7 @@
 
 
 <div class="viewcode-block" id="ExperimentWorker">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentWorker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentWorker</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Führt das Experiment-Skript in einem eigenen Thread aus. &quot;&quot;&quot;</span>
     <span class="n">finished</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
@@ -421,7 +424,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">_is_stopped</span> <span class="o">=</span> <span class="kc">False</span>
     
 <div class="viewcode-block" id="ExperimentWorker.run">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker.run">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentWorker.run">[docs]</a>
     <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Lädt und führt das Experiment-Skript aus. &quot;&quot;&quot;</span>
@@ -487,10 +490,15 @@
 <div class="viewcode-block" id="ExperimentAPI">
 <a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentAPI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentAPI</span><span class="p">():</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_manager</span><span class="p">,</span> <span class="n">profile_manager</span><span class="p">,</span> <span class="n">device_manager</span><span class="p">):</span>      <span class="c1"># &lt;- Hier Manager einbinden</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span> <span class="o">=</span> <span class="n">log_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span> <span class="o">=</span> <span class="n">profile_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">device_mgr</span> <span class="o">=</span> <span class="n">device_manager</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>      <span class="c1"># &lt;- Hier Manager einbinden</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">log_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">profile_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">device_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">spectrometer_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smu_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">smu_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">export_manager</span>
+        
         <span class="c1"># self.next_mgr = next_manager                                      # &lt;- Hier </span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_paused</span> <span class="o">=</span> <span class="kc">False</span>
@@ -516,7 +524,7 @@
 
 <span class="c1"># Eigene Exception für sauberen Stopp</span>
 <div class="viewcode-block" id="ExperimentStoppedException">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentStoppedException">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentStoppedException">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentStoppedException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
@@ -552,9 +560,11 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
     </body>
 </html>

@@ -15,6 +15,7 @@ MODULAB documentation
    modulab/device_manager
    modulab/smu_manager
    modulab/spectrometer_manager
+   modulab/export_manager
   
 .. modulab/experiment_manager
    

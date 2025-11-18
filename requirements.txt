@@ -1,7 +1,24 @@
 PySide6
-pyserial
 QScintilla
 furo
-numpy                                                                                                           │▄
-seabreeze                                                                                                       │█
-matplotlib       
+seabreeze
+pyqtgraph
+silx
+numpy
+scipy
+pandas
+lmfit
+sympy
+scikit-learn
+statsmodels
+matplotlib
+seaborn
+openpyxl
+xlsxwriter
+pillow
+h5py
+requests
+pyyaml
+pyserial
+pyvisa
+

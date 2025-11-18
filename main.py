@@ -1,3 +1,4 @@
+# main.py
 from PySide6.QtWidgets import QApplication, QSplashScreen
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, QTimer, QRect
@@ -5,10 +6,10 @@ from PySide6.QtCore import Qt, QTimer, QRect
 import sys
 from core.context import ApplicationContext
 from core.mainwindow import MainWindow
+import core.std_includes
 
+#pyinstaller --name Modulab --onefile --windowed --icon=resources/logo.ico --add-data "resources;resources" --add-data "docs;docs" --hidden-import=seabreeze.backends.cseabreeze main.py
 
-__title__ = "MODULAB" 
-__version__ = "0.1.0"
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

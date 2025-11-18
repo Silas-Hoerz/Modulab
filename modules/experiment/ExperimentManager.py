@@ -1,7 +1,4 @@
-"""
-context:
-Ich entwickle eine Software für das Labor eines instituts an einer Universität. Diese Software ist möglichst modular wartbar und erwiterbar. Sie besitzt ein pySide6 UI. Ich habe bereits einige Module entwickelt, das wäre ein ProfileManager dieser legt kann Profile anlegen und laden. Ein Profil bietet die möglichkeit Profilspezifische informationen zu speichern, bspw. gibt es ein Modul devices dies kümmert sich um die geometrische abmessungen und sonstige eigenschaften des zu vermessenen bauttiels diese werden auch im Profil gespeichert. Es gibt bereits ein Modul Log das sich um alle logging dinge kümmert. es fängt alle infos errors ab und hat auch eine ansicht im UI. Der erste Use case der software ist folgender: Wir nehmen elektroluminiszenz messungen an bautteilen auf einem wafer vor. dazu muss das Device mit Piezos positioniert werden (später HAL Position) dann wird eine spannung oder stromvon einer SMU via nadeln auf dem device eingeprägt, dann wir das emittierte spektrum des devices gemessen. Dieses soll verarbeitet werden mit allen nötigen infos und in einem Origin kompatiblen Format abgespeichert werden.Das ist aktuell die Basis. Ich möchte eine sauber Kapselung zwischen den Modulen, sprich keine große python datei wo keiner mehr durchblickt. Der Ablauf eines Experiments sollte möglichst abstrakt sein (set_pos(x,y,z), set_SMU(v,i), get_spectrum(), get_realVI(), export(data)) dazu möchte ich custom python scripte laden können die dann nach anwendung schnell und einfach angepasst werden können. diese sollen dann ausführbar sein. wichtig ist mir wissenschaftlich zu arbeiten sprich die erhobenen daten sollen repräsentativ sein. wie sieht es mit mehrfach messungen aus. nur der durchschnitt würde evtl. das ergebniss verfälschen... Das müssen wir sauber ausarbeiten. Wie soll die modulstruktur sein. Jedes Modul hat bei mir einen Manager. dieser hat get set funktionen etc. und kümmert sich geschlossen um seine aufgabe er hat nach ausßen kaum schnittstellen. bspw. der SmuManager soll sich nur um die ansteuerung initialisierung des SMU kümmer er kennt kein UI sondern erfüllt nur die Kernaufgabe. ich habe dann noch bspw. SmuWidget das noch eine grafische benutzeroberfläche zu der SMU bietet und die öffentlichen Funktionen des Managers nutzt. Das ist aktuell meine Struktur. Ich habe jetzt mit dem ExperimentManager begonnen dieser soll ein dateiverzeichnis anlegen, User scripte suchen können. und auch user scripte laden und abspielen können mit pausier funktion etc. das User script soll dann später möglichst abstrakt die Experimente durchführen analysen machen und auch exportieren.
-"""
+# modules/experiment/ExperimentManager.py
 
 
 
@@ -32,13 +29,14 @@ class ExperimentManager(QObject):
     # Pause / Resume??? Progress??? vllt später
     progress_updated = Signal(int,str)
 
-    def __init__(self, log_manager = None, profile_manager = None, device_manager = None):
+    def __init__(self, context):
         super().__init__()
-        self.log_mgr = log_manager
-        self.profile_mgr = profile_manager
-        self.device_mgr = device_manager
+        self.context = context
+        self.log_mgr = self.context.log_manager
+        self.profile_mgr = self.context.profile_manager
+        self.device_mgr = self.context.device_manager
 
-        self.api = ExperimentAPI(self.log_mgr, self.profile_mgr, self.device_mgr) 
+        self.api = ExperimentAPI(self.context)
 
         self.working_dir = os.path.join(os.path.expanduser('~'),'Modulab','Experiments')
         self.experiment_files = {}
@@ -216,10 +214,15 @@ class ExperimentWorker(QObject):
 # Good Luck! 
 
 class ExperimentAPI():
-    def __init__ (self, log_manager, profile_manager, device_manager):      # <- Hier Manager einbinden
-        self.log_mgr = log_manager
-        self.profile_mgr = profile_manager
-        self.device_mgr = device_manager
+    def __init__ (self, context):      # <- Hier Manager einbinden
+        self.context = context
+        self.log_mgr = self.context.log_manager
+        self.profile_mgr = self.context.profile_manager
+        self.device_mgr = self.context.device_manager
+        self.spectrometer_mgr = self.context.spectrometer_manager
+        self.smu_mgr = self.context.smu_manager
+        self.export_mgr = self.context.export_manager
+        
         # self.next_mgr = next_manager                                      # <- Hier 
 
         self._is_paused = False

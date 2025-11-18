@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Experiment Manager - MODULAB 0.1.0 documentation</title>
+        <title>Experiment Manager - MODULAB 0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">MODULAB 0.1.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">MODULAB 0.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">MODULAB 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">MODULAB 0.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -238,11 +238,9 @@
         <article role="main" id="furo-main-content">
           <section id="module-modules.experiment.ExperimentManager">
 <span id="id1"></span><span id="experiment-manager"></span><h1>Experiment Manager<a class="headerlink" href="#module-modules.experiment.ExperimentManager" title="Link to this heading">¶</a></h1>
-<p>context:
-Ich entwickle eine Software für das Labor eines instituts an einer Universität. Diese Software ist möglichst modular wartbar und erwiterbar. Sie besitzt ein pySide6 UI. Ich habe bereits einige Module entwickelt, das wäre ein ProfileManager dieser legt kann Profile anlegen und laden. Ein Profil bietet die möglichkeit Profilspezifische informationen zu speichern, bspw. gibt es ein Modul devices dies kümmert sich um die geometrische abmessungen und sonstige eigenschaften des zu vermessenen bauttiels diese werden auch im Profil gespeichert. Es gibt bereits ein Modul Log das sich um alle logging dinge kümmert. es fängt alle infos errors ab und hat auch eine ansicht im UI. Der erste Use case der software ist folgender: Wir nehmen elektroluminiszenz messungen an bautteilen auf einem wafer vor. dazu muss das Device mit Piezos positioniert werden (später HAL Position) dann wird eine spannung oder stromvon einer SMU via nadeln auf dem device eingeprägt, dann wir das emittierte spektrum des devices gemessen. Dieses soll verarbeitet werden mit allen nötigen infos und in einem Origin kompatiblen Format abgespeichert werden.Das ist aktuell die Basis. Ich möchte eine sauber Kapselung zwischen den Modulen, sprich keine große python datei wo keiner mehr durchblickt. Der Ablauf eines Experiments sollte möglichst abstrakt sein (set_pos(x,y,z), set_SMU(v,i), get_spectrum(), get_realVI(), export(data)) dazu möchte ich custom python scripte laden können die dann nach anwendung schnell und einfach angepasst werden können. diese sollen dann ausführbar sein. wichtig ist mir wissenschaftlich zu arbeiten sprich die erhobenen daten sollen repräsentativ sein. wie sieht es mit mehrfach messungen aus. nur der durchschnitt würde evtl. das ergebniss verfälschen… Das müssen wir sauber ausarbeiten. Wie soll die modulstruktur sein. Jedes Modul hat bei mir einen Manager. dieser hat get set funktionen etc. und kümmert sich geschlossen um seine aufgabe er hat nach ausßen kaum schnittstellen. bspw. der SmuManager soll sich nur um die ansteuerung initialisierung des SMU kümmer er kennt kein UI sondern erfüllt nur die Kernaufgabe. ich habe dann noch bspw. SmuWidget das noch eine grafische benutzeroberfläche zu der SMU bietet und die öffentlichen Funktionen des Managers nutzt. Das ist aktuell meine Struktur. Ich habe jetzt mit dem ExperimentManager begonnen dieser soll ein dateiverzeichnis anlegen, User scripte suchen können. und auch user scripte laden und abspielen können mit pausier funktion etc. das User script soll dann später möglichst abstrakt die Experimente durchführen analysen machen und auch exportieren.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.experiment.ExperimentManager.</span></span><span class="sig-name descname"><span class="pre">ExperimentManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.experiment.ExperimentManager.</span></span><span class="sig-name descname"><span class="pre">ExperimentManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
 <p>Verantwortlich für das Laden und Ausführen von Experiment-Skripten in einem separaten Thread.</p>
 <dl class="py method">
@@ -353,7 +351,7 @@ Ich entwickle eine Software für das Labor eines instituts an einer Universität
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
