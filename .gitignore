@@ -2,7 +2,6 @@
 __pycache__/
 .qtcreator/
 .venv/
-.vscode/
 docs/_build/doctrees
 tools/
 dist/
