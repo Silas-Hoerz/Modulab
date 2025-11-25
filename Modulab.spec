@@ -1,9 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_data_files
 
-# --- 1. Silx Ressourcen sammeln ---
+# This file generates a SINGLE ONE-FILE EXE.
+# No scientific libraries are bundled (as per your request).
+
+# --- FIX FÜR SILX FEHLER ---
+# Silx benötigt Icons und interne Daten (z.B. 'process-working'), die PyInstaller
+# standardmäßig übersieht. Wir sammeln diese hier manuell ein.
 silx_datas = collect_data_files('silx')
-silx_hidden = collect_submodules('silx')
 
 block_cipher = None
 
@@ -12,62 +16,59 @@ a = Analysis(
     pathex=[],
     binaries=[],
     
-    # --- 2. Daten ---
-    # WICHTIG: Wir nutzen das '+' Zeichen, um die Listen zu verbinden
+    # Data files required by the core application + SILX Data
     datas=[
         ('resources', 'resources'), 
         ('docs', 'docs')
-    ] + silx_datas,  
+    ] + silx_datas,
 
-    # --- 3. Versteckte Imports ---
-    # Auch hier: '+' zum Verbinden der Listen
+    # Hidden imports for libraries that are bundled with the app
+    # h5py und silx benötigen oft explizite hiddenimports
     hiddenimports=[
         'seabreeze.backends.cseabreeze',
-        'scipy.special._ufuncs_cxx',
-        'scipy.linalg.cython_blas',
-        'scipy.linalg.cython_lapack',
-        'pandas._libs.tslibs.base', 
-        'pandas._libs.tslibs.np_datetime',
-        'matplotlib.backends.backend_qtagg',
-        'sklearn.neighbors._partition_nodes',
-    ] + silx_hidden,
+        'silx',
+        'silx.gui.qt',
+        'h5py',
+        'h5py.defs',
+        'h5py.utils',
+        'h5py.h5ac',
+        'h5py._proxy',
+    ],
 
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['PyQt5', 'PyQt6', 'tkinter'],
+    # Wir schließen PyQt5/6 aus, da du im Code PySide6 nutzt.
+    # Stelle sicher, dass PySide6 installiert ist.
+    excludes=['PyQt5', 'tkinter'], 
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-# --- 4. EXE (Starter) ---
+# --- EXE (One-File Build) ---
+# Um eine einzelne Datei zu erhalten, müssen a.binaries, a.zipfiles und a.datas
+# hier übergeben werden und exclude_binaries darf NICHT True sein.
+
 exe = EXE(
     pyz,
     a.scripts,
-    [], 
-    exclude_binaries=True,
+    a.binaries,   # WICHTIG: Binaries müssen hier rein für One-File
+    a.zipfiles,   # WICHTIG: Zipfiles müssen hier rein für One-File
+    a.datas,      # WICHTIG: Daten müssen hier rein für One-File
+    [],
     name='Modulab',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False, # Setze auf True für Debugging (Fehlermeldungen sehen)
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False, # Setze dies auf True, falls du Fehler beim Start sehen willst
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['resources\\logo.ico'],
-)
-
-# --- 5. COLLECT (Ordner-Modus) ---
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='Modulab',
+    icon='resources/logo.ico',
 )

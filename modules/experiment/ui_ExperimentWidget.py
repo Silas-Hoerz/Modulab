@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ExperimentWidgetbPClqt.ui'
+## Form generated from reading UI file 'ExperimentWidgetaWxNuS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -58,8 +58,8 @@ class Ui_Form(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.pushButton_start.sizePolicy().hasHeightForWidth())
         self.pushButton_start.setSizePolicy(sizePolicy2)
-        self.pushButton_start.setMinimumSize(QSize(50, 0))
-        self.pushButton_start.setMaximumSize(QSize(50, 16777215))
+        self.pushButton_start.setMinimumSize(QSize(0, 0))
+        self.pushButton_start.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout.addWidget(self.pushButton_start)
 
@@ -67,8 +67,8 @@ class Ui_Form(object):
         self.pushButton_pause.setObjectName(u"pushButton_pause")
         sizePolicy2.setHeightForWidth(self.pushButton_pause.sizePolicy().hasHeightForWidth())
         self.pushButton_pause.setSizePolicy(sizePolicy2)
-        self.pushButton_pause.setMinimumSize(QSize(50, 0))
-        self.pushButton_pause.setMaximumSize(QSize(50, 16777215))
+        self.pushButton_pause.setMinimumSize(QSize(0, 0))
+        self.pushButton_pause.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout.addWidget(self.pushButton_pause)
 
@@ -76,8 +76,8 @@ class Ui_Form(object):
         self.pushButton_stop.setObjectName(u"pushButton_stop")
         sizePolicy2.setHeightForWidth(self.pushButton_stop.sizePolicy().hasHeightForWidth())
         self.pushButton_stop.setSizePolicy(sizePolicy2)
-        self.pushButton_stop.setMinimumSize(QSize(50, 0))
-        self.pushButton_stop.setMaximumSize(QSize(50, 16777215))
+        self.pushButton_stop.setMinimumSize(QSize(0, 0))
+        self.pushButton_stop.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout.addWidget(self.pushButton_stop)
 
@@ -90,8 +90,8 @@ class Ui_Form(object):
         self.pushButton_edit.setObjectName(u"pushButton_edit")
         sizePolicy2.setHeightForWidth(self.pushButton_edit.sizePolicy().hasHeightForWidth())
         self.pushButton_edit.setSizePolicy(sizePolicy2)
-        self.pushButton_edit.setMinimumSize(QSize(50, 0))
-        self.pushButton_edit.setMaximumSize(QSize(50, 16777215))
+        self.pushButton_edit.setMinimumSize(QSize(0, 0))
+        self.pushButton_edit.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout_2.addWidget(self.pushButton_edit)
 
@@ -133,7 +133,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"Experiments", None))
         Form.setProperty(u"status", "")
         self.pushButton_start.setText(QCoreApplication.translate("Form", u"Start", None))
         self.pushButton_pause.setText(QCoreApplication.translate("Form", u"Pause", None))

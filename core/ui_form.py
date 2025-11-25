@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'formRifsvT.ui'
+## Form generated from reading UI file 'formsvTVuk.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -40,6 +40,6 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"ModuLab", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Modulab", None))
     # retranslateUi
 

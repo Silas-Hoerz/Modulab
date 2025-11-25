@@ -1,8 +1,7 @@
-# modules/device/ui_DeviceWidget.py
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'DeviceWidgetyVlGoQ.ui'
+## Form generated from reading UI file 'DeviceWidgetRfSfZy.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -82,7 +81,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle("")
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"Device", None))
         self.label.setText(QCoreApplication.translate("Form", u"Device", None))
         self.pushButton_new.setText(QCoreApplication.translate("Form", u"New", None))
         self.pushButton_edit.setText(QCoreApplication.translate("Form", u"Edit", None))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ProfileWidgetZtsESG.ui'
+## Form generated from reading UI file 'ProfileWidgetQRVjXz.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -76,7 +76,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle("")
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"Profile", None))
         self.label.setText(QCoreApplication.translate("Form", u"Profile", None))
         self.pushButton_new.setText(QCoreApplication.translate("Form", u"New ", None))
         self.pushButton_delete.setText(QCoreApplication.translate("Form", u"Delete", None))

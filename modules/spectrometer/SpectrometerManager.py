@@ -465,7 +465,7 @@ class SpectrometerManager(QObject):
         try:
             wavelengths, intensities = self.spectrometer.spectrum(
                 correct_dark_counts=self.correct_dark_counts,
-                correct_non_linearity=self.correct_non_linearity
+                correct_nonlinearity=self.correct_non_linearity
             )
             self.log_mgr.debug("Spectrum acquired successfully.")
 

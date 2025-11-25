@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Log</string>
   </property>
   <property name="styleSheet">
    <string notr="true">/* Basis-Stil, gilt IMMER */
@@ -23,7 +23,7 @@ QCheckBox {
 	border-color: rgb(68, 68, 68);
     /* Standard-Zustand (entspricht &quot;info&quot;) */
     background-color: transparent;
-    color: white;
+
 }
 
 /* Versteckt die Checkbox-Box */
@@ -38,7 +38,7 @@ QCheckBox::indicator {
 
 QCheckBox[logStatus=&quot;info&quot;] {
     background-color: transparent;
-    color: white;
+   /* color: white;*/
 }
 
 QCheckBox[logStatus=&quot;warning&quot;] {

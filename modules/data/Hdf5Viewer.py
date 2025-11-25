@@ -1,3 +1,4 @@
+# modules/data/Hdf5Viewer.py
 import h5py
 import os
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel

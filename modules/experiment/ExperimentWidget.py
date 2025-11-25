@@ -71,6 +71,7 @@ class ExperimentWidget(QWidget, Ui_Form):
         self.pushButton_pause.clicked.connect(self.on_pause_clicked)
         self.pushButton_stop.clicked.connect(self.exp_mgr.stop_experiment)
         self.pushButton_docs.clicked.connect(self.on_docs_clicked)
+        self.pushButton_edit.clicked.connect(self.on_edit_clicked)
         self.exp_mgr.experiments_found.connect(self.on_experiments_found)
 
         # 2. Manager-Signale an UI-Slots (diese Klasse)
@@ -136,6 +137,17 @@ class ExperimentWidget(QWidget, Ui_Form):
             
         # 'file://' ist wichtig, um dem Browser zu sagen, dass es eine lokale Datei ist.
         webbrowser.open_new_tab(f"file://{DOC_PATH}")
+
+    @Slot()
+    def on_edit_clicked(self):
+        selected_script = self.comboBox_experiments.currentText()
+        
+        if not selected_script:
+            return
+        experiment_path = self.exp_mgr.experiment_files[selected_script]
+        
+
+        os.startfile(experiment_path)
     # --- Slots für Signale vom ExperimentManager ---
 
     @Slot(list)

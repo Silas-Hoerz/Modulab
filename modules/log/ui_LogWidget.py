@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'LogWidgetvVBOjD.ui'
+## Form generated from reading UI file 'LogWidgetHeTEvj.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.0
 ##
@@ -156,7 +156,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"Log", None))
         Form.setProperty(u"status", "")
         self.status_label.setText(QCoreApplication.translate("Form", u"Ready", None))
         self.pushButton_profile.setText(QCoreApplication.translate("Form", u"No Profile", None))

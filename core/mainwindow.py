@@ -1,6 +1,8 @@
 # core/mainwindow.py
 # This Python file uses the following encoding: utf-8
-
+import sys
+import os
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog
 from PySide6.QtCore import Qt, Slot
 
@@ -18,6 +20,15 @@ from modules.data.Hdf5Viewer import Hdf5Viewer
 
 from modules.experiment.ExperimentWidget import ExperimentWidget
 
+def resource_path(relative_path):
+    """ Ermittelt den absoluten Pfad zu Ressourcen, funktioniert für Dev und PyInstaller One-File """
+    try:
+        # PyInstaller erstellt einen temporären Ordner und speichert den Pfad in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class MainWindow(QMainWindow):
     
@@ -28,6 +39,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        icon_path = resource_path(os.path.join('resources', 'logo.ico'))
+        self.setWindowIcon(QIcon(icon_path))
 
         # Den Kontext für später speichern
         self.context = context
