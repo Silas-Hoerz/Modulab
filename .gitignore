@@ -6,6 +6,5 @@ __pycache__/
 docs/_build/doctrees
 tools/
 dist/
-/build
-/build/Modulab
+build/
 build/Modulab/Modulab.pkg
