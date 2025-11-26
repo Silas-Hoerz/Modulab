@@ -19,3 +19,7 @@ sphinx-autodoc-typehints
 sphinx-copybutton
 myst-parser
 pyinstaller
+
+pyqtdarktheme
+requests
+packaging
