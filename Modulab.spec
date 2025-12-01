@@ -19,7 +19,8 @@ a = Analysis(
     # Data files required by the core application + SILX Data
     datas=[
         ('resources', 'resources'), 
-        ('docs', 'docs')
+        ('docs', 'docs'),
+        ('scripts', 'scripts')
     ] + silx_datas,
 
     # Hidden imports for libraries that are bundled with the app
@@ -33,6 +34,12 @@ a = Analysis(
         'h5py.utils',
         'h5py.h5ac',
         'h5py._proxy',
+        'tkinter',
+        'tkinter',
+        'tkinter.font',         
+        'tkinter.messagebox',   
+        'tkinter.simpledialog', 
+        'tkinter.filedialog',   
     ],
 
     hookspath=[],
@@ -40,7 +47,7 @@ a = Analysis(
     runtime_hooks=[],
     # Wir schließen PyQt5/6 aus, da du im Code PySide6 nutzt.
     # Stelle sicher, dass PySide6 installiert ist.
-    excludes=['PyQt5', 'tkinter'], 
+    excludes=['PyQt5'], 
     noarchive=False,
     optimize=0,
 )

@@ -78,11 +78,21 @@ class ExperimentManager(QObject):
         """
         Kopiert Beispiel-Skripte aus dem Projekt-Ordner 'scripts/' in den User-Ordner,
         falls diese dort noch nicht existieren.
+        Unterscheidet zwischen Dev-Mode und PyInstaller EXE.
         """
         
-        current_file_path = os.path.abspath(__file__)
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
-        source_dir = os.path.join(project_root, 'scripts')
+        # Prüfung: Sind wir eine EXE oder ein Skript?
+        if getattr(sys, 'frozen', False):
+            # Wenn EXE: Der Pfad ist im temporären _MEIPASS Ordner
+            base_path = sys._MEIPASS
+        else:
+            # Wenn Skript: Relativ zu dieser Datei (ExperimentManager.py)
+            # ExperimentManager -> experiment -> modules -> ProjektRoot
+            current_file_path = os.path.abspath(__file__)
+            base_path = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
+            
+        # Zielpfad zusammenbauen
+        source_dir = os.path.join(base_path, 'scripts')
 
         if not os.path.exists(source_dir):
             self.log_mgr.warning(f"Example scripts folder not found at: {source_dir}")
@@ -96,7 +106,7 @@ class ExperimentManager(QObject):
                 # Nur kopieren, wenn Zieldatei NICHT existiert
                 if not os.path.exists(dest_file):
                     try:
-                        shutil.copy2(source_file, dest_file) # copy2 behält Metadaten (Erstelldatum etc.)
+                        shutil.copy2(source_file, dest_file) 
                         self.log_mgr.info(f"Copied example script '{filename}' to experiments folder.")
                     except Exception as e:
                         self.log_mgr.error(f"Failed to copy example script {filename}: {e}")

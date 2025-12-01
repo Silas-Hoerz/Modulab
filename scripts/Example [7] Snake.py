@@ -261,7 +261,7 @@ class SnakeGame:
         
         cx, cy = Config.WIDTH // 2, Config.HEIGHT // 2
         
-        self.canvas.create_text(cx, cy - 60, text="SNAKE PRO", 
+        self.canvas.create_text(cx, cy - 60, text="SNAKE", 
                                 font=self.font_big, fill=Config.COL_SNAKE_HEAD)
         
         self.canvas.create_text(cx, cy, text="Drücke [LEERTASTE] zum Starten", 
