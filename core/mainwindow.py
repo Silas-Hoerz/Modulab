@@ -2,9 +2,9 @@
 # This Python file uses the following encoding: utf-8
 import sys
 import os
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtGui import QIcon, QDesktopServices
+from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog, QToolButton
+from PySide6.QtCore import Qt, Slot, QUrl
 
 from core.ui_form import Ui_MainWindow
 from core.context import ApplicationContext 
@@ -125,6 +125,23 @@ class MainWindow(QMainWindow):
         # Floating Docks (Klick darauf öffnet das Fenster)
         self.view_menu.addAction(self.liveplot_dock.toggleViewAction())
         self.view_menu.addAction(self.hdf5viewer_dock.toggleViewAction())
+
+
+        # GitHub Link
+        
+        gh_icon_path = resource_path(os.path.join('resources', 'github.svg')) 
+        
+        self.github_btn = QToolButton(self)
+        self.github_btn.setIcon(QIcon(gh_icon_path))
+        self.github_btn.setToolTip("Open GitHub Repository") # Tooltip beim Drüberfahren
+        self.github_btn.setAutoRaise(True) # Macht den Button flach (sieht aus wie ein Menü-Item)
+        
+        # 3. URL festlegen und Klick-Event verbinden
+        repo_url = "https://github.com/Silas-Hoerz/Modulab" # <--- HIER DEINE URL EINTRAGEN
+        self.github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(repo_url)))
+
+        # 4. Button in die obere rechte Ecke der Menüleiste setzen
+        menu_bar.setCornerWidget(self.github_btn, Qt.TopRightCorner)
 
         # --- 7. Signale verbinden ---
         self.log_widget.request_profile_dialog.connect(self.show_profile_dialog)

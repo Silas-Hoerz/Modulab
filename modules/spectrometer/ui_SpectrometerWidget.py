@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SpectrometerWidgetiKZbEv.ui'
+## Form generated from reading UI file 'SpectrometerWidgetHGKfKV.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,8 +24,8 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(400, 530)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        Form.resize(400, 348)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
@@ -65,8 +65,11 @@ class Ui_Form(object):
 
         self.pushButton_connect = QPushButton(self.frame)
         self.pushButton_connect.setObjectName(u"pushButton_connect")
-        sizePolicy.setHeightForWidth(self.pushButton_connect.sizePolicy().hasHeightForWidth())
-        self.pushButton_connect.setSizePolicy(sizePolicy)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.pushButton_connect.sizePolicy().hasHeightForWidth())
+        self.pushButton_connect.setSizePolicy(sizePolicy2)
         self.pushButton_connect.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
 
         self.horizontalLayout_4.addWidget(self.pushButton_connect)
@@ -77,8 +80,8 @@ class Ui_Form(object):
 
         self.label_device = QLabel(self.frame)
         self.label_device.setObjectName(u"label_device")
-        sizePolicy.setHeightForWidth(self.label_device.sizePolicy().hasHeightForWidth())
-        self.label_device.setSizePolicy(sizePolicy)
+        sizePolicy2.setHeightForWidth(self.label_device.sizePolicy().hasHeightForWidth())
+        self.label_device.setSizePolicy(sizePolicy2)
 
         self.horizontalLayout_4.addWidget(self.label_device)
 
@@ -92,18 +95,18 @@ class Ui_Form(object):
         self.verticalLayout_connection.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.label_integrationTime = QLabel(self.frame)
         self.label_integrationTime.setObjectName(u"label_integrationTime")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.label_integrationTime.sizePolicy().hasHeightForWidth())
-        self.label_integrationTime.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label_integrationTime.sizePolicy().hasHeightForWidth())
+        self.label_integrationTime.setSizePolicy(sizePolicy3)
 
         self.verticalLayout_connection.addWidget(self.label_integrationTime)
 
         self.spinBox_integrationTime = QSpinBox(self.frame)
         self.spinBox_integrationTime.setObjectName(u"spinBox_integrationTime")
-        sizePolicy2.setHeightForWidth(self.spinBox_integrationTime.sizePolicy().hasHeightForWidth())
-        self.spinBox_integrationTime.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.spinBox_integrationTime.sizePolicy().hasHeightForWidth())
+        self.spinBox_integrationTime.setSizePolicy(sizePolicy3)
         self.spinBox_integrationTime.setMinimumSize(QSize(0, 0))
         self.spinBox_integrationTime.setMaximumSize(QSize(250, 16777215))
         self.spinBox_integrationTime.setMaximum(100000)
@@ -119,15 +122,15 @@ class Ui_Form(object):
         self.verticalLayout_settings.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         self.checkBox_correctDarkCounts = QCheckBox(self.frame)
         self.checkBox_correctDarkCounts.setObjectName(u"checkBox_correctDarkCounts")
-        sizePolicy2.setHeightForWidth(self.checkBox_correctDarkCounts.sizePolicy().hasHeightForWidth())
-        self.checkBox_correctDarkCounts.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.checkBox_correctDarkCounts.sizePolicy().hasHeightForWidth())
+        self.checkBox_correctDarkCounts.setSizePolicy(sizePolicy3)
 
         self.verticalLayout_settings.addWidget(self.checkBox_correctDarkCounts)
 
         self.checkBox_correctNonLinearity = QCheckBox(self.frame)
         self.checkBox_correctNonLinearity.setObjectName(u"checkBox_correctNonLinearity")
-        sizePolicy2.setHeightForWidth(self.checkBox_correctNonLinearity.sizePolicy().hasHeightForWidth())
-        self.checkBox_correctNonLinearity.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.checkBox_correctNonLinearity.sizePolicy().hasHeightForWidth())
+        self.checkBox_correctNonLinearity.setSizePolicy(sizePolicy3)
 
         self.verticalLayout_settings.addWidget(self.checkBox_correctNonLinearity)
 
@@ -148,8 +151,8 @@ class Ui_Form(object):
 
         self.pushButton_acquire = QPushButton(self.frame)
         self.pushButton_acquire.setObjectName(u"pushButton_acquire")
-        sizePolicy2.setHeightForWidth(self.pushButton_acquire.sizePolicy().hasHeightForWidth())
-        self.pushButton_acquire.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.pushButton_acquire.sizePolicy().hasHeightForWidth())
+        self.pushButton_acquire.setSizePolicy(sizePolicy3)
         self.pushButton_acquire.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout_2.addWidget(self.pushButton_acquire)
@@ -162,11 +165,8 @@ class Ui_Form(object):
 
         self.widget_plot = QWidget(self.frame)
         self.widget_plot.setObjectName(u"widget_plot")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.widget_plot.sizePolicy().hasHeightForWidth())
-        self.widget_plot.setSizePolicy(sizePolicy3)
+        sizePolicy.setHeightForWidth(self.widget_plot.sizePolicy().hasHeightForWidth())
+        self.widget_plot.setSizePolicy(sizePolicy)
         self.widget_plot.setMinimumSize(QSize(380, 200))
 
         self.verticalLayout.addWidget(self.widget_plot)

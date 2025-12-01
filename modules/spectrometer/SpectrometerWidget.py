@@ -1,6 +1,6 @@
 
 import sys
-from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout,QSizePolicy
 from PySide6.QtCore import Slot, Signal, QEvent
 
 # Importiere die generierte UI-Klasse
@@ -21,6 +21,7 @@ except ImportError:
 # Importiere die Plot-Bibliothek (Matplotlib)
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+from matplotlib.colors import to_rgba
 
 class SpectrometerWidget(QWidget, Ui_Form):
     """
@@ -51,25 +52,58 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
     def __setup_plot(self):
         """
-        Initialisiert das Matplotlib-Diagramm und fügt es in den 
-        Platzhalter 'widget_plot' ein.
+        Initialisiert das Matplotlib-Diagramm im Dark-Mode Style.
         """
-        # Erstelle ein Layout FÜR den Platzhalter, da er von Haus aus keins hat
+        # Erstelle ein Layout FÜR den Platzhalter
         plot_layout = QVBoxLayout(self.widget_plot)
-        plot_layout.setContentsMargins(0, 0, 0, 0) # Fülle den Platz aus
+        plot_layout.setContentsMargins(0, 0, 0, 0)
         
-        # Erstelle das Matplotlib Canvas
-        self.plot_canvas = FigureCanvas(Figure(figsize=(5, 3), tight_layout=True))
-        self.plot_ax = self.plot_canvas.figure.subplots()
+        # 1. Figure erstellen (Hintergrund transparent für Integration in GUI)
+        self.fig = Figure(tight_layout=True)
+        self.fig.patch.set_facecolor('none')  # Transparent!
         
-        # Füge das Canvas zum Layout des Platzhalters hinzu
+        # Canvas erstellen
+        self.plot_canvas = FigureCanvas(self.fig)
+        self.plot_canvas.setStyleSheet("background-color:transparent;")
+
+        self.plot_canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.plot_canvas.updateGeometry()
+
+        # Subplot erstellen
+        self.plot_ax = self.fig.subplots()
+        
+        # 2. Initiales Styling anwenden (ruft unsere Helper-Funktion auf)
+        self.__style_axis()
+        
+        # Titel initial setzen
+        self.plot_ax.set_title("Spectrum (Not Connected)", color="white")
+
+        # Füge das Canvas zum Layout hinzu
         plot_layout.addWidget(self.plot_canvas)
         
-        # Initialisiere den Plot-Titel
-        self.plot_ax.set_title("Spectrum (Not Connected)")
-        self.plot_ax.set_xlabel("Wavelength (nm)")
-        self.plot_ax.set_ylabel("Intensity (a.u.)")
         self.plot_canvas.draw()
+
+    def __style_axis(self):
+        """
+        Hilfsfunktion: Setzt das Aussehen der Achsen auf 'Modern Dark Mode'.
+        Muss nach jedem ax.clear() erneut aufgerufen werden!
+        """
+        # Hintergrund der Achsen: Entweder auch 'none' oder ein leichtes Dunkelgrau
+        self.plot_ax.set_facecolor('none') 
+        
+        # Farben der Achsen-Linien (Spines)
+        for spine in self.plot_ax.spines.values():
+            spine.set_color('#aaaaaa') # Hellgrau
+            
+        # Farben der Ticks und Labels
+        self.plot_ax.tick_params(axis='x', colors='white')
+        self.plot_ax.tick_params(axis='y', colors='white')
+        
+        # Grid hinzufügen (sieht technischer aus)
+        self.plot_ax.grid(True, linestyle=':', alpha=0.3, color='white')
+        
+        self.plot_ax.set_xlabel("Wavelength (nm)", color='white')     # <--- HIER
+        self.plot_ax.set_ylabel("Intensity (a.u.)", color='white')    # <--- HIER
 
     def __setup_ui(self):
         """Setzt den anfänglichen Zustand der UI-Elemente."""
@@ -127,15 +161,15 @@ class SpectrometerWidget(QWidget, Ui_Form):
     @Slot(bool, str)
     def on_connection_status_changed(self, connected, device_name):
         """
-        Der wichtigste Slot: Schaltet die UI-Zustände um, wenn die 
-        Verbindung aufgebaut oder getrennt wird.
+        Der wichtigste Slot: Schaltet die UI-Zustände um.
+        KORRIGIERT: Erzwingt weiße Schriftfarbe bei Statusänderungen.
         """
         if connected:
             self.label_device.setText(device_name)
             self.label_device.setStyleSheet("color: green;")
             self.pushButton_connect.setText("Disconnect")
             
-            # UI-Bereiche anzeigen (statt nur zu aktivieren)
+            # UI-Bereiche aktivieren
             self.label_integrationTime.setEnabled(True)
             self.spinBox_integrationTime.setEnabled(True)
             self.checkBox_correctDarkCounts.setEnabled(True)
@@ -143,20 +177,20 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.pushButton_acquire.setEnabled(True)
             self.widget_plot.setEnabled(True)
             
-            # UI-Bereiche aktivieren (HINWEIS: Dies ist der fehlerhafte Code aus deinem Original)
-            # self.verticalLayout_settings.setEnabled(True) # -> Ersetzt
-            # self.verticalLayout_acquisition.setEnabled(True) # -> Ersetzt
-            
-            self.comboBox_deviceList.setEnabled(False) # Auswahl sperren
+            self.comboBox_deviceList.setEnabled(False) 
 
-            # Hardware-Limits abrufen und UI aktualisieren
+            # Limits holen
             min_us, max_us = self.spec_mgr.get_integrationtime_limits_us()
             self.spinBox_integrationTime.setRange(min_us, max_us)
             
-            # Max. Intensität für Plot-Skalierung holen
             self.y_max_intensity = self.spec_mgr.get_max_intensity()
             
-            self.plot_ax.set_title(f"Spectrum ({device_name})")
+            # --- FIX: Farbe explizit auf Weiß setzen ---
+            self.plot_ax.set_title(f"Spectrum ({device_name})", color='white', fontweight='bold')
+            # Sicherstellen, dass Labels weiß bleiben (falls sie durch draw resettet wurden)
+            self.plot_ax.xaxis.label.set_color('white')
+            self.plot_ax.yaxis.label.set_color('white')
+            
             self.plot_canvas.draw()
 
         else: # Nicht verbunden
@@ -164,7 +198,7 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.label_device.setStyleSheet("color: red;")
             self.pushButton_connect.setText("Connect")
             
-            # UI-Bereiche ausblenden (statt nur zu deaktivieren)
+            # UI-Bereiche deaktivieren
             self.label_integrationTime.setEnabled(False)
             self.spinBox_integrationTime.setEnabled(False)
             self.checkBox_correctDarkCounts.setEnabled(False)
@@ -172,42 +206,55 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.pushButton_acquire.setEnabled(False)
             self.widget_plot.setEnabled(False)
 
-            # UI-Bereiche deaktivieren (HINWEIS: Dies ist der fehlerhafte Code aus deinem Original)
-            # self.verticalLayout_settings.setEnabled(False) # -> Ersetzt
-            # self.verticalLayout_acquisition.setEnabled(False) # -> Ersetzt
-            
-            self.comboBox_deviceList.setEnabled(True)  # Auswahl freigeben
+            self.comboBox_deviceList.setEnabled(True)
 
             # Plot zurücksetzen
-            self.y_max_intensity = 65535.0 # Standard
+            self.y_max_intensity = 65535.0 
+            
             self.plot_ax.clear()
-            self.plot_ax.set_title("Spectrum (Not Connected)")
-            self.plot_ax.set_xlabel("Wavelength (nm)")
-            self.plot_ax.set_ylabel("Intensity (a.u.)")
+            
+            # --- FIX: Styling wieder anwenden, da clear() alles löscht ---
+            self.__style_axis() 
+            
+            # Titel explizit weiß setzen
+            self.plot_ax.set_title("Spectrum (Not Connected)", color='white')
+            
+            # Hinweis: set_xlabel/ylabel sind jetzt schon in __style_axis() enthalten,
+            # müssen hier also nicht doppelt stehen, solange __style_axis() aufgerufen wird.
+            
             self.plot_canvas.draw()
 
 
     @Slot(object, object)
     def on_new_spectrum_acquired(self, wavelengths, intensities):
-        """Aktualisiert den Plot, wenn ein neues Spektrum empfangen wird."""
+        """Aktualisiert den Plot modern und performant."""
         if wavelengths is None or intensities is None:
             return
             
         # Altes Diagramm löschen
         self.plot_ax.clear()
         
-        # Neu zeichnen
-        self.plot_ax.plot(wavelengths, intensities, color="cyan")
+        # 1. Plotten der Linie (Cyan leuchtet gut auf Dunkel)
+        # 'lw=1.5' macht die Linie etwas dicker
+        self.plot_ax.plot(wavelengths, intensities, color="#00e5ff", lw=1.5)
         
-        # Beschriftungen und Limits setzen (clear() löscht sie)
-        self.plot_ax.set_title(self.spec_mgr.get_activeDeviceName())
-        self.plot_ax.set_xlabel("Wavelength (nm)")
-        self.plot_ax.set_ylabel("Intensity (a.u.)")
+        # 2. "Glow"-Effekt: Bereich darunter leicht füllen
+        # alpha=0.2 macht es durchscheinend
+        self.plot_ax.fill_between(wavelengths, intensities, color="#00e5ff", alpha=0.15)
         
-        # Y-Achse auf den maximalen Wert des Spektrometers festlegen
-        self.plot_ax.set_ylim(0, self.y_max_intensity * 1.05) # 5% Puffer
+        # 3. Styling wiederherstellen (wird durch clear() gelöscht)
+        self.__style_axis()
         
-        # Diagramm neu rendern
+        # Titel setzen
+        self.plot_ax.set_title(self.spec_mgr.get_activeDeviceName(), color="white", fontweight='bold')
+        
+        # Limits setzen
+        self.plot_ax.set_ylim(0, self.y_max_intensity * 1.05)
+        # X-Limits festsetzen verhindert "Springen" der Achse
+        if len(wavelengths) > 0:
+            self.plot_ax.set_xlim(min(wavelengths), max(wavelengths))
+        
+        # Zeichnen
         self.plot_canvas.draw()
 
     # --- Slots für UI-Aktionen ---
