@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.9.15)  18 NOV 2025 11:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.9.15)  1 DEC 2025 11:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -985,24 +985,727 @@ Chapter 6.
 
 
 
+] (modulab.ind [30
+
+
 ]
-No file modulab.ind.
-(modulab.aux)
+Underfull \hbox (badness 10000) in paragraph at lines 8--10
+[]\T1/txtt/m/n/10 __init__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.device.De
+viceManager.Device
+ []
+
+
+Overfull \hbox (21.23236pt too wide) in paragraph at lines 10--12
+[]\T1/txtt/m/n/10 __init__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.device.De
+viceManager.DeviceManager
+ []
+
+
+Overfull \hbox (20.46231pt too wide) in paragraph at lines 12--14
+[]\T1/txtt/m/n/10 __init__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.export.Ex
+portManager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--15
+[]\T1/txtt/m/n/10 __init__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.log.LogMa
+nager.LogManager
+ []
+
+
+Overfull \hbox (19.97234pt too wide) in paragraph at lines 15--17
+[]\T1/txtt/m/n/10 __init__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.profile.P
+rofileManager.ProfileManager
+ []
+
+
+Overfull \hbox (96.6724pt too wide) in paragraph at lines 17--19
+[]\T1/txtt/m/n/10 __init__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.spectrome
+ter.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--21
+[]\T1/txtt/m/n/10 __repr__() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.device.De
+viceManager.Device
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--26
+[]\T1/txtt/m/n/10 acquire_spectrum() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 24--26
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 6220) in paragraph at lines 26--28
+[]\T1/txtt/m/n/10 add() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.export.ExportM
+anager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--30
+[]\T1/txtt/m/n/10 add_group_attribute() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--30
+\T1/qtm/m/it/10 ules.export.ExportManager.ExportManager
+ []
+
+
+Overfull \hbox (30.96228pt too wide) in paragraph at lines 30--32
+[]\T1/txtt/m/n/10 add_static() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.export.
+ExportManager.ExportManager
+ []
+
+
+Overfull \hbox (9.96234pt too wide) in paragraph at lines 35--37
+[]\T1/txtt/m/n/10 commit() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.export.Expo
+rtManager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--39
+[]\T1/txtt/m/n/10 CONFIG_FILE_NAME \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--39
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--40
+[]\T1/txtt/m/n/10 connect() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.smu.SmuMan
+ager.SmuManager
+ []
+
+
+Overfull \hbox (91.42241pt too wide) in paragraph at lines 40--42
+[]\T1/txtt/m/n/10 connect() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.spectromet
+er.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--44
+[]\T1/txtt/m/n/10 connect_LastDevice() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--44
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--46
+[]\T1/txtt/m/n/10 connect_LastDevice() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 44--46
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--48
+[]\T1/txtt/m/n/10 create_device() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--48
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--50
+[]\T1/txtt/m/n/10 create_profile() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--50
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--55
+[]\T1/txtt/m/n/10 debug() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.log.LogManag
+er.LogManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 55--57
+[]\T1/txtt/m/n/10 delete_device() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 55--57
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--59
+[]\T1/txtt/m/n/10 delete_profile() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--59
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 60--61
+[]\T1/txtt/m/n/10 DeviceManager \T1/qtm/m/n/10 (\T1/qtm/m/it/10 class in mod-
+ []
+
+
+Overfull \hbox (1.2223pt too wide) in paragraph at lines 61--62
+[]\T1/txtt/m/n/10 disconnect() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.smu.Smu
+Manager.SmuManager
+ []
+
+
+Overfull \hbox (107.17236pt too wide) in paragraph at lines 62--64
+[]\T1/txtt/m/n/10 disconnect() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.spectro
+meter.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 67--69
+[]\T1/txtt/m/n/10 edit_device() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 67--69
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 70--71
+[]\T1/txtt/m/n/10 error() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.log.LogManag
+er.LogManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 71--72
+[]\T1/txtt/m/n/10 ExportManager \T1/qtm/m/n/10 (\T1/qtm/m/it/10 class in mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--77
+[]\T1/txtt/m/n/10 from_dict() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.device.D
+eviceManager.Device
+ []
+
+[31
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 80--82
+[]\T1/txtt/m/n/10 get_active_device() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 80--82
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--84
+[]\T1/txtt/m/n/10 get_active_device_area() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--84
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 84--86
+[]\T1/txtt/m/n/10 get_active_device_dimensions() \T1/qtm/m/n/10 (\T1/qtm/m/it/1
+0 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 84--86
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 86--88
+[]\T1/txtt/m/n/10 get_activeDeviceName() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 86--88
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 88--90
+[]\T1/txtt/m/n/10 get_activeDeviceName() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 88--90
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 90--92
+[]\T1/txtt/m/n/10 get_all_messages() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 90--92
+\T1/qtm/m/it/10 ules.log.LogManager.LogManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 92--93
+[]\T1/txtt/m/n/10 get_area() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.device.De
+viceManager.Device
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 93--95
+[]\T1/txtt/m/n/10 get_correction_dark_count() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 m
+od-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 93--95
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 95--97
+[]\T1/txtt/m/n/10 get_correction_non_linearity() \T1/qtm/m/n/10 (\T1/qtm/m/it/1
+0 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 95--97
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 97--99
+[]\T1/txtt/m/n/10 get_current_profile_name() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mo
+d-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 97--99
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--101
+[]\T1/txtt/m/n/10 get_device_by_name() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--101
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 101--103
+[]\T1/txtt/m/n/10 get_deviceList() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 101--103
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 103--105
+[]\T1/txtt/m/n/10 get_deviceList() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 103--105
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 105--107
+[]\T1/txtt/m/n/10 get_export_directory() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 105--107
+\T1/qtm/m/it/10 ules.export.ExportManager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 107--109
+[]\T1/txtt/m/n/10 get_integrationtime() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 107--109
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 109--111
+[]\T1/txtt/m/n/10 get_integrationtime_limits_us() \T1/qtm/m/n/10 (\T1/qtm/m/it/
+10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 109--111
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 111--113
+[]\T1/txtt/m/n/10 get_last_profile_name() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 111--113
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 113--115
+[]\T1/txtt/m/n/10 get_latest_message() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 113--115
+\T1/qtm/m/it/10 ules.log.LogManager.LogManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 115--117
+[]\T1/txtt/m/n/10 get_max_intensity() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 115--117
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 121--122
+[]\T1/txtt/m/n/10 info() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.log.LogManage
+r.LogManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 122--124
+[]\T1/txtt/m/n/10 is_connected() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 122--124
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--126
+[]\T1/txtt/m/n/10 is_connected() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 124--126
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 129--131
+[]\T1/txtt/m/n/10 KEY_ACTIVE_DEVICE \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 129--131
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 131--133
+[]\T1/txtt/m/n/10 KEY_DEVICE_LIST \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 131--133
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 133--135
+[]\T1/txtt/m/n/10 KEY_LAST_PROFILE \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 133--135
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 138--140
+[]\T1/txtt/m/n/10 list_device_names() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 138--140
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 140--142
+[]\T1/txtt/m/n/10 list_profiles() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 140--142
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 142--144
+[]\T1/txtt/m/n/10 load_from_profile() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 142--144
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 144--146
+[]\T1/txtt/m/n/10 load_profile() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 144--146
+\T1/qtm/m/it/10 ules.profile.ProfileManager.ProfileManager
+ []
+
+
+Overfull \hbox (1.2223pt too wide) in paragraph at lines 150--151
+[]\T1/txtt/m/n/10 measure_iv() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.smu.Smu
+Manager.SmuManager
+ []
+
+
+Overfull \hbox (2.62189pt too wide) in paragraph at lines 157--158
+[]| \T1/txtt/m/n/10 modules.spectrometer.SpectrometerManager\T1/qtm/m/n/10 ,
+ []
+
+[32]
+Underfull \hbox (badness 6220) in paragraph at lines 173--175
+[]\T1/txtt/m/n/10 new() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.export.ExportM
+anager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 178--179
+[]\T1/txtt/m/n/10 ProfileManager \T1/qtm/m/n/10 (\T1/qtm/m/it/10 class in mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 184--186
+[]\T1/txtt/m/n/10 reset_channel() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 184--186
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 189--191
+[]\T1/txtt/m/n/10 select_directory_dialog() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod
+-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 189--191
+\T1/qtm/m/it/10 ules.export.ExportManager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 191--193
+[]\T1/txtt/m/n/10 set_active_device() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 191--193
+\T1/qtm/m/it/10 ules.device.DeviceManager.DeviceManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 193--195
+[]\T1/txtt/m/n/10 set_correction_dark_count() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 m
+od-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 193--195
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 195--197
+[]\T1/txtt/m/n/10 set_correction_non_linearity() \T1/qtm/m/n/10 (\T1/qtm/m/it/1
+0 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 195--197
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 197--199
+[]\T1/txtt/m/n/10 set_export_directory() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 197--199
+\T1/qtm/m/it/10 ules.export.ExportManager.ExportManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 199--201
+[]\T1/txtt/m/n/10 set_integrationtime() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Overfull \hbox (61.95255pt too wide) in paragraph at lines 199--201
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager.SpectrometerManager
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 201--203
+[]\T1/txtt/m/n/10 set_output_state() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 201--203
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 203--205
+[]\T1/txtt/m/n/10 set_sense_local() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 203--205
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 205--207
+[]\T1/txtt/m/n/10 set_sense_remote() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 205--207
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 207--209
+[]\T1/txtt/m/n/10 set_source_current() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 207--209
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 209--211
+[]\T1/txtt/m/n/10 set_source_level() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 209--211
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 211--213
+[]\T1/txtt/m/n/10 set_source_limit() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 211--213
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 213--215
+[]\T1/txtt/m/n/10 set_source_voltage() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 213--215
+\T1/qtm/m/it/10 ules.smu.SmuManager.SmuManager method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--218
+[]\T1/txtt/m/n/10 SpectrometerManager \T1/qtm/m/n/10 (\T1/qtm/m/it/10 class in 
+mod-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--218
+\T1/qtm/m/it/10 ules.spectrometer.SpectrometerManager\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 223--224
+[]\T1/txtt/m/n/10 to_dict() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.device.Dev
+iceManager.Device
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 227--228
+[]\T1/txtt/m/n/10 WARNING \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.log.LogManag
+er.LogManager at-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 228--229
+[]\T1/txtt/m/n/10 warning() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.log.LogMan
+ager.LogManager
+ []
+
+
+Overfull \hbox (4.22238pt too wide) in paragraph at lines 229--231
+[]\T1/txtt/m/n/10 write() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mod-ules.profile.Prof
+ileManager.ProfileManager
+ []
+
+[33]) (modulab.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `modulab.out' has not changed.
-(rerunfilecheck)             Checksum: 6F928EB3BA277D4A58020505AB30AB8E;847.
+(rerunfilecheck)             Checksum: CFD77740B378D276E9599D4CC880A5A4;917.
  ) 
 Here is how much of TeX's memory you used:
- 20343 strings out of 474486
- 373449 string characters out of 5743755
+ 20354 strings out of 474486
+ 373610 string characters out of 5743755
  1960542 words of memory out of 5000000
- 42074 multiletter control sequences out of 15000+600000
+ 42077 multiletter control sequences out of 15000+600000
  616681 words of font info for 87 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 72i,11n,82p,1198b,832s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,12n,82p,1198b,832s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/silas/AppData/Local/Programs/MiKTeX/fonts/type1/public/fontawesome5
 /FontAwesome5Free-Solid.pfb><C:/Users/silas/AppData/Local/Programs/MiKTeX/fonts
 /type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/silas/AppData/Local/Programs/MiKT
@@ -1021,9 +1724,9 @@ Users/silas/AppData/Local/Programs/MiKTeX/fonts/type1/public/txfonts/t1xbtt.pfb
 ts/tcxbtt.pfb><C:/Users/silas/AppData/Local/Programs/MiKTeX/fonts/type1/public/
 txfonts/tcxtt.pfb><C:/Users/silas/AppData/Local/Programs/MiKTeX/fonts/type1/urw
 /times/utmr8a.pfb>
-Output written on modulab.pdf (33 pages, 340179 bytes).
+Output written on modulab.pdf (37 pages, 367608 bytes).
 PDF statistics:
- 395 PDF objects out of 1000 (max. 8388607)
- 136 named destinations out of 1000 (max. 500000)
- 77 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 520 PDF objects out of 1000 (max. 8388607)
+ 141 named destinations out of 1000 (max. 500000)
+ 85 words of extra memory for PDF output out of 10000 (max. 10000000)
 

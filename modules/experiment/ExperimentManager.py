@@ -6,6 +6,7 @@
 # die Schnittstelle zwischen dem User Experiment Script und den echten Managern/Modulen dar.
 
 import os, sys , importlib.util
+import shutil
 from PySide6.QtCore import QObject, Signal, Slot, QDir, QThread
 
 
@@ -46,6 +47,8 @@ class ExperimentManager(QObject):
         try:
             os.makedirs(self.working_dir, exist_ok = True)
             self.log_mgr.debug(f"Working Dir: '{self.working_dir}'")
+
+            self._copy_example_scripts()
         except Exception as e:
             self.log_mgr.error(f"Directory could not be created: {e}")
         
@@ -70,6 +73,33 @@ class ExperimentManager(QObject):
             display_names.append(display_name)
             # self.script_combo.addItem(display_name) # Das ist aufgabe vom Widget bzw. View
         self.experiments_found.emit(display_names)
+
+    def _copy_example_scripts(self):
+        """
+        Kopiert Beispiel-Skripte aus dem Projekt-Ordner 'scripts/' in den User-Ordner,
+        falls diese dort noch nicht existieren.
+        """
+        
+        current_file_path = os.path.abspath(__file__)
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_file_path)))
+        source_dir = os.path.join(project_root, 'scripts')
+
+        if not os.path.exists(source_dir):
+            self.log_mgr.warning(f"Example scripts folder not found at: {source_dir}")
+            return
+
+        for filename in os.listdir(source_dir):
+            if filename.endswith(".py"):
+                source_file = os.path.join(source_dir, filename)
+                dest_file = os.path.join(self.working_dir, filename)
+
+                # Nur kopieren, wenn Zieldatei NICHT existiert
+                if not os.path.exists(dest_file):
+                    try:
+                        shutil.copy2(source_file, dest_file) # copy2 behält Metadaten (Erstelldatum etc.)
+                        self.log_mgr.info(f"Copied example script '{filename}' to experiments folder.")
+                    except Exception as e:
+                        self.log_mgr.error(f"Failed to copy example script {filename}: {e}")
 
     @Slot(str)
     def start_experiment(self, experiment_name):
@@ -238,9 +268,7 @@ class ExperimentAPI():
     
     
  
-    def log_message(self, msg):
-        """Ermöglicht dem Skript, in das Haupt-Log zu schreiben."""
-        self.log_mgr.info(f"[USER SCRIPT] {msg}")
+   
 
 # Eigene Exception für sauberen Stopp
 class ExperimentStoppedException(Exception):

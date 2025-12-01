@@ -1,0 +1,232 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter {\sphinxsymbolsname}
+  \item \spxentry{\_\_init\_\_()}\spxextra{modules.device.DeviceManager.Device method}, 
+		\hyperpage{9}
+  \item \spxentry{\_\_init\_\_()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{11}
+  \item \spxentry{\_\_init\_\_()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{26}
+  \item \spxentry{\_\_init\_\_()}\spxextra{modules.log.LogManager.LogManager method}, \hyperpage{1}
+  \item \spxentry{\_\_init\_\_()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{5}
+  \item \spxentry{\_\_init\_\_()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{19}
+  \item \spxentry{\_\_repr\_\_()}\spxextra{modules.device.DeviceManager.Device method}, 
+		\hyperpage{10}
+
+  \indexspace
+  \bigletter A
+  \item \spxentry{acquire\_spectrum()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{23}
+  \item \spxentry{add()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{27}
+  \item \spxentry{add\_group\_attribute()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{28}
+  \item \spxentry{add\_static()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{27}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{commit()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{28}
+  \item \spxentry{CONFIG\_FILE\_NAME}\spxextra{modules.profile.ProfileManager.ProfileManager attribute}, 
+		\hyperpage{5}
+  \item \spxentry{connect()}\spxextra{modules.smu.SmuManager.SmuManager method}, \hyperpage{15}
+  \item \spxentry{connect()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{20}
+  \item \spxentry{connect\_LastDevice()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{16}
+  \item \spxentry{connect\_LastDevice()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{20}
+  \item \spxentry{create\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{11}
+  \item \spxentry{create\_profile()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{5}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{DEBUG}\spxextra{modules.log.LogManager.LogManager attribute}, \hyperpage{1}
+  \item \spxentry{debug()}\spxextra{modules.log.LogManager.LogManager method}, \hyperpage{3}
+  \item \spxentry{delete\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{12}
+  \item \spxentry{delete\_profile()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{6}
+  \item \spxentry{Device}\spxextra{class in modules.device.DeviceManager}, \hyperpage{9}
+  \item \spxentry{DeviceManager}\spxextra{class in modules.device.DeviceManager}, \hyperpage{10}
+  \item \spxentry{disconnect()}\spxextra{modules.smu.SmuManager.SmuManager method}, \hyperpage{16}
+  \item \spxentry{disconnect()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{edit\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{12}
+  \item \spxentry{ERROR}\spxextra{modules.log.LogManager.LogManager attribute}, \hyperpage{1}
+  \item \spxentry{error()}\spxextra{modules.log.LogManager.LogManager method}, \hyperpage{2}
+  \item \spxentry{ExportManager}\spxextra{class in modules.export.ExportManager}, \hyperpage{25}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{from\_dict()}\spxextra{modules.device.DeviceManager.Device class method}, 
+		\hyperpage{10}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_active\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{13}
+  \item \spxentry{get\_active\_device\_area()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{14}
+  \item \spxentry{get\_active\_device\_dimensions()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{14}
+  \item \spxentry{get\_activeDeviceName()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{16}
+  \item \spxentry{get\_activeDeviceName()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{21}
+  \item \spxentry{get\_all\_messages()}\spxextra{modules.log.LogManager.LogManager method}, 
+		\hyperpage{3}
+  \item \spxentry{get\_area()}\spxextra{modules.device.DeviceManager.Device method}, \hyperpage{10}
+  \item \spxentry{get\_correction\_dark\_count()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{21}
+  \item \spxentry{get\_correction\_non\_linearity()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{22}
+  \item \spxentry{get\_current\_profile\_name()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{8}
+  \item \spxentry{get\_device\_by\_name()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{13}
+  \item \spxentry{get\_deviceList()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{15}
+  \item \spxentry{get\_deviceList()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{19}
+  \item \spxentry{get\_export\_directory()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{26}
+  \item \spxentry{get\_integrationtime()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{22}
+  \item \spxentry{get\_integrationtime\_limits\_us()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{22}
+  \item \spxentry{get\_last\_profile\_name()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{8}
+  \item \spxentry{get\_latest\_message()}\spxextra{modules.log.LogManager.LogManager method}, 
+		\hyperpage{3}
+  \item \spxentry{get\_max\_intensity()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{23}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{INFO}\spxextra{modules.log.LogManager.LogManager attribute}, \hyperpage{1}
+  \item \spxentry{info()}\spxextra{modules.log.LogManager.LogManager method}, \hyperpage{2}
+  \item \spxentry{is\_connected()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{16}
+  \item \spxentry{is\_connected()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter K
+  \item \spxentry{KEY\_ACTIVE\_DEVICE}\spxextra{modules.device.DeviceManager.DeviceManager attribute}, 
+		\hyperpage{11}
+  \item \spxentry{KEY\_DEVICE\_LIST}\spxextra{modules.device.DeviceManager.DeviceManager attribute}, 
+		\hyperpage{11}
+  \item \spxentry{KEY\_LAST\_PROFILE}\spxextra{modules.profile.ProfileManager.ProfileManager attribute}, 
+		\hyperpage{5}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{list\_device\_names()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{13}
+  \item \spxentry{list\_profiles()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{7}
+  \item \spxentry{load\_from\_profile()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{11}
+  \item \spxentry{load\_profile()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{6}
+  \item \spxentry{LogManager}\spxextra{class in modules.log.LogManager}, \hyperpage{1}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{measure\_iv()}\spxextra{modules.smu.SmuManager.SmuManager method}, \hyperpage{18}
+  \item \spxentry{module}
+    \subitem \spxentry{modules.device.DeviceManager}, \hyperpage{9}
+    \subitem \spxentry{modules.export.ExportManager}, \hyperpage{25}
+    \subitem \spxentry{modules.log.LogManager}, \hyperpage{1}
+    \subitem \spxentry{modules.profile.ProfileManager}, \hyperpage{5}
+    \subitem \spxentry{modules.smu.SmuManager}, \hyperpage{15}
+    \subitem \spxentry{modules.spectrometer.SpectrometerManager}, \hyperpage{19}
+  \item \spxentry{modules.device.DeviceManager}
+    \subitem \spxentry{module}, \hyperpage{9}
+  \item \spxentry{modules.export.ExportManager}
+    \subitem \spxentry{module}, \hyperpage{25}
+  \item \spxentry{modules.log.LogManager}
+    \subitem \spxentry{module}, \hyperpage{1}
+  \item \spxentry{modules.profile.ProfileManager}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{modules.smu.SmuManager}
+    \subitem \spxentry{module}, \hyperpage{15}
+  \item \spxentry{modules.spectrometer.SpectrometerManager}
+    \subitem \spxentry{module}, \hyperpage{19}
+
+  \indexspace
+  \bigletter N
+  \item \spxentry{new()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{26}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{ProfileManager}\spxextra{class in modules.profile.ProfileManager}, \hyperpage{5}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{read()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{7}
+  \item \spxentry{reset\_channel()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{select\_directory\_dialog()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{26}
+  \item \spxentry{set\_active\_device()}\spxextra{modules.device.DeviceManager.DeviceManager method}, 
+		\hyperpage{13}
+  \item \spxentry{set\_correction\_dark\_count()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{21}
+  \item \spxentry{set\_correction\_non\_linearity()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{21}
+  \item \spxentry{set\_export\_directory()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{26}
+  \item \spxentry{set\_integrationtime()}\spxextra{modules.spectrometer.SpectrometerManager.SpectrometerManager method}, 
+		\hyperpage{22}
+  \item \spxentry{set\_output\_state()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{18}
+  \item \spxentry{set\_sense\_local()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+  \item \spxentry{set\_sense\_remote()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+  \item \spxentry{set\_source\_current()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+  \item \spxentry{set\_source\_level()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+  \item \spxentry{set\_source\_limit()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+  \item \spxentry{set\_source\_voltage()}\spxextra{modules.smu.SmuManager.SmuManager method}, 
+		\hyperpage{17}
+  \item \spxentry{SmuManager}\spxextra{class in modules.smu.SmuManager}, \hyperpage{15}
+  \item \spxentry{SpectrometerManager}\spxextra{class in modules.spectrometer.SpectrometerManager}, 
+		\hyperpage{19}
+  \item \spxentry{stop()}\spxextra{modules.export.ExportManager.ExportManager method}, 
+		\hyperpage{28}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{to\_dict()}\spxextra{modules.device.DeviceManager.Device method}, \hyperpage{10}
+
+  \indexspace
+  \bigletter W
+  \item \spxentry{WARNING}\spxextra{modules.log.LogManager.LogManager attribute}, \hyperpage{1}
+  \item \spxentry{warning()}\spxextra{modules.log.LogManager.LogManager method}, \hyperpage{2}
+  \item \spxentry{write()}\spxextra{modules.profile.ProfileManager.ProfileManager method}, 
+		\hyperpage{7}
+
+\end{sphinxtheindex}

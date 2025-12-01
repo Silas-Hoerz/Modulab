@@ -6,3 +6,4 @@
 \contentsline {chapter}{\numberline {5}Spectrometer Manager}{19}{chapter.5}%
 \contentsline {chapter}{\numberline {6}Export Manager}{25}{chapter.6}%
 \contentsline {chapter}{Python Module Index}{29}{section*.91}%
+\contentsline {chapter}{Index}{31}{section*.92}%

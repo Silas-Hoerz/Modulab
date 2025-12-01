@@ -3,7 +3,7 @@
 import sys
 import os
 from PySide6.QtGui import QIcon, QDesktopServices
-from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog, QToolButton
+from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog, QToolButton,QWidget, QHBoxLayout
 from PySide6.QtCore import Qt, Slot, QUrl
 
 from core.ui_form import Ui_MainWindow
@@ -127,21 +127,44 @@ class MainWindow(QMainWindow):
         self.view_menu.addAction(self.hdf5viewer_dock.toggleViewAction())
 
 
-        # GitHub Link
+        # --- GitHub & Issues Buttons ---
         
+        # 1. Container Widget erstellen
+        corner_widget = QWidget(self)
+        corner_layout = QHBoxLayout(corner_widget)
+        
+        # Wichtig: Ränder entfernen, damit die Menüleiste nicht unnötig hoch wird
+        corner_layout.setContentsMargins(0, 0, 0, 0) 
+        corner_layout.setSpacing(5) # Kleiner Abstand zwischen den Buttons
+
+        # 2. Issue Button erstellen
+        self.issue_btn = QToolButton(self)
+        self.issue_btn.setText("Issue?")
+        self.issue_btn.setToolTip("Open Issues Page")
+        self.issue_btn.setAutoRaise(True)
+        
+        repo_issues_url = "https://github.com/Silas-Hoerz/Modulab/issues" 
+        self.issue_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(repo_issues_url)))
+
+        # 3. GitHub Icon Button erstellen
         gh_icon_path = resource_path(os.path.join('resources', 'github.svg')) 
         
         self.github_btn = QToolButton(self)
         self.github_btn.setIcon(QIcon(gh_icon_path))
-        self.github_btn.setToolTip("Open GitHub Repository") # Tooltip beim Drüberfahren
-        self.github_btn.setAutoRaise(True) # Macht den Button flach (sieht aus wie ein Menü-Item)
+        self.github_btn.setToolTip("Open GitHub Repository")
+        self.github_btn.setAutoRaise(True)
         
-        # 3. URL festlegen und Klick-Event verbinden
-        repo_url = "https://github.com/Silas-Hoerz/Modulab" # <--- HIER DEINE URL EINTRAGEN
+        repo_url = "https://github.com/Silas-Hoerz/Modulab" 
         self.github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(repo_url)))
 
-        # 4. Button in die obere rechte Ecke der Menüleiste setzen
-        menu_bar.setCornerWidget(self.github_btn, Qt.TopRightCorner)
+        # 4. Beide Buttons in das Layout des Containers packen
+        corner_layout.addWidget(self.issue_btn)
+        corner_layout.addWidget(self.github_btn)
+
+        # 5. Den Container als EINES Widget oben rechts setzen
+        menu_bar.setCornerWidget(corner_widget, Qt.TopRightCorner)
+
+        
 
         # --- 7. Signale verbinden ---
         self.log_widget.request_profile_dialog.connect(self.show_profile_dialog)
