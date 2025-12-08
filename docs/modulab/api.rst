@@ -16,7 +16,7 @@ SMU Manager
 
 Device Manager
 --------------
-.. automodule:: modules.device.DeviceManager^^
+.. automodule:: modules.device.DeviceManager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -53,6 +53,24 @@ Profile Manager
 Spectrometer Manager
 --------------------
 .. automodule:: modules.spectrometer.SpectrometerManager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. _export-manager:
+
+Export Manager
+------------------
+.. automodule:: modules.export.ExportManager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. _waterfall-manager:
+
+Waterfall Manager
+------------------
+.. automodule:: modules.waterfall.WaterfallManager
    :members:
    :undoc-members:
    :show-inheritance:

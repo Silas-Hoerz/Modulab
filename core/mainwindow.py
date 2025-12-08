@@ -3,7 +3,7 @@
 import sys
 import os
 from PySide6.QtGui import QIcon, QDesktopServices
-from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog, QToolButton,QWidget, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog, QToolButton, QWidget, QHBoxLayout
 from PySide6.QtCore import Qt, Slot, QUrl
 
 from core.ui_form import Ui_MainWindow
@@ -17,22 +17,19 @@ from modules.spectrometer.SpectrometerWidget import SpectrometerWidget
 from modules.smu.SmuWidget import SmuWidget
 from modules.data.LivePlotWidget import LivePlotWidget
 from modules.data.Hdf5Viewer import Hdf5Viewer
+from modules.waterfall.WaterfallWidget import WaterfallWidget
 
 from modules.experiment.ExperimentWidget import ExperimentWidget
 
 def resource_path(relative_path):
-    """ Ermittelt den absoluten Pfad zu Ressourcen, funktioniert für Dev und PyInstaller One-File """
     try:
-        # PyInstaller erstellt einen temporären Ordner und speichert den Pfad in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 class MainWindow(QMainWindow):
     
-    # Die Signatur ist jetzt sauber: nur noch EIN 'context'-Argument
     def __init__(self, context: ApplicationContext, parent=None):
         
         super().__init__(parent)
@@ -42,151 +39,143 @@ class MainWindow(QMainWindow):
         icon_path = resource_path(os.path.join('resources', 'logo.ico'))
         self.setWindowIcon(QIcon(icon_path))
 
-        # Den Kontext für später speichern
         self.context = context
-        
-        # --- Log Widget ---
-        # Das LogWidget bekommt den gesamten Kontext
+
+        # 1. Grid-Verhalten aktivieren
+        self.setDockNestingEnabled(True)
+
+        # 2. Zentrales Widget verstecken (für lückenloses Grid)
+        self.central_placeholder = QWidget(self)
+        self.setCentralWidget(self.central_placeholder)
+        self.central_placeholder.hide() 
+
+        # 3. Widgets instanziieren
         self.log_widget = LogWidget(context=self.context, parent=self)
         self.ui.statusbar.addWidget(self.log_widget, 1)
 
-        # --- Profile Widget ---
-        # Das ProfileWidget bekommt den gesamten Kontext
         self.profile_widget_dialog = ProfileWidget(context=self.context, parent=self)
-    
-        # --- Device Widget ---
-        # Das DeviceWidget bekommt AUCH den gesamten Kontext
         self.device_widget_dialog = DeviceWidget(context=self.context, parent=self)
 
-        # --- Spectrometer Widget ---
         self.spectrometer_widget = SpectrometerWidget(context=self.context, parent=self)
-        self.spectrometer_dock = QDockWidget("Spectrometer", self)
-        self.spectrometer_dock.setObjectName("Spectrometer")
-        self.spectrometer_dock.setWidget(self.spectrometer_widget)
-
-        # --- Experiment Widget ---
         self.experiment_widget = ExperimentWidget(context=self.context, parent=self)
-        self.experiment_dock = QDockWidget("Experiments", self)
-        self.experiment_dock.setObjectName("Experiments")
-        self.experiment_dock.setWidget(self.experiment_widget)
-
-        # --- Smu Widget ---
         self.smu_widget = SmuWidget(context=self.context, parent=self)
-        self.smu_dock = QDockWidget("SMU", self)
-        self.smu_dock.setObjectName("SMU")
-        self.smu_dock.setWidget(self.smu_widget)
-
-        # --- LivePlot Widget ---
+        self.waterfall_widget = WaterfallWidget(context=self.context, parent=self)
         self.liveplot_widget = LivePlotWidget(context=self.context)
-        self.liveplot_dock = QDockWidget("Live Plot", self)
-        self.liveplot_dock.setObjectName("Live Plot")
+        self.hdf5viewer_widget = Hdf5Viewer() 
+        
+        # 4. Docks erstellen
+        self.experiment_dock = QDockWidget("Experiments", self)
+        self.experiment_dock.setWidget(self.experiment_widget)
+        self.experiment_dock.setObjectName("ExperimentDock")
+
+        self.spectrometer_dock = QDockWidget("Spectrometer", self)
+        self.spectrometer_dock.setWidget(self.spectrometer_widget)
+        self.spectrometer_dock.setObjectName("SpectrometerDock")
+
+        self.smu_dock = QDockWidget("SMU", self)
+        self.smu_dock.setWidget(self.smu_widget)
+        self.smu_dock.setObjectName("SmuDock")
+
+        self.waterfall_dock = QDockWidget("Waterfall (2D)", self)
+        self.waterfall_dock.setWidget(self.waterfall_widget)
+        self.waterfall_dock.setObjectName("WaterfallDock")
+
+        self.liveplot_dock = QDockWidget("Live Plot (XY)", self)
         self.liveplot_dock.setWidget(self.liveplot_widget)
+        self.liveplot_dock.setObjectName("LivePlotDock")
 
-        # Konfiguration: Gelöst (Floating) und Versteckt
-        self.liveplot_dock.setFloating(True) 
-        self.liveplot_dock.setVisible(False)
-
-        # Hdf5Viewer
-        self.hdf5viewer_widget = Hdf5Viewer() # Ggf. Klassenname anpassen
         self.hdf5viewer_dock = QDockWidget("Hdf5 Viewer", self)
-        self.hdf5viewer_dock.setObjectName("Hdf5 Viewer")
         self.hdf5viewer_dock.setWidget(self.hdf5viewer_widget)
-        
-        # Konfiguration: Gelöst (Floating) und Versteckt
-        self.hdf5viewer_dock.setFloating(True)
-        self.hdf5viewer_dock.setVisible(False)
+        self.hdf5viewer_dock.setObjectName("Hdf5ViewerDock")
 
-
-        # --- 5. Layout Zusammenbau ---
+        # --- 5. LAYOUT AUFBAU (Schritt für Schritt) ---
         
-        # Standard-Layout setzen
+        # Wichtig: Zuerst alle sichtbar machen, damit Qt die Geometrie berechnen kann
+        self.experiment_dock.setVisible(True)
+        self.spectrometer_dock.setVisible(True)
+        self.smu_dock.setVisible(True)
+        self.waterfall_dock.setVisible(True)
+        self.liveplot_dock.setVisible(True)
+        self.hdf5viewer_dock.setVisible(True)
+
+        # SCHRITT A: Den "Anker" setzen.
+        # Wir setzen Experiments als Startpunkt, der erst mal ALLES einnimmt.
         self.addDockWidget(Qt.LeftDockWidgetArea, self.experiment_dock)
+
+        # SCHRITT B: Oben und Unten trennen.
+        # Wir "schneiden" Waterfall vertikal unter Experiment.
+        # Jetzt: Oben=Exp, Unten=Waterfall
+        self.splitDockWidget(self.experiment_dock, self.waterfall_dock, Qt.Vertical)
+
+        # SCHRITT C: Die untere Reihe auffüllen (Waterfall | LivePlot | HDF5)
+        # Wir schneiden LivePlot horizontal rechts neben Waterfall.
+        self.splitDockWidget(self.waterfall_dock, self.liveplot_dock, Qt.Horizontal)
+        # Wir schneiden Hdf5 horizontal rechts neben LivePlot.
+        self.splitDockWidget(self.liveplot_dock, self.hdf5viewer_dock, Qt.Horizontal)
+
+        # SCHRITT D: Die obere Reihe in Links und Rechts teilen
+        # Wir schneiden SMU horizontal rechts neben Experiment.
+        # Da Experiment "über" der unteren Reihe liegt, bleibt SMU auch oben.
+        self.splitDockWidget(self.experiment_dock, self.smu_dock, Qt.Horizontal)
+
+        # SCHRITT E: Oben-Links vertikal teilen (Experiment / Spectrometer)
+        # Wir wollen, dass Experiment oben und Spectrometer direkt darunter ist.
         self.splitDockWidget(self.experiment_dock, self.spectrometer_dock, Qt.Vertical)
+
+        # SCHRITT F: Größenverhältnisse anpassen
+        # Da "Experiments" flach sein soll, ändern wir das Verhältnis zu Spectrometer.
+        # Wir sagen: Exp soll klein, Spectrometer groß sein.
+        self.resizeDocks([self.experiment_dock, self.spectrometer_dock], [100, 500], Qt.Vertical)
         
-        self.addDockWidget(Qt.RightDockWidgetArea, self.smu_dock)
+        # Wir geben der SMU rechts etwas mehr Breite, falls nötig
+        self.resizeDocks([self.spectrometer_dock, self.smu_dock], [400, 400], Qt.Horizontal)
 
-        # WICHTIG: Auch floating/hidden Docks müssen einmal hinzugefügt werden,
-        # damit 'toggleViewAction' weiß, zu welchem Fenster sie gehören.
-        # Wir fügen sie einfach "rechts" hinzu, aber da sie floating sind, schweben sie.
-        self.addDockWidget(Qt.RightDockWidgetArea, self.liveplot_dock)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.hdf5viewer_dock)
 
-        # --- 6. Menu Bar ---
+        # --- 6. Menu & Corner ---
         menu_bar = self.menuBar()
         self.view_menu = menu_bar.addMenu("View")
         
-        # Haupt-Docks
-        self.view_menu.addAction(self.experiment_dock.toggleViewAction())
-        self.view_menu.addAction(self.spectrometer_dock.toggleViewAction())
-        self.view_menu.addAction(self.smu_dock.toggleViewAction())
-        
-        self.view_menu.addSeparator()
-        
-        # Floating Docks (Klick darauf öffnet das Fenster)
-        self.view_menu.addAction(self.liveplot_dock.toggleViewAction())
-        self.view_menu.addAction(self.hdf5viewer_dock.toggleViewAction())
+        docks = [self.experiment_dock, self.spectrometer_dock, self.smu_dock, 
+                 self.waterfall_dock, self.liveplot_dock, self.hdf5viewer_dock]
+        for dock in docks:
+            self.view_menu.addAction(dock.toggleViewAction())
 
-
-        # --- GitHub & Issues Buttons ---
-        
-        # 1. Container Widget erstellen
         corner_widget = QWidget(self)
         corner_layout = QHBoxLayout(corner_widget)
-        
-        # Wichtig: Ränder entfernen, damit die Menüleiste nicht unnötig hoch wird
-        corner_layout.setContentsMargins(0, 0, 0, 0) 
-        corner_layout.setSpacing(5) # Kleiner Abstand zwischen den Buttons
+        corner_layout.setContentsMargins(0, 0, 0, 0)
+        corner_layout.setSpacing(5)
 
-        # 2. Issue Button erstellen
         self.issue_btn = QToolButton(self)
         self.issue_btn.setText("Issue?")
-        self.issue_btn.setToolTip("Open Issues Page")
         self.issue_btn.setAutoRaise(True)
-        
-        repo_issues_url = "https://github.com/Silas-Hoerz/Modulab/issues" 
-        self.issue_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(repo_issues_url)))
+        self.issue_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/Silas-Hoerz/Modulab/issues")))
 
-        # 3. GitHub Icon Button erstellen
         gh_icon_path = resource_path(os.path.join('resources', 'github.svg')) 
-        
         self.github_btn = QToolButton(self)
         self.github_btn.setIcon(QIcon(gh_icon_path))
-        self.github_btn.setToolTip("Open GitHub Repository")
         self.github_btn.setAutoRaise(True)
-        
-        repo_url = "https://github.com/Silas-Hoerz/Modulab" 
-        self.github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(repo_url)))
+        self.github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/Silas-Hoerz/Modulab")))
 
-        # 4. Beide Buttons in das Layout des Containers packen
         corner_layout.addWidget(self.issue_btn)
         corner_layout.addWidget(self.github_btn)
+        self.menuBar().setCornerWidget(corner_widget, Qt.TopRightCorner)
 
-        # 5. Den Container als EINES Widget oben rechts setzen
-        menu_bar.setCornerWidget(corner_widget, Qt.TopRightCorner)
-
-        
-
-        # --- 7. Signale verbinden ---
+        # --- 7. Signale ---
         self.log_widget.request_profile_dialog.connect(self.show_profile_dialog)
         self.log_widget.request_device_dialog.connect(self.show_device_dialog)
-        
         self.context.export_manager.export_finished.connect(self.on_export_finished_ui)
-   
-    
-
+        
+        self.setWindowState(Qt.WindowMaximized) 
 
     def show_profile_dialog(self):
-        result = self.profile_widget_dialog.exec()
+        self.profile_widget_dialog.exec()
 
     def show_device_dialog(self):
-        result = self.device_widget_dialog.exec()
-        pass
+        self.device_widget_dialog.exec()
 
+    @Slot(str)
     def on_export_finished_ui(self, filepath):
-        """
-        Öffnet den HDF5 Viewer automatisch als schwebendes Fenster, 
-        wenn das Experiment fertig ist.
-        """
         self.hdf5viewer_widget.load_file(filepath)
-        self.hdf5viewer_dock.setVisible(True) # Macht das Fenster sichtbar
-        self.hdf5viewer_dock.activateWindow() # Holt es in den Vordergrund
+        self.hdf5viewer_dock.setVisible(True)
+        self.hdf5viewer_dock.raise_()
+        self.hdf5viewer_dock.activateWindow()

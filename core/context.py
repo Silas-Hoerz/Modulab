@@ -7,7 +7,7 @@ from modules.profile.ProfileManager import ProfileManager
 from modules.device.DeviceManager import DeviceManager, Device
 from modules.experiment.ExperimentManager import ExperimentManager
 from modules.export.ExportManager import ExportManager
-
+from modules.waterfall.WaterfallManager import WaterfallManager
 from modules.spectrometer.SpectrometerManager import SpectrometerManager
 from modules.smu.SmuManager import SmuManager
 
@@ -45,10 +45,25 @@ class ApplicationContext:
             profile_manager=self.profile_manager
         )
 
-        # Wir übergeben einfach den ganzen Kontext (self).
+        self.waterfall_manager = WaterfallManager(
+             log_manager=self.log_manager, 
+            profile_manager=self.profile_manager
+        )
+
+        # übergeben einfach den ganzen Kontext (self).
         # Damit hat der ExperimentManager Zugriff auf ALLES, was hier definiert ist.
         self.experiment_manager = ExperimentManager(context=self)
     
-        
-        
+        self.connect_managers()
+
         self.log_manager.debug("ApplicationContext successfully initialized.")
+
+    def connect_managers(self):
+        """
+        Stellt die notwendigen Querverbindungen zwischen den Managern her,
+        die außerhalb der UI-Widgets funktionieren sollen.
+        """
+        self.spectrometer_manager.new_spectrum_acquired.connect(
+            self.waterfall_manager.add_spectrum
+        )
+        self.log_manager.debug("Connected SpectrometerManager -> WaterfallManager for spectrum acquisition.")

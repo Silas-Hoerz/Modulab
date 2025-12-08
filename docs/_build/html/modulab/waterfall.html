@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Experiment Manager - Modulab 0.1.6 documentation</title>
+        <title>Waterfall Manager - Modulab 0.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -219,7 +219,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/modulab/experiment_manager.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/modulab/waterfall.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -237,56 +237,128 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-modules.experiment.ExperimentManager">
-<span id="id1"></span><span id="experiment-manager"></span><h1>Experiment Manager<a class="headerlink" href="#module-modules.experiment.ExperimentManager" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.experiment.ExperimentManager.</span></span><span class="sig-name descname"><span class="pre">ExperimentManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager" title="Link to this definition">¶</a></dt>
+          <section id="waterfall-manager">
+<span id="id1"></span><h1>Waterfall Manager<a class="headerlink" href="#waterfall-manager" title="Link to this heading">¶</a></h1>
+<dl class="py class" id="module-modules.waterfall.WaterfallManager">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.waterfall.WaterfallManager.</span></span><span class="sig-name descname"><span class="pre">WaterfallManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Verantwortlich für das Laden und Ausführen von Experiment-Skripten in einem separaten Thread.</p>
+<p>Manager zu Verwaltung und Pufferung von Spektrendaten für die Waterfall-Darstellung.</p>
+<p>Diese Klasse emfängt Daten vom SpektrometerManager, speichert diese in einen Buffer und stellt Funktionen zum Exportieren der 3D-Daten und zu Steuerung des zugehörigen GUI Widgets bereit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz des Log-Managers.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von App-Einstellungen und User-Daten.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signale:</dt><dd><dl class="simple">
+<dt>waterfall_data_updated (list, object):</dt><dd><p>Wird ausgelöst, wenn ein neues Spektrum hinzugefügt wurde.
+Args: (list: Z-Indices [int], object: Datenmatrix [np.ndarray]).</p>
+</dd>
+<dt>waterfall_cleared ():</dt><dd><p>Wird ausgelöst, nachdem der interne Datenpuffer geleert wurde.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.search_experiments">
-<span class="sig-name descname"><span class="pre">search_experiments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.search_experiments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.search_experiments" title="Link to this definition">¶</a></dt>
-<dd><p>Sucht nach Python-Skripten im Arbeitsverzeichnis</p>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data">
+<span class="sig-name descname"><span class="pre">get_waterfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.get_waterfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt die gesamten akkumulierten 3D-Daten (Wellenlänge, Intensitäten, Z-Indices) zurück.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Wellenlängen, Intensitäts-Datenmatrix (2D), Z-Indices).
+Gibt leere Arrays/Listen zurück, wenn keine Daten vorhanden sind.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, list[int]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.start_experiment">
-<span class="sig-name descname"><span class="pre">start_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.start_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.start_experiment" title="Link to this definition">¶</a></dt>
-<dd><p>Startet die Ausführung des Experiments im eigenen Thread</p>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">
+<span class="sig-name descname"><span class="pre">add_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.add_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Fügt dem Waterfall-Puffer ein neues Spektrum hinzu.</p>
+<p>Diese Methode ist dazu gedacht, mit dem Signal
+<cite>SpectrometerManager.new_spectrum_acquired</cite> verbunden zu werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wavelengths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Wellenlängen des Spektrums (X-Achse).</p></li>
+<li><p><strong>intensities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Intensitäten des Spektrums (Y-Achse).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Das Wellenlängen-Array wird nur beim ersten Aufruf gespeichert.
+Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
+überprüft, um Konsistenz sicherzustellen.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">
-<span class="sig-name descname"><span class="pre">on_worker_finished</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.on_worker_finished"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished" title="Link to this definition">¶</a></dt>
-<dd><p>Aufrämen nach Beendigung des Experiments</p>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.clear_data">
+<span class="sig-name descname"><span class="pre">clear_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.clear_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data" title="Link to this definition">¶</a></dt>
+<dd><p>Löscht alle akkumulierten Spektrendaten und setzt den Zähler zurück.</p>
+<p>Löst das <cite>waterfall_cleared</cite>-Signal aus.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.on_worker_error">
-<span class="sig-name descname"><span class="pre">on_worker_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error_message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.on_worker_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error" title="Link to this definition">¶</a></dt>
-<dd><p>Fehlerbehandlung</p>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data">
+<span class="sig-name descname"><span class="pre">save_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data" title="Link to this definition">¶</a></dt>
+<dd><p>Exportiert die gesamten 3D-Rohdaten (Wellenlänge, Intensitäten, Z-Index) in eine Datei.</p>
+<p>Unterstützte Formate: ‘csv’, ‘npy’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Das gewünschte Exportformat (‘csv’ oder ‘npy’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei erfolgreichem Export, sonst False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Daten als CSV speichern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.csv&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Daten als NumPy Binärdatei (schnell):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.npy&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentWorker">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.experiment.ExperimentManager.</span></span><span class="sig-name descname"><span class="pre">ExperimentWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentWorker" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Führt das Experiment-Skript in einem eigenen Thread aus.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentWorker.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentWorker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentWorker.run" title="Link to this definition">¶</a></dt>
-<dd><p>Lädt und führt das Experiment-Skript aus.</p>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image">
+<span class="sig-name descname"><span class="pre">save_plot_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_plot_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image" title="Link to this definition">¶</a></dt>
+<dd><p>Speichert die aktuelle Matplotlib-Abbildung des Waterfalls in eine Bilddatei.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code>) – Die zu speichernde Matplotlib-Figure-Instanz.</p></li>
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei (unterstützt: .png, .svg, .pdf).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, sonst False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentStoppedException">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.experiment.ExperimentManager.</span></span><span class="sig-name descname"><span class="pre">ExperimentStoppedException</span></span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentStoppedException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentStoppedException" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
 </section>
@@ -328,19 +400,15 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Experiment Manager</a><ul>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager"><code class="docutils literal notranslate"><span class="pre">ExperimentManager</span></code></a><ul>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.search_experiments"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.search_experiments()</span></code></a></li>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.start_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.start_experiment()</span></code></a></li>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_finished()</span></code></a></li>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_error()</span></code></a></li>
+<li><a class="reference internal" href="#">Waterfall Manager</a><ul>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager"><code class="docutils literal notranslate"><span class="pre">WaterfallManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.get_waterfall_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.add_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.clear_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_raw_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_plot_image()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentWorker"><code class="docutils literal notranslate"><span class="pre">ExperimentWorker</span></code></a><ul>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentWorker.run"><code class="docutils literal notranslate"><span class="pre">ExperimentWorker.run()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentStoppedException"><code class="docutils literal notranslate"><span class="pre">ExperimentStoppedException</span></code></a></li>
 </ul>
 </li>
 </ul>

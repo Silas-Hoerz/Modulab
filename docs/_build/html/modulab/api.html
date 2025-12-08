@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>API-Referenz der Manager - Modulab 0.1.4 documentation</title>
+        <title>API-Referenz der Manager - Modulab 0.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.4 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.4 documentation</span>
+  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -199,6 +199,7 @@
 <li class="toctree-l1"><a class="reference internal" href="smu_manager.html">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="waterfall_manager.html">Waterfall Manager</a></li>
 </ul>
 
 </div>
@@ -548,8 +549,430 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 </dd></dl>
 
 </section>
-<section id="device-manager">
-<span id="id2"></span><h2>Device Manager<a class="headerlink" href="#device-manager" title="Link to this heading">¶</a></h2>
+<section id="module-modules.device.DeviceManager">
+<span id="id2"></span><span id="device-manager"></span><h2>Device Manager<a class="headerlink" href="#module-modules.device.DeviceManager" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.Device">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.device.DeviceManager.</span></span><span class="sig-name descname"><span class="pre">Device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dimensions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#Device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.Device" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Repräsentiert ein einzelnes physisches Device (z.B. Pixel, Teststruktur).</p>
+<p>Dies ist eine Daten-Container-Klasse, die alle geometrischen und
+metadatenbezogenen Eigenschaften eines Devices speichert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.Device.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dimensions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#Device.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.Device.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialisiert ein neues Device-Objekt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der eindeutige Name des Devices (z.B. “Pixel_R1C1”).</p></li>
+<li><p><strong>geometry</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Geometrie-Typ. Muss ‘rectangle’ oder ‘circle’ sein.</p></li>
+<li><p><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – Eine Liste von String-Tags zur Filterung.</p></li>
+<li><p><strong>**dimensions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – <p>Dynamische Schlüsselwortargumente für die Maße
+des Devices in Metern [m].</p>
+<ul>
+<li><p>Für ‘rectangle’: <cite>length</cite>, <cite>width</cite></p></li>
+<li><p>Für ‘circle’: <cite>radius</cite></p></li>
+<li><p>Optionale Cutouts: <cite>cutout_length</cite>, <cite>cutout_width</cite>,
+<cite>cutout_radius</cite>.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Ein rechteckiges Device (1mm x 0.5mm) erstellen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dev1</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pixel_1&quot;</span><span class="p">,</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;rectangle&quot;</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;OLED&quot;</span><span class="p">,</span> <span class="s2">&quot;Red&quot;</span><span class="p">],</span>
+    <span class="n">length</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mf">0.5e-3</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Ein kreisförmiges Device (Radius 80µm) mit einem kreisförmigen
+Ausschnitt (Radius 10µm) erstellen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dev2</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ring_Struktur&quot;</span><span class="p">,</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;circle&quot;</span><span class="p">,</span>
+    <span class="n">radius</span><span class="o">=</span><span class="mf">80e-6</span><span class="p">,</span>
+    <span class="n">cutout_radius</span><span class="o">=</span><span class="mf">10e-6</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.Device.get_area">
+<span class="sig-name descname"><span class="pre">get_area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#Device.get_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.Device.get_area" title="Link to this definition">¶</a></dt>
+<dd><p>Berechnet die aktive Fläche [m²] des Devices.</p>
+<p>Die Fläche wird als <cite>Hauptfläche - Ausschnittfläche</cite> berechnet,
+basierend auf der Geometrie und den <cite>dimensions</cite>.</p>
+<dl class="simple">
+<dt>Hinweis:</dt><dd><ul class="simple">
+<li><p>Wenn die Maße ungültig (nicht numerisch) sind, wird 0.0 zurückgegeben.</p></li>
+<li><p>Wenn die Ausschnittfläche größer als die Hauptfläche ist,
+wird 0.0 zurückgegeben.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Die berechnete aktive Fläche in Quadratmetern [m²].</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.Device.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#Device.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.Device.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Konvertiert das Device-Objekt in ein serialisierbares Diktat.</p>
+<p>Wird verwendet, um das Device im ProfileManager zu speichern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Eine Diktat-Repräsentation des Devices.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.Device.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#Device.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.Device.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Erstellt eine Device-Instanz aus einem Diktat.</p>
+<p>Wird verwendet, um das Device aus dem ProfileManager zu laden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Das Diktat, das <cite>to_dict()</cite> erzeugt hat.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Eine neue Instanz der Device-Klasse.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.Device.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#Device.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.Device.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Stellt eine formale String-Repräsentation des Objekts bereit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.device.DeviceManager.</span></span><span class="sig-name descname"><span class="pre">DeviceManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Erstellt, bearbeitet, löscht und verwaltet <cite>Device</cite>-Objekte.</p>
+<p>Diese Klasse dient als zentraler Service für die Verwaltung einer
+Liste von Devices. Sie ist verantwortlich für:
+- Das Erstellen, Bearbeiten und Löschen von <cite>Device</cite>-Objekten.
+- Das Speichern und Laden der Device-Liste im/aus dem <cite>ProfileManager</cite>.
+- Die Verwaltung, welches Device das “aktive” ist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz des LogManagers.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz des ProfileManagers.</p></li>
+<li><p><strong>parent</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code>, <em>optional</em>) – Ein übergeordnetes QObject für das Speichermanagement.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signale:</dt><dd><dl class="simple">
+<dt>device_loaded (str):</dt><dd><p>Wird ausgelöst, wenn ein Device mit <cite>set_active_device</cite>
+als aktiv ausgewählt wurde.
+Args: (str: Der Name des geladenen Devices).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.KEY_DEVICE_LIST">
+<span class="sig-name descname"><span class="pre">KEY_DEVICE_LIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'devices'</span></em><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.KEY_DEVICE_LIST" title="Link to this definition">¶</a></dt>
+<dd><p>Der Profil-Schlüssel zum Speichern der Liste aller Device-Diktate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.KEY_ACTIVE_DEVICE">
+<span class="sig-name descname"><span class="pre">KEY_ACTIVE_DEVICE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'active_device_name'</span></em><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.KEY_ACTIVE_DEVICE" title="Link to this definition">¶</a></dt>
+<dd><p>Der Profil-Schlüssel zum Speichern des Namens des aktiven Devices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.device_loaded">
+<span class="sig-name descname"><span class="pre">device_loaded</span></span><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.device_loaded" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialisiert den DeviceManager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>, <em>optional</em>) – Die LogManager-Instanz.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>, <em>optional</em>) – Die ProfileManager-Instanz.</p></li>
+<li><p><strong>parent</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code>, <em>optional</em>) – Ein übergeordnetes QObject.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.load_from_profile">
+<span class="sig-name descname"><span class="pre">load_from_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.load_from_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.load_from_profile" title="Link to this definition">¶</a></dt>
+<dd><p>Lädt die Device-Liste und das aktive Device aus dem geladenen Profil.</p>
+<p>Diese Funktion wird typischerweise aufgerufen, nachdem der
+ProfileManager das <cite>profile_loaded</cite>-Signal gesendet hat.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.create_device">
+<span class="sig-name descname"><span class="pre">create_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dimensions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.create_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.create_device" title="Link to this definition">¶</a></dt>
+<dd><p>Erstellt ein neues Device, fügt es zur Liste hinzu und speichert es im Profil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der eindeutige Name des Devices (z.B. “Pixel_R1C1”).</p></li>
+<li><p><strong>geometry</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Geometrie-Typ (‘rectangle’ oder ‘circle’).</p></li>
+<li><p><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – Eine Liste von String-Tags.</p></li>
+<li><p><strong>**dimensions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Dynamische Schlüsselwortargumente für die Maße
+des Devices in Metern [m] (z.B. <cite>length=1e-3</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False, wenn der Name bereits existiert.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Ein rechteckiges Device (1mm x 0.5mm) erstellen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Annahme: &#39;device_mgr&#39; ist eine Instanz von DeviceManager</span>
+<span class="n">device_mgr</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span>
+    <span class="s2">&quot;OLED_Pixel_1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rectangle&quot;</span><span class="p">,</span>
+    <span class="n">length</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mf">0.5e-3</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Ein kreisförmiges Device (Radius 80µm) mit Tags erstellen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">device_mgr</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span>
+    <span class="s2">&quot;Pin80&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;circle&quot;</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Test_Struktur&quot;</span><span class="p">,</span> <span class="s2">&quot;Rund&quot;</span><span class="p">],</span>
+    <span class="n">radius</span><span class="o">=</span><span class="mf">80e-6</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.delete_device">
+<span class="sig-name descname"><span class="pre">delete_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.delete_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.delete_device" title="Link to this definition">¶</a></dt>
+<dd><p>Löscht ein Device anhand seines Namens aus der Liste.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des zu löschenden Devices.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False, wenn das Device nicht gefunden wurde.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.edit_device">
+<span class="sig-name descname"><span class="pre">edit_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dimensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.edit_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.edit_device" title="Link to this definition">¶</a></dt>
+<dd><p>Bearbeitet ein existierendes Device.</p>
+<p>Der Name kann nicht geändert werden. Nur die übergebenen (nicht-None)
+Parameter werden aktualisiert.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des zu bearbeitenden Devices.</p></li>
+<li><p><strong>new_geometry</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Die neue Geometrie (‘rectangle’/’circle’).</p></li>
+<li><p><strong>new_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – Die <em>komplett neue</em> Liste von Tags.</p></li>
+<li><p><strong>new_dimensions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Das <em>komplett neue</em> Diktat
+für Dimensionen.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False, wenn das Device nicht gefunden wurde.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Die Dimensionen eines Devices ändern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">neue_maße</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="mf">1.1e-3</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mf">0.6e-3</span><span class="p">}</span>
+<span class="n">device_mgr</span><span class="o">.</span><span class="n">edit_device</span><span class="p">(</span><span class="s2">&quot;OLED_Pixel_1&quot;</span><span class="p">,</span> <span class="n">new_dimensions</span><span class="o">=</span><span class="n">neue_maße</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nur die Tags eines Devices ändern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">device_mgr</span><span class="o">.</span><span class="n">edit_device</span><span class="p">(</span><span class="s2">&quot;Pin80&quot;</span><span class="p">,</span> <span class="n">new_tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Test_Struktur&quot;</span><span class="p">,</span> <span class="s2">&quot;Wichtig&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.get_device_by_name">
+<span class="sig-name descname"><span class="pre">get_device_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.get_device_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.get_device_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Sucht und retourniert das Device-Objekt anhand des Namens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des gesuchten Devices.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Das <cite>Device</cite>-Objekt oder <cite>None</cite>, wenn nicht gefunden.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.list_device_names">
+<span class="sig-name descname"><span class="pre">list_device_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.list_device_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.list_device_names" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt eine Liste aller Device-Namen zurück.</p>
+<p>Nützlich für die Anzeige in einer Combobox oder Liste in der GUI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Eine Liste der Namen aller geladenen Devices.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Eine QComboBox mit allen Device-Namen füllen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">namen</span> <span class="o">=</span> <span class="n">device_mgr</span><span class="o">.</span><span class="n">list_device_names</span><span class="p">()</span>
+<span class="n">ui</span><span class="o">.</span><span class="n">device_combobox</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="n">ui</span><span class="o">.</span><span class="n">device_combobox</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">namen</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.set_active_device">
+<span class="sig-name descname"><span class="pre">set_active_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.set_active_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.set_active_device" title="Link to this definition">¶</a></dt>
+<dd><p>Setzt das aktive Device für die Anwendung.</p>
+<p>Löst das <cite>device_loaded</cite>-Signal aus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des Devices, das aktiv werden soll.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False, wenn das Device nicht gefunden wurde.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.get_active_device">
+<span class="sig-name descname"><span class="pre">get_active_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.get_active_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.get_active_device" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt das <em>gesamte Objekt</em> des aktiven Devices zurück.</p>
+<p>Die UI kann dann <cite>device.get_area()</cite> oder <cite>device.dimensions</cite>
+selbst aufrufen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Das aktuell aktive <cite>Device</cite>-Objekt oder <cite>None</cite>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Informationen des aktiven Devices abrufen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">aktives_gerät</span> <span class="o">=</span> <span class="n">device_mgr</span><span class="o">.</span><span class="n">get_active_device</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">aktives_gerät</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Aktuell: </span><span class="si">{</span><span class="n">aktives_gerät</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fläche: </span><span class="si">{</span><span class="n">aktives_gerät</span><span class="o">.</span><span class="n">get_area</span><span class="p">()</span><span class="si">}</span><span class="s2"> m²&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Kein Device aktiv.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.get_active_device_area">
+<span class="sig-name descname"><span class="pre">get_active_device_area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.get_active_device_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.get_active_device_area" title="Link to this definition">¶</a></dt>
+<dd><p>Bequemlichkeitsfunktion: Gibt die Fläche [m²] des aktiven Devices zurück.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Die Fläche in m² oder <cite>None</cite>, wenn kein Device aktiv ist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;DeviceManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=device_loaded(QString),</span> <span class="pre">parameters=QString</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.device.DeviceManager.DeviceManager.get_active_device_dimensions">
+<span class="sig-name descname"><span class="pre">get_active_device_dimensions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/device/DeviceManager.html#DeviceManager.get_active_device_dimensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.device.DeviceManager.DeviceManager.get_active_device_dimensions" title="Link to this definition">¶</a></dt>
+<dd><p>Bequemlichkeitsfunktion: Gibt die Maße des aktiven Devices zurück.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Das Dimensions-Wörterbuch (z.B. <cite>{‘length’: 0.1, …}</cite>)</dt><dd><p>oder ein leeres dict.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-modules.experiment.ExperimentManager">
 <span id="id3"></span><span id="experiment-manager"></span><h2>Experiment Manager<a class="headerlink" href="#module-modules.experiment.ExperimentManager" title="Link to this heading">¶</a></h2>
@@ -686,12 +1109,6 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 <dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentAPI">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.experiment.ExperimentManager.</span></span><span class="sig-name descname"><span class="pre">ExperimentAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentAPI" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentAPI.log_message">
-<span class="sig-name descname"><span class="pre">log_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentAPI.log_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentAPI.log_message" title="Link to this definition">¶</a></dt>
-<dd><p>Ermöglicht dem Skript, in das Haupt-Log zu schreiben.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py exception">
@@ -1645,6 +2062,431 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 </dd></dl>
 
 </section>
+<section id="module-modules.export.ExportManager">
+<span id="id7"></span><span id="export-manager"></span><h2>Export Manager<a class="headerlink" href="#module-modules.export.ExportManager" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">ExportManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Verwaltet den Daten-Export in HDF5-Dateien und fungiert als Datenquelle für Live-Plots.</p>
+<p>Dieser Manager abstrahiert die Komplexität von <cite>h5py</cite>. Er implementiert ein
+Zeilen-basiertes Schreibmodell: Daten werden mit <cite>add()</cite> gesammelt (gestaged)
+und mit <cite>commit()</cite> synchron in die HDF5-Datei geschrieben und gleichzeitig
+an die GUI (z.B. PlotManager) gesendet.</p>
+<dl class="simple">
+<dt>Funktionsweise:</dt><dd><ol class="arabic simple">
+<li><p><strong>Setup:</strong> Zielordner wählen (<cite>select_directory_dialog</cite>).</p></li>
+<li><p><strong>Start:</strong> Neue Datei/Gruppe erstellen (<cite>new</cite>).</p></li>
+<li><p><strong>Metadaten:</strong> Statische Infos speichern (<cite>add_static</cite>).</p></li>
+<li><dl class="simple">
+<dt><strong>Loop:</strong></dt><dd><ul class="simple">
+<li><p>Werte hinzufügen (<cite>add(‘Voltage’, 5.0)</cite>).</p></li>
+<li><p>Werte hinzufügen (<cite>add(‘Current’, 0.001)</cite>).</p></li>
+<li><p>Schreiben &amp; Senden (<cite>commit()</cite>).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Ende:</strong> Datei schließen (<cite>stop</cite>).</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Speichern des letzten Pfades.</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Signale:</dt><dd><dl>
+<dt>data_committed (dict):</dt><dd><p>Wird bei jedem <cite>commit()</cite> ausgelöst. Enthält die neuen Datenpunkte für
+Live-Plots.</p>
+<p><strong>Payload-Struktur:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Voltage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;Current&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">1.2e-3</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;Spectrum&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;cnt&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt>export_started (str):</dt><dd><p>Wird ausgelöst, wenn eine neue Datei erstellt wurde.
+Args: (str: Voller Pfad zur Datei).</p>
+</dd>
+<dt>export_finished (str):</dt><dd><p>Wird ausgelöst, wenn der Export beendet wurde.
+Args: (str: Dateiname).</p>
+</dd>
+<dt>export_error (str):</dt><dd><p>Wird bei Schreib-/IO-Fehlern ausgelöst.
+Args: (str: Fehlermeldung).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.data_committed">
+<span class="sig-name descname"><span class="pre">data_committed</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.data_committed" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.export_started">
+<span class="sig-name descname"><span class="pre">export_started</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.export_started" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.export_finished">
+<span class="sig-name descname"><span class="pre">export_finished</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.export_finished" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.export_error">
+<span class="sig-name descname"><span class="pre">export_error</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.export_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialisiert den ExportManager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.select_directory_dialog">
+<span class="sig-name descname"><span class="pre">select_directory_dialog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.select_directory_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.select_directory_dialog" title="Link to this definition">¶</a></dt>
+<dd><p>Öffnet einen System-Dialog zur Auswahl des Speicherordners.</p>
+<p><strong>Thread-Safety:</strong>
+Diese Funktion erkennt automatisch, ob sie aus einem Worker-Thread (Experiment)
+oder dem Haupt-Thread aufgerufen wird. Wenn sie aus einem Worker-Thread kommt,
+pausiert sie diesen und führt den GUI-Dialog sicher im Haupt-Thread aus.</p>
+<p>Der gewählte Pfad wird automatisch im Profil gespeichert (<cite>Export_LastDir</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Der ausgewählte (oder vorherige) Pfad.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Button-Click Handler in der GUI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_btn_browse_clicked</span><span class="p">():</span>
+    <span class="n">new_path</span> <span class="o">=</span> <span class="n">export_mgr</span><span class="o">.</span><span class="n">select_directory_dialog</span><span class="p">()</span>
+    <span class="n">ui</span><span class="o">.</span><span class="n">line_edit_path</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.set_export_directory">
+<span class="sig-name descname"><span class="pre">set_export_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.set_export_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.set_export_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Setzt den Export-Pfad manuell und speichert ihn im Profil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der absolute Pfad zum Zielordner.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.get_export_directory">
+<span class="sig-name descname"><span class="pre">get_export_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.get_export_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.get_export_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Liest den aktuell konfigurierten Export-Pfad aus dem Profil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Der Pfad oder das Benutzer-Home-Verzeichnis als Fallback.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.new">
+<span class="sig-name descname"><span class="pre">new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Measurement'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.new" title="Link to this definition">¶</a></dt>
+<dd><p>Erstellt eine neue HDF5-Datei und bereitet die Messung vor.</p>
+<p>Der Dateiname wird automatisch mit einem Zeitstempel versehen
+(<cite>Name_YYYYMMDD_HHMMSS.h5</cite>). Schließt eine evtl. offene Datei zuvor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename_base</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Basisname der Datei (z.B. “Experiment_A”).</p></li>
+<li><p><strong>dataset_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name der HDF5-Gruppe für die Daten
+(Standard: “Measurement”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False bei IO-Fehlern.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Eine neue Messdatei starten:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">export_mgr</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;OLED_IV_Curve&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Datei erstellt, bereit für Daten.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add" title="Link to this definition">¶</a></dt>
+<dd><p>Fügt dynamische Messdaten zum internen Puffer hinzu.</p>
+<p>Diese Daten werden <strong>noch nicht</strong> auf die Festplatte geschrieben.
+Erst der Aufruf von <cite>commit()</cite> schreibt alle mit <cite>add()</cite> gesammelten
+Werte als eine Zeile in die HDF5-Datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des Datasets (Spaltenname), z.B. “Voltage”.</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span> <span class="pre">|</span> <span class="pre">numpy.ndarray</span></code>) – Der Messwert (Skalar) oder ein Array
+(z.B. ganzes Spektrum).</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Die physikalische Einheit (z.B. “V”, “nm”),
+wird als HDF5-Attribut gespeichert.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Werte für den nächsten Zeitschritt sammeln:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skalar hinzufügen</span>
+<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Current&quot;</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+
+<span class="c1"># Array hinzufügen (z.B. Spektrum)</span>
+<span class="n">spectrum_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Spectrum&quot;</span><span class="p">,</span> <span class="n">spectrum_data</span><span class="p">,</span> <span class="s2">&quot;counts&quot;</span><span class="p">)</span>
+
+<span class="c1"># WICHTIG: Jetzt commit aufrufen!</span>
+<span class="n">export_mgr</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_static">
+<span class="sig-name descname"><span class="pre">add_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_static"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_static" title="Link to this definition">¶</a></dt>
+<dd><p>Speichert einmalige, statische Daten (Metadaten/Konstanten).</p>
+<p>Im Gegensatz zu <cite>add()</cite> wird hier <strong>sofort</strong> geschrieben.
+Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name des Datasets.</p></li>
+<li><p><strong>data</strong> – Der Wert (String, Zahl, Array).</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Einheit.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Geräte-Infos speichern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">export_mgr</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="s2">&quot;Max Mustermann&quot;</span><span class="p">)</span>
+<span class="n">export_mgr</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;IntegrationTime&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_group_attribute">
+<span class="sig-name descname"><span class="pre">add_group_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_group_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_group_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Fügt Metadaten als Attribute zur HDF5-Hauptgruppe hinzu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Attribut-Name.</p></li>
+<li><p><strong>value</strong> – Attribut-Wert.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.commit">
+<span class="sig-name descname"><span class="pre">commit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.commit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.commit" title="Link to this definition">¶</a></dt>
+<dd><p>Schließt den aktuellen Datenpunkt ab (Synchronisation).</p>
+<p>Führt folgende Schritte aus:
+1. Erstellt HDF5-Datasets für neue Spalten (falls nötig).
+2. Erweitert alle Datasets um eine Zeile.
+3. Schreibt die gepufferten Werte aus <cite>add()</cite> in die neue Zeile.
+4. Füllt fehlende Werte (falls <cite>add</cite> für eine Spalte vergessen wurde) mit NaN.
+5. Sendet das <cite>data_committed</cite>-Signal für Live-Plots.
+6. Leert den Puffer für den nächsten Punkt.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Am Ende einer Messschleife aufrufen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">measuring</span><span class="p">:</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">instrument</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Reading&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+    <span class="n">export_mgr</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> <span class="c1"># Schreibt auf Disk &amp; updated Plot</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Beendet den Export und schließt die HDF5-Datei sauber.</p>
+<p>Sendet das <cite>export_finished</cite>-Signal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;ExportManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=data_committed(QVariantMap),</span> <span class="pre">parameters=QVariantMap</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_started(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_finished(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_error(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=_show_directory_dialog_slot()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.export.ExportManager.ExportManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.waterfall.WaterfallManager">
+<span id="id8"></span><span id="waterfall-manager"></span><h2>Waterfall Manager<a class="headerlink" href="#module-modules.waterfall.WaterfallManager" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.waterfall.WaterfallManager.</span></span><span class="sig-name descname"><span class="pre">WaterfallManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Manager zu Verwaltung und Pufferung von Spektrendaten für die Waterfall-Darstellung.</p>
+<p>Diese Klasse emfängt Daten vom SpektrometerManager, speichert diese in einen Buffer und stellt Funktionen zum Exportieren der 3D-Daten und zu Steuerung des zugehörigen GUI Widgets bereit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz des Log-Managers.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von App-Einstellungen und User-Daten.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signale:</dt><dd><dl class="simple">
+<dt>waterfall_data_updated (list, object):</dt><dd><p>Wird ausgelöst, wenn ein neues Spektrum hinzugefügt wurde.
+Args: (list: Z-Indices [int], object: Datenmatrix [np.ndarray]).</p>
+</dd>
+<dt>waterfall_cleared ():</dt><dd><p>Wird ausgelöst, nachdem der interne Datenpuffer geleert wurde.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated">
+<span class="sig-name descname"><span class="pre">waterfall_data_updated</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.waterfall_cleared">
+<span class="sig-name descname"><span class="pre">waterfall_cleared</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_cleared" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data">
+<span class="sig-name descname"><span class="pre">get_waterfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.get_waterfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt die gesamten akkumulierten 3D-Daten (Wellenlänge, Intensitäten, Z-Indices) zurück.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Wellenlängen, Intensitäts-Datenmatrix (2D), Z-Indices).
+Gibt leere Arrays/Listen zurück, wenn keine Daten vorhanden sind.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, list[int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">
+<span class="sig-name descname"><span class="pre">add_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.add_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Fügt dem Waterfall-Puffer ein neues Spektrum hinzu.</p>
+<p>Diese Methode ist dazu gedacht, mit dem Signal
+<cite>SpectrometerManager.new_spectrum_acquired</cite> verbunden zu werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wavelengths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Wellenlängen des Spektrums (X-Achse).</p></li>
+<li><p><strong>intensities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Intensitäten des Spektrums (Y-Achse).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Das Wellenlängen-Array wird nur beim ersten Aufruf gespeichert.
+Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
+überprüft, um Konsistenz sicherzustellen.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.clear_data">
+<span class="sig-name descname"><span class="pre">clear_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.clear_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data" title="Link to this definition">¶</a></dt>
+<dd><p>Löscht alle akkumulierten Spektrendaten und setzt den Zähler zurück.</p>
+<p>Löst das <cite>waterfall_cleared</cite>-Signal aus.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data">
+<span class="sig-name descname"><span class="pre">save_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data" title="Link to this definition">¶</a></dt>
+<dd><p>Exportiert die gesamten 3D-Rohdaten (Wellenlänge, Intensitäten, Z-Index) in eine Datei.</p>
+<p>Unterstützte Formate: ‘csv’, ‘npy’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Das gewünschte Exportformat (‘csv’ oder ‘npy’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei erfolgreichem Export, sonst False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p>Daten als CSV speichern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.csv&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Daten als NumPy Binärdatei (schnell):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.npy&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image">
+<span class="sig-name descname"><span class="pre">save_plot_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_plot_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image" title="Link to this definition">¶</a></dt>
+<dd><p>Speichert die aktuelle Matplotlib-Abbildung des Waterfalls in eine Bilddatei.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code>) – Die zu speichernde Matplotlib-Figure-Instanz.</p></li>
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei (unterstützt: .png, .svg, .pdf).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, sonst False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;WaterfallManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_data_updated(QVariantList,PyObject),</span> <span class="pre">parameters=QVariantList,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_cleared()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Slot,</span> <span class="pre">signature=add_spectrum(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=clear_data()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
         </article>
@@ -1706,7 +2548,35 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#device-manager">Device Manager</a></li>
+<li><a class="reference internal" href="#module-modules.device.DeviceManager">Device Manager</a><ul>
+<li><a class="reference internal" href="#modules.device.DeviceManager.Device"><code class="docutils literal notranslate"><span class="pre">Device</span></code></a><ul>
+<li><a class="reference internal" href="#modules.device.DeviceManager.Device.__init__"><code class="docutils literal notranslate"><span class="pre">Device.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.Device.get_area"><code class="docutils literal notranslate"><span class="pre">Device.get_area()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.Device.to_dict"><code class="docutils literal notranslate"><span class="pre">Device.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.Device.from_dict"><code class="docutils literal notranslate"><span class="pre">Device.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.Device.__repr__"><code class="docutils literal notranslate"><span class="pre">Device.__repr__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager"><code class="docutils literal notranslate"><span class="pre">DeviceManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.KEY_DEVICE_LIST"><code class="docutils literal notranslate"><span class="pre">DeviceManager.KEY_DEVICE_LIST</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.KEY_ACTIVE_DEVICE"><code class="docutils literal notranslate"><span class="pre">DeviceManager.KEY_ACTIVE_DEVICE</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.device_loaded"><code class="docutils literal notranslate"><span class="pre">DeviceManager.device_loaded</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.__init__"><code class="docutils literal notranslate"><span class="pre">DeviceManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.load_from_profile"><code class="docutils literal notranslate"><span class="pre">DeviceManager.load_from_profile()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.create_device"><code class="docutils literal notranslate"><span class="pre">DeviceManager.create_device()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.delete_device"><code class="docutils literal notranslate"><span class="pre">DeviceManager.delete_device()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.edit_device"><code class="docutils literal notranslate"><span class="pre">DeviceManager.edit_device()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.get_device_by_name"><code class="docutils literal notranslate"><span class="pre">DeviceManager.get_device_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.list_device_names"><code class="docutils literal notranslate"><span class="pre">DeviceManager.list_device_names()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.set_active_device"><code class="docutils literal notranslate"><span class="pre">DeviceManager.set_active_device()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.get_active_device"><code class="docutils literal notranslate"><span class="pre">DeviceManager.get_active_device()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.get_active_device_area"><code class="docutils literal notranslate"><span class="pre">DeviceManager.get_active_device_area()</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">DeviceManager.staticMetaObject</span></code></a></li>
+<li><a class="reference internal" href="#modules.device.DeviceManager.DeviceManager.get_active_device_dimensions"><code class="docutils literal notranslate"><span class="pre">DeviceManager.get_active_device_dimensions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-modules.experiment.ExperimentManager">Experiment Manager</a><ul>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager"><code class="docutils literal notranslate"><span class="pre">ExperimentManager</span></code></a><ul>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.experiments_found"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.experiments_found</span></code></a></li>
@@ -1736,10 +2606,7 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentWorker.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">ExperimentWorker.staticMetaObject</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentAPI"><code class="docutils literal notranslate"><span class="pre">ExperimentAPI</span></code></a><ul>
-<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentAPI.log_message"><code class="docutils literal notranslate"><span class="pre">ExperimentAPI.log_message()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentAPI"><code class="docutils literal notranslate"><span class="pre">ExperimentAPI</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentStoppedException"><code class="docutils literal notranslate"><span class="pre">ExperimentStoppedException</span></code></a></li>
 </ul>
 </li>
@@ -1807,6 +2674,41 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-modules.export.ExportManager">Export Manager</a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager"><code class="docutils literal notranslate"><span class="pre">ExportManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.data_committed"><code class="docutils literal notranslate"><span class="pre">ExportManager.data_committed</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.export_started"><code class="docutils literal notranslate"><span class="pre">ExportManager.export_started</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.export_finished"><code class="docutils literal notranslate"><span class="pre">ExportManager.export_finished</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.export_error"><code class="docutils literal notranslate"><span class="pre">ExportManager.export_error</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.__init__"><code class="docutils literal notranslate"><span class="pre">ExportManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.select_directory_dialog"><code class="docutils literal notranslate"><span class="pre">ExportManager.select_directory_dialog()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.set_export_directory"><code class="docutils literal notranslate"><span class="pre">ExportManager.set_export_directory()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.get_export_directory"><code class="docutils literal notranslate"><span class="pre">ExportManager.get_export_directory()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.new"><code class="docutils literal notranslate"><span class="pre">ExportManager.new()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add"><code class="docutils literal notranslate"><span class="pre">ExportManager.add()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_static"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_static()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_group_attribute"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_group_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.commit"><code class="docutils literal notranslate"><span class="pre">ExportManager.commit()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.stop"><code class="docutils literal notranslate"><span class="pre">ExportManager.stop()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">ExportManager.staticMetaObject</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-modules.waterfall.WaterfallManager">Waterfall Manager</a><ul>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager"><code class="docutils literal notranslate"><span class="pre">WaterfallManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.waterfall_data_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_cleared"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.waterfall_cleared</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.get_waterfall_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.add_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.clear_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_raw_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_plot_image()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.staticMetaObject</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1818,7 +2720,7 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=fd825880"></script>
+</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

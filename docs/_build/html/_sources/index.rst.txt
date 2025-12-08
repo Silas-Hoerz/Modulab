@@ -16,7 +16,8 @@ MODULAB documentation
    modulab/smu_manager
    modulab/spectrometer_manager
    modulab/export_manager
-  
+   modulab/waterfall_manager
+   
 .. modulab/experiment_manager
    
    

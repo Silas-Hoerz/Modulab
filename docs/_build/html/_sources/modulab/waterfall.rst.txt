@@ -1,0 +1,7 @@
+.. _waterfall-manager:
+
+Waterfall Manager
+-----------
+.. automodule:: modules.waterfall.WaterfallManager
+   :members:
+   :show-inheritance:
