@@ -103,16 +103,6 @@ class SpectrometerWidget(QWidget, Ui_Form):
     def __setup_initial_values(self):
         """Lädt gespeicherte Werte und setzt Styles."""
         
-        # Stylesheet für den Start-Button setzen (Active State)
-        self.pushButton_acquireContinuous.setStyleSheet("""
-            QPushButton:checked {
-                background-color: #00e5ff; 
-                color: black;
-                border: 1px solid #00e5ff;
-                font-weight: bold;
-            }
-        """)
-
         # GUI Status updaten (Disconnected)
         self.on_connection_status_changed(False, "")
 
