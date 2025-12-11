@@ -3,7 +3,11 @@ import time
 
 def run_experiment(api):
     """
-    Kompletter IVL-Sweep mit Datenspeicherung und Live-Plotting.
+    IVL-Sweep mit Datenspeicherung.
+    
+    Demonstriert:
+    1. Automatische Dark-Correction des Managers.
+    2. Speicherung der Rohdaten und Korrekturdaten zur Validierung.
     """
     # Manager Referenzen holen
     log = api.log_mgr
@@ -18,27 +22,42 @@ def run_experiment(api):
     steps = 20
     channel = 'a'
     
-    # Sicherstellen, dass Hardware verbunden ist
+    # Hardware Checks
     if not smu.is_connected():
         log.warning("SMU nicht verbunden! Nutze DUMMY.")
         smu.connect("DUMMY")
-        
-    # --- 2. Export vorbereiten ---
-    # Dialog um Ordner zu wählen (oder festen Pfad nutzen) 
-    # save_path = export.select_directory_dialog() 
     
+    # --- 2. Export vorbereiten ---
     # Neue HDF5 Datei anlegen
-    if not export.new("OLED_IVL_Sweep", dataset_name="IVL_Data"):
+    if not export.new("IVL_Sweep_Valid", dataset_name="IVL_Data"):
         log.error("Konnte Export-Datei nicht erstellen.")
         return
 
-    # Statische Metadaten speichern (einmalig) 
+    # 2a. Statische Metadaten (User, Device, etc.)
     export.add_static("Operator", "User")
     
     active_dev = dev_mgr.get_active_device()
     if active_dev:
         export.add_static("Device_Name", active_dev.name)
         export.add_static("Device_Area", active_dev.get_area(), "m^2")
+
+    # 2b. DARK SPECTRUM REFERENZ SPEICHERN ("Anhang")
+    # Da sich das Dark Spectrum während des Sweeps nicht ändert, speichern wir es 
+    # einmalig als statische Referenz. Das spart Speicherplatz und gilt als "Anhang".
+    
+    # Info: Neue Dark-Messung kann im Manager via GUI oder spec.acquire_dark_spectrum(n) gemacht werden.
+    if spec.is_connected():
+        dark_avg = spec.get_dark_spectrum_average()
+        
+        if dark_avg is not None:
+            # Wir speichern das Referenz-Dunkelspektrum, das aktuell für die Korrektur genutzt wird
+            export.add_static("Appendix_Dark_Spectrum_Avg", dark_avg, "counts")
+            log.info("Dunkelspektrum-Referenz wurde in HDF5 gespeichert.")
+        else:
+            log.warning("Kein Dunkelspektrum im Manager hinterlegt (Korrektur ist inaktiv oder leer).")
+            # Wir können optional vermerken, dass ohne Dark Correction gemessen wurde
+            export.add_static("Info_Dark_Correction", "None")
+
 
     # --- 3. Messung vorbereiten ---
     smu.reset_channel(channel)
@@ -54,7 +73,7 @@ def run_experiment(api):
         # --- 4. Messschleife ---
         for i, v_target in enumerate(voltages):
             
-            # Prüfen ob User Pause/Stop gedrückt hat
+            # Abbruchbedingungen
             if api._is_stopped: 
                 log.info("Experiment vom User gestoppt.")
                 break
@@ -64,37 +83,46 @@ def run_experiment(api):
             # A) SMU setzen & messen
             smu.set_source_level(channel, v_target)
             time.sleep(0.1) # Warten auf Stabilität
-            
             val_current, val_voltage = smu.measure_iv(channel) or (0, 0)
             
-            # B) Spektrometer messen (nur wenn "an", z.B. Spannung > 2.5V)
-            # Hier simulieren wir ein Spektrum, falls kein Gerät da ist
-            spectrum_int = np.zeros(100)
+            # B) Spektrometer messen
+            # Wir holen uns hier BEIDE Varianten für volle Nachvollziehbarkeit
+            spectrum_corr = np.zeros(10) # Fallback
+            spectrum_raw = np.zeros(10)  # Fallback
+            
             if spec.is_connected():
-                 _, spectrum_int = spec.acquire_spectrum()
-                 if spectrum_int is None: spectrum_int = np.zeros(100)
+                # 1. Das korrigierte Spektrum (Standard für Plots)
+                # Zieht automatisch das gespeicherte Dark Spectrum ab, falls vorhanden.
+                _, spectrum_corr = spec.acquire_spectrum()
+                
+                # 2. Das Roh-Spektrum (Zur Überprüfung / Nachrechnung)
+                # Holt die Daten direkt vom Sensor ohne Abzug.
+                _, spectrum_raw = spec.acquire_spectrum_raw()
+                
+                # Safety checks falls Fehler auftraten
+                if spectrum_corr is None: spectrum_corr = np.zeros(10)
+                if spectrum_raw is None: spectrum_raw = np.zeros(10)
 
-            # C) Daten für Export stagen (fügt sie zum Puffer hinzu) 
-            # Diese Keys ('Voltage', 'Current') werden im LivePlotWidget als Titel genutzt
+
+            # C) Daten stagen
             export.add("Voltage", val_voltage, "V")
             export.add("Current", val_current, "A")
             export.add("Set_Voltage", v_target, "V")
             
-            # Spektrum als Array speichern
-            export.add("Spectrum", spectrum_int, "counts")
+            # Spektren speichern
+            export.add("Spectrum", spectrum_corr, "counts (corrected)")
+            export.add("Spectrum_Raw", spectrum_raw, "counts (raw)")
             
-            # Stromdichte berechnen (wenn Device vorhanden)
+            # Stromdichte
             if active_dev and active_dev.get_area() > 0:
-                j = val_current / active_dev.get_area() # A/m^2
-                j_mA_cm2 = j * 0.1 # Umrechnung
-                export.add("J", j_mA_cm2, "mA/cm^2")
+                j = val_current / active_dev.get_area()
+                export.add("J", j * 0.1, "mA/cm^2")
 
-            # D) Commit: Schreibt Daten in Datei & sendet sie an Plot
+            # D) Commit: Schreibt Zeile in HDF5
             export.commit()
 
-            # Progress update
-            progress_pct = int((i + 1) / steps * 100)
-            log.info(f"Step {i+1}/{steps}: {val_voltage:.2f}V -> {val_current:.2e}A")
+            # Log
+            log.info(f"Step {i+1}/{steps}: {val_voltage:.2f}V")
 
     except Exception as e:
         log.error(f"Fehler im Ablauf: {e}")
@@ -103,7 +131,5 @@ def run_experiment(api):
         # --- 5. Abschluss ---
         smu.set_source_level(channel, 0)
         smu.set_output_state(channel, False)
-        
-        # Datei schließen 
         export.stop()
         log.info("Messung beendet.")
