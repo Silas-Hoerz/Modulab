@@ -34,7 +34,7 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")
+    #app.setStyle("Fusion")
 
 
     image_path = resource_path("resources/logo.png")
