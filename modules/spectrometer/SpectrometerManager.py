@@ -164,7 +164,8 @@ class SpectrometerManager(QObject):
             
             active_name = self.get_activeDeviceName()
             self.LastDevice = self.spectrometer.serial_number
-            self.profile_mgr.write("Spec_LastDevice", self.LastDevice)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write("Spec_LastDevice", self.LastDevice)
             self.log_mgr.info(f"Successfully connected to {active_name}")
             
             # Wende Einstellungen an
@@ -251,7 +252,8 @@ class SpectrometerManager(QObject):
         """
         if self.correct_dark_counts != enable:
             self.correct_dark_counts = enable
-            self.profile_mgr.write("Spec_correct_dark_counts", enable)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write("Spec_correct_dark_counts", enable)
             self.log_mgr.info(f"Dark count correction set to: {enable}")
             self._invalidate_dark_spectrum()
     
@@ -273,7 +275,8 @@ class SpectrometerManager(QObject):
         """
         if self.correct_non_linearity != enable:
             self.correct_non_linearity = enable
-            self.profile_mgr.write("Spec_non_linearity", enable)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write("Spec_non_linearity", enable)
             self.log_mgr.info(f"Non-linearity correction set to: {enable}")
             self._invalidate_dark_spectrum()
     
@@ -305,7 +308,8 @@ class SpectrometerManager(QObject):
         if not self.is_connected():
             self.log_mgr.info(f"Storing integration time ({time_us} us) for next connect.")
             self.current_integration_time_us = time_us
-            self.profile_mgr.write("Spec_integration_time_us", time_us)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write("Spec_integration_time_us", time_us)
             self._invalidate_dark_spectrum()
             return True
         
@@ -322,7 +326,8 @@ class SpectrometerManager(QObject):
             if self.current_integration_time_us != clamped_us:
                 self.spectrometer.integration_time_micros(clamped_us)
                 self.current_integration_time_us = clamped_us
-                self.profile_mgr.write("Spec_integration_time_us", clamped_us)
+                if self.profile_mgr.get_current_profile_name():
+                    self.profile_mgr.write("Spec_integration_time_us", clamped_us)
                 self.log_mgr.info(f"Integration time set to {self.current_integration_time_us} us.")
                 self._invalidate_dark_spectrum()
             return True
@@ -380,7 +385,8 @@ class SpectrometerManager(QObject):
         KORRIGIERT: Greift jetzt korrekt auf das erste Element der Feature-Liste zu.
         """
         self.current_temperature_C = temperature_degC
-        self.profile_mgr.write("Spec_temperature_C", temperature_degC)
+        if self.profile_mgr.get_current_profile_name():
+            self.profile_mgr.write("Spec_temperature_C", temperature_degC)
         self._invalidate_dark_spectrum()
         
         if self.is_connected():

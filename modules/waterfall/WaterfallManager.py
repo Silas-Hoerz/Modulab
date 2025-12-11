@@ -60,7 +60,8 @@ class WaterfallManager(QObject):
             self.history_buffer = new_deque
             
             # Speichern
-            self.profile_mgr.write("Waterfall_MaxHistory", limit)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write("Waterfall_MaxHistory", limit)
 
     @Slot()
     def clear_data(self):

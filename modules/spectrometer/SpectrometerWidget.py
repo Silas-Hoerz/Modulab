@@ -112,16 +112,6 @@ class SpectrometerWidget(QWidget, Ui_Form):
             }
         """)
 
-        # Werte vom Manager holen (erst wenn Profil geladen ist, sonst Defaults)
-        try:
-            self.spinBox_integrationTime.setValue(self.spec_mgr.get_integrationtime())
-            self.checkBox_correctDarkCounts.setChecked(self.spec_mgr.get_correction_dark_count())
-            self.checkBox_correctNonLinearity.setChecked(self.spec_mgr.get_correction_non_linearity())
-            self.doubleSpinBox.setValue(self.spec_mgr.get_temperature()) 
-        except Exception as e:
-            # Fehler ignorieren beim Start (passiert, wenn Profil noch nicht da ist)
-            pass
-
         # GUI Status updaten (Disconnected)
         self.on_connection_status_changed(False, "")
 
@@ -178,13 +168,27 @@ class SpectrometerWidget(QWidget, Ui_Form):
     @Slot(str)
     def on_profile_loaded(self, profile_name):
         """Wird aufgerufen, wenn Profil geladen wurde -> UI aktualisieren."""
+        self.log_mgr.info(f"SpectrometerWidget: Loading settings from profile '{profile_name}'...")
+        
+        # Integration Time
         self.spinBox_integrationTime.blockSignals(True)
         self.spinBox_integrationTime.setValue(self.spec_mgr.get_integrationtime())
         self.spinBox_integrationTime.blockSignals(False)
         
+        # Dark Count Correction
         self.checkBox_correctDarkCounts.blockSignals(True)
         self.checkBox_correctDarkCounts.setChecked(self.spec_mgr.get_correction_dark_count())
         self.checkBox_correctDarkCounts.blockSignals(False)
+
+        # Non-Linearity Correction
+        self.checkBox_correctNonLinearity.blockSignals(True)
+        self.checkBox_correctNonLinearity.setChecked(self.spec_mgr.get_correction_non_linearity())
+        self.checkBox_correctNonLinearity.blockSignals(False)
+
+        # Target Temperature
+        self.doubleSpinBox.blockSignals(True)
+        self.doubleSpinBox.setValue(self.spec_mgr.get_temperature())
+        self.doubleSpinBox.blockSignals(False)
 
     @Slot()
     def on_toggle_continuous(self):

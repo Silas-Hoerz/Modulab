@@ -64,13 +64,6 @@ class SmuManager(QObject):
 
         self.get_deviceList()
 
-        if self.LastDevice:
-            self.log_mgr.info(f"Last connected SMU (Port): {self.LastDevice}. Attempting re-connect...")
-            self.connect_LastDevice()
-        else:
-            self.log_mgr.info("No last SMU saved. Please connect manually")
-            self.get_deviceList()
-
     @Slot(str)
     def on_profile_loaded(self, profile_name):
         """

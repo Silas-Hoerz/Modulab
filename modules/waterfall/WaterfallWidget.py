@@ -34,14 +34,8 @@ class WaterfallWidget(QWidget, Ui_Form):
         # --- Interne Variablen & Defaults laden ---
         self.img_array = None       
         self.wavelengths = None
-        
-        # Lade Buffer Size aus Profil oder nimm 100
-        saved_size = self.profile.read("Waterfall_HistoryLines")
-        self.buffer_size = int(saved_size) if saved_size else 100
-
-        # Lade Colormap aus Profil oder nimm 'Jet'
-        saved_cmap = self.profile.read("Waterfall_Colormap")
-        self.current_cmap_name = saved_cmap if saved_cmap else "Jet"
+        self.buffer_size = 100
+        self.current_cmap_name = "Jet"
 
         self.__setup_pyqtgraph()
         self.__setup_ui()
@@ -104,6 +98,29 @@ class WaterfallWidget(QWidget, Ui_Form):
         self.comboBox_colormap.currentTextChanged.connect(self.on_colormap_changed)
         self.spinBox_bufferSize.valueChanged.connect(self.on_buffer_size_changed)
 
+        self.profile.profile_loaded.connect(self.on_profile_loaded)
+
+    @Slot(str)
+    def on_profile_loaded(self, profile_name):
+        """Lädt Einstellungen, sobald ein Profil vom User gewählt wurde."""
+        self.log.info(f"WaterfallWidget: Loading settings from profile '{profile_name}'...")
+        
+        saved_size = self.profile.read("Waterfall_HistoryLines")
+        if saved_size is not None:
+            self.buffer_size = int(saved_size)
+            self.spinBox_bufferSize.blockSignals(True)
+            self.spinBox_bufferSize.setValue(self.buffer_size)
+            self.spinBox_bufferSize.blockSignals(False)
+            self.mgr.set_history_limit(max(2000, self.buffer_size))
+
+        saved_cmap = self.profile.read("Waterfall_Colormap")
+        if saved_cmap:
+            self.current_cmap_name = saved_cmap
+            self.comboBox_colormap.blockSignals(True)
+            self.comboBox_colormap.setCurrentText(self.current_cmap_name.capitalize())
+            self.on_colormap_changed(self.current_cmap_name)
+            self.comboBox_colormap.blockSignals(False)
+
     # --- Logik ---
 
     @Slot(object, object)
@@ -137,7 +154,8 @@ class WaterfallWidget(QWidget, Ui_Form):
         self.img_array = None # Reset
         
         # Profil speichern
-        self.profile.write("Waterfall_HistoryLines", val)
+        if self.profile.get_current_profile_name():
+            self.profile.write("Waterfall_HistoryLines", val)
         
         # Dem Manager auch Bescheid geben (optional, falls er mitwachsen soll)
         self.mgr.set_history_limit(max(2000, val))
@@ -154,7 +172,8 @@ class WaterfallWidget(QWidget, Ui_Form):
             self.hist_lut.gradient.setColorMap(cmap)
             
             # Profil speichern
-            self.profile.write("Waterfall_Colormap", name)
+            if self.profile.get_current_profile_name():
+                self.profile.write("Waterfall_Colormap", name)
             
         except Exception as e:
             self.log.error(f"Error setting colormap '{name}': {e}")
