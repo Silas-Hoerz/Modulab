@@ -64,7 +64,6 @@ class SmuManager(QObject):
 
         self.get_deviceList()
 
-    @Slot(str)
     def on_profile_loaded(self, profile_name):
         """
         Wird aufgerufen, sobald ein Profil geladen wurde.
@@ -77,10 +76,51 @@ class SmuManager(QObject):
 
         if self.LastDevice:
             self.log_mgr.info(f"Last connected SMU (Port): {self.LastDevice}. Attempting re-connect...")
-            if not self.connect_LastDevice():
+            if self.connect_LastDevice():
+                # Erst nach erfolgreicher Verbindung die Kanal-Settings laden
+                self._load_channel_settings_from_profile()
+            else:
                 self.log_mgr.info("Could not reconnect to last SMU.")
         else:
             self.log_mgr.info("No last SMU saved in this profile.")
+
+    def _load_channel_settings_from_profile(self):
+        """Lädt und appliziert alle Kanal-Einstellungen aus dem Profil."""
+        if not self.is_connected():
+            return
+
+        self.log_mgr.info("Loading and applying channel settings from profile...")
+        for ch in ['a', 'b']:
+            ch_upper = ch.upper()
+            
+            # 1. Source Function (V/I)
+            source_func = self.profile_mgr.read(f"Smu_Ch{ch_upper}_SourceFunc")
+            if source_func == 'V':
+                self.set_source_voltage(ch)
+            elif source_func == 'I':
+                self.set_source_current(ch)
+            
+            # 2. Level
+            level = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Level")
+            if level is not None:
+                self.set_source_level(ch, float(level))
+
+            # 3. Limit
+            limit = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Limit")
+            if limit is not None:
+                self.set_source_limit(ch, float(limit))
+            
+            # 4. Sense Mode
+            sense_mode = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Sense")
+            if sense_mode == 'local':
+                self.set_sense_local(ch)
+            elif sense_mode == 'remote':
+                self.set_sense_remote(ch)
+
+            # 5. SICHERHEITSREGEL: Output immer ausschalten
+            self.set_output_state(ch, False)
+        
+        self.log_mgr.info("Finished applying channel settings.")
 
     # --- Verbindungs- und Geräte-Verwaltung
 
@@ -320,6 +360,8 @@ class SmuManager(QObject):
         try:
             self.smu_device.set_source_voltage(channel)
             self.channel_source_func[channel] = 'V' # Zustand im Manager merken
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write(f"Smu_Ch{channel.upper()}_SourceFunc", "V")
             self.log_mgr.info(f"SMU Channel {channel} source set to VOLTAGE.")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source voltage for {channel}: {e}")
@@ -339,6 +381,8 @@ class SmuManager(QObject):
         try:
             self.smu_device.set_source_current(channel)
             self.channel_source_func[channel] = 'I' # Zustand im Manager merken
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write(f"Smu_Ch{channel.upper()}_SourceFunc", "I")
             self.log_mgr.info(f"SMU Channel {channel} source set to CURRENT.")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source current for {channel}: {e}")
@@ -354,6 +398,8 @@ class SmuManager(QObject):
             return
         try:
             self.smu_device.set_sense_mode_local(channel)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write(f"Smu_Ch{channel.upper()}_Sense", "local")
             self.log_mgr.info(f"SMU Channel {channel} sense mode set to LOCAL (2-Wire).")
         except Exception as e:
             self.log_mgr.error(f"Failed to set sense local for {channel}: {e}")
@@ -369,6 +415,8 @@ class SmuManager(QObject):
             return
         try:
             self.smu_device.set_sense_mode_remote(channel)
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write(f"Smu_Ch{channel.upper()}_Sense", "remote")
             self.log_mgr.info(f"SMU Channel {channel} sense mode set to REMOTE (4-Wire).")
         except Exception as e:
             self.log_mgr.error(f"Failed to set sense remote for {channel}: {e}")
@@ -397,7 +445,11 @@ class SmuManager(QObject):
                 self.smu_device.set_source_voltage_level(channel, level)
             else: # func == 'I'
                 self.smu_device.set_source_current_level(channel, level)
-                self.log_mgr.debug(f"SMU Channel {channel} level set to {level} (using {func}).")
+
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write(f"Smu_Ch{channel.upper()}_Level", level)
+
+            self.log_mgr.debug(f"SMU Channel {channel} level set to {level} (using {func}).")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source level for {channel}: {e}")
 
@@ -447,6 +499,9 @@ class SmuManager(QObject):
             else: # func == 'I'
                 # Strom-Quelle braucht Spannungs-Limit
                 self.smu_device.set_source_voltage_limit(channel, limit)
+
+            if self.profile_mgr.get_current_profile_name():
+                self.profile_mgr.write(f"Smu_Ch{channel.upper()}_Limit", limit)
 
             self.log_mgr.debug(f"SMU Channel {channel} limit set to {limit} (using {func}).")
         except Exception as e:

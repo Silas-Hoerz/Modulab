@@ -50,6 +50,7 @@ class SmuWidget(QWidget, Ui_Form):
         # Manager aus dem Kontext-Objekt holen
         self.smu_mgr = context.smu_manager
         self.log_mgr = context.log_manager
+        self.profile_mgr = context.profile_manager
 
         self.__setup_ui()
         self.__connect_signals()
@@ -135,6 +136,8 @@ class SmuWidget(QWidget, Ui_Form):
         self.smu_mgr.connection_status_changed.connect(self.on_connection_status_changed)
         self.smu_mgr.device_list_updated.connect(self.on_device_list_updated)
         self.smu_mgr.new_measurement_acquired.connect(self.on_new_measurement_acquired)
+        if self.profile_mgr:
+            self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
         # 2. UI-Elemente (Verbindung)
         self.pushButton_connect.clicked.connect(self.on_connect_clicked)
@@ -169,6 +172,66 @@ class SmuWidget(QWidget, Ui_Form):
 
     # --- Hilfsfunktionen ---
     
+    @Slot(str)
+    def on_profile_loaded(self, profile_name):
+        """Synchronisiert die UI mit den geladenen Profilwerten."""
+        self.log_mgr.info(f"SmuWidget: Syncing UI to profile '{profile_name}'.")
+
+        for ch in ['a', 'b']:
+            ch_upper = ch.upper()
+            
+            # Source/Sense ButtonGroups und LineEdits für den aktuellen Kanal holen
+            source_group = self.source_group_A if ch == 'a' else self.source_group_B
+            sense_group = self.sense_group_A if ch == 'a' else self.sense_group_B
+            btn_voltage = self.pushButton_voltageA if ch == 'a' else self.pushButton_voltageB
+            btn_current = self.pushButton_currentA if ch == 'a' else self.pushButton_currentB
+            btn_local = self.pushButton_localA if ch == 'a' else self.pushButton_localB
+            btn_remote = self.pushButton_remoteA if ch == 'a' else self.pushButton_remoteB
+            line_level = self.lineEdit_levelA if ch == 'a' else self.lineEdit_levelB
+            line_limit = self.lineEdit_limitA if ch == 'a' else self.lineEdit_limitB
+            btn_output = self.pushButton_outputA if ch == 'a' else self.pushButton_outputB
+
+            # Blockiere Signale, um Zyklen zu verhindern
+            source_group.blockSignals(True)
+            sense_group.blockSignals(True)
+            line_level.blockSignals(True)
+            line_limit.blockSignals(True)
+
+            # 1. Source Function
+            source_func = self.profile_mgr.read(f"Smu_Ch{ch_upper}_SourceFunc", 'V') # Default 'V'
+            if source_func == 'I':
+                btn_current.setChecked(True)
+            else:
+                btn_voltage.setChecked(True)
+
+            # 2. Sense Mode
+            sense_mode = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Sense", 'local') # Default 'local'
+            if sense_mode == 'remote':
+                btn_remote.setChecked(True)
+            else:
+                btn_local.setChecked(True)
+
+            # 3. Level
+            level = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Level", 0.0) # Default 0.0
+            line_level.setText(str(level))
+
+            # 4. Limit
+            limit = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Limit", 0.1) # Default 0.1
+            line_limit.setText(str(limit))
+
+            # 5. Safety: Output immer aus
+            btn_output.setChecked(False)
+            btn_output.setText("OFF")
+
+            # Signale wieder freigeben
+            source_group.blockSignals(False)
+            sense_group.blockSignals(False)
+            line_level.blockSignals(False)
+            line_limit.blockSignals(False)
+            
+            # UI-Labels aktualisieren, nachdem die Buttons gesetzt sind
+            self._update_channel_labels(ch)
+
     def _set_channel_controls_enabled(self, channel_char: str, enabled: bool):
         """
         Aktiviert oder deaktiviert alle Steuerelemente für einen Kanal.

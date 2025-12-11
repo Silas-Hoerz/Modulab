@@ -41,6 +41,7 @@ class ExperimentWidget(QWidget, Ui_Form):
         # Manager aus dem Kontext-Objekt holen
         self.exp_mgr = context.experiment_manager
         self.log_mgr = context.log_manager
+        self.profile_mgr = context.profile_manager
 
         # Internen Status für den Pause/Resume-Toggle-Button
         self.is_paused = False
@@ -85,7 +86,27 @@ class ExperimentWidget(QWidget, Ui_Form):
         # Verbinde das neue Progress-Signal mit dem UI-Slot
         self.exp_mgr.progress_updated.connect(self.on_progress_updated)
 
+        # Eigene UI-Verbindungen für Profil-Interaktionen
+        self.comboBox_experiments.currentTextChanged.connect(self.on_experiment_selected)
+        if self.profile_mgr:
+            self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
+
     # --- Slots für UI-Aktionen ---
+
+    @Slot(str)
+    def on_experiment_selected(self, experiment_name):
+        """Wird aufgerufen, wenn User ein Experiment auswählt -> im Profil speichern."""
+        if self.profile_mgr.get_current_profile_name() and experiment_name:
+            self.profile_mgr.write("Experiment_LastSelected", experiment_name)
+
+    @Slot(str)
+    def on_profile_loaded(self, profile_name):
+        """Lädt die letzte Auswahl, wenn ein Profil geladen wird."""
+        last_experiment = self.profile_mgr.read("Experiment_LastSelected")
+        if last_experiment:
+            # Prüfen, ob das Experiment in der ComboBox existiert
+            if self.comboBox_experiments.findText(last_experiment) != -1:
+                self.comboBox_experiments.setCurrentText(last_experiment)
 
     @Slot()
     def on_combobox_clicked(self):

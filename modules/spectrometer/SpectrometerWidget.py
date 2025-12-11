@@ -38,6 +38,7 @@ class SpectrometerWidget(QWidget, Ui_Form):
         # Manager aus dem Context holen
         self.spec_mgr = context.spectrometer_manager
         self.log_mgr = context.log_manager
+        self.profile_mgr = context.profile_manager
 
         # --- Timer Setup ---
         self.continuous_timer = QTimer(self)
@@ -137,13 +138,14 @@ class SpectrometerWidget(QWidget, Ui_Form):
         self.checkBox_correctDarkCounts.toggled.connect(self.spec_mgr.set_correction_dark_count)
         self.checkBox_correctNonLinearity.toggled.connect(self.spec_mgr.set_correction_non_linearity)
         self.spinBox_integrationTime.valueChanged.connect(self.spec_mgr.set_integrationtime)
+        self.spinBox_countDarkRead.valueChanged.connect(self.on_dark_read_count_changed)
         
         # Temperatur
         self.doubleSpinBox.editingFinished.connect(self.on_target_temp_changed)
         
         # Auf Profil-Laden warten für UI-Update
-        if hasattr(self.spec_mgr, 'profile_mgr'):
-             self.spec_mgr.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
+        if self.profile_mgr:
+             self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
     # --- Interne Logik ---
 
@@ -164,6 +166,12 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.on_toggle_continuous()
 
     # --- Slots ---
+
+    @Slot(int)
+    def on_dark_read_count_changed(self, value):
+        """Speichert die Anzahl der Dark Scans im Profil."""
+        if self.profile_mgr.get_current_profile_name():
+            self.profile_mgr.write("Spec_DarkReadCount", value)
 
     @Slot(str)
     def on_profile_loaded(self, profile_name):
@@ -189,6 +197,13 @@ class SpectrometerWidget(QWidget, Ui_Form):
         self.doubleSpinBox.blockSignals(True)
         self.doubleSpinBox.setValue(self.spec_mgr.get_temperature())
         self.doubleSpinBox.blockSignals(False)
+
+        # Dark Read Count
+        dark_read_count = self.profile_mgr.read("Spec_DarkReadCount")
+        if dark_read_count is not None:
+            self.spinBox_countDarkRead.blockSignals(True)
+            self.spinBox_countDarkRead.setValue(int(dark_read_count))
+            self.spinBox_countDarkRead.blockSignals(False)
 
     @Slot()
     def on_toggle_continuous(self):
