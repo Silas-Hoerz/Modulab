@@ -2,181 +2,76 @@ import sys
 import numpy as np
 import pyqtgraph as pg
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
-from PySide6.QtCore import Slot, Signal, QEvent, QTimer, Qt
+from PySide6.QtCore import Slot, Signal, QEvent, QTimer, Qt, QCoreApplication
 
 # ==========================================================================================
-# UI Setup 
+# IMPORT DEINER GENERIERTEN UI DATEI
 # ==========================================================================================
-from PySide6.QtCore import (QCoreApplication, QMetaObject, QSize, Qt)
-from PySide6.QtWidgets import (QAbstractSpinBox, QCheckBox, QComboBox,
-    QDoubleSpinBox, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
-
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(483, 400) # Wieder kompakter ohne die Checkboxen
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        Form.setSizePolicy(sizePolicy)
-        
-        self.gridLayout = QGridLayout(Form)
-        self.gridLayout.setContentsMargins(0, 0, 0, 6)
-        
-        self.frame = QFrame(Form)
-        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.verticalLayout = QVBoxLayout(self.frame)
-        
-        # --- Top Bar: Connection ---
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.label = QLabel("Device:", self.frame)
-        self.horizontalLayout_4.addWidget(self.label)
-        
-        self.comboBox_deviceList = QComboBox(self.frame)
-        self.comboBox_deviceList.setMinimumSize(QSize(150, 0))
-        self.horizontalLayout_4.addWidget(self.comboBox_deviceList)
-        
-        self.pushButton_connect = QPushButton("Connect", self.frame)
-        self.horizontalLayout_4.addWidget(self.pushButton_connect)
-        
-        self.horizontalSpacer = QSpacerItem(0, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
-        self.horizontalLayout_4.addItem(self.horizontalSpacer)
-        
-        self.label_device = QLabel("No connection", self.frame)
-        self.horizontalLayout_4.addWidget(self.label_device)
-        self.verticalLayout.addLayout(self.horizontalLayout_4)
-
-        # --- Settings Row 1: Integration & Correction ---
-        self.horizontalLayout = QHBoxLayout()
-        self.verticalLayout_connection = QVBoxLayout()
-        self.label_integrationTime = QLabel("Integration Time [us]:", self.frame)
-        self.verticalLayout_connection.addWidget(self.label_integrationTime)
-        
-        self.spinBox_integrationTime = QSpinBox(self.frame)
-        self.spinBox_integrationTime.setMaximum(60000000) 
-        self.spinBox_integrationTime.setValue(100000)
-        self.verticalLayout_connection.addWidget(self.spinBox_integrationTime)
-        self.horizontalLayout.addLayout(self.verticalLayout_connection)
-
-        self.verticalLayout_settings = QVBoxLayout()
-        self.checkBox_correctDarkCounts = QCheckBox("Correct dark counts (Electric)", self.frame)
-        self.verticalLayout_settings.addWidget(self.checkBox_correctDarkCounts)
-        self.checkBox_correctNonLinearity = QCheckBox("Correct non linearity", self.frame)
-        self.verticalLayout_settings.addWidget(self.checkBox_correctNonLinearity)
-        self.horizontalLayout.addLayout(self.verticalLayout_settings)
-
-        # --- Settings Row 2: Temperature ---
-        self.verticalLayout_2 = QVBoxLayout()
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.label_actualTemp = QLabel("Actual Temp:", self.frame)
-        self.horizontalLayout_5.addWidget(self.label_actualTemp)
-        
-        self.doubleSpinBox_actualTemp = QDoubleSpinBox(self.frame)
-        self.doubleSpinBox_actualTemp.setReadOnly(True)
-        self.doubleSpinBox_actualTemp.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
-        self.doubleSpinBox_actualTemp.setSuffix(" °C")
-        self.doubleSpinBox_actualTemp.setMinimum(-100.0)
-        self.horizontalLayout_5.addWidget(self.doubleSpinBox_actualTemp)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_5)
-
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.label_2 = QLabel("Target Temp:", self.frame)
-        self.horizontalLayout_3.addWidget(self.label_2)
-        
-        self.doubleSpinBox = QDoubleSpinBox(self.frame) # Target Temp
-        self.doubleSpinBox.setSuffix(" °C")
-        self.doubleSpinBox.setMinimum(-100.0)
-        self.horizontalLayout_3.addWidget(self.doubleSpinBox)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
-        
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-        self.horizontalLayout.addItem(self.horizontalSpacer_3)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-
-        # --- Acquisition Bar ---
-        self.verticalLayout_acquisition = QVBoxLayout()
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.pushButton_acquireDarkRead = QPushButton("Read Dark", self.frame)
-        self.horizontalLayout_2.addWidget(self.pushButton_acquireDarkRead)
-        
-        self.spinBox_countDarkRead = QSpinBox(self.frame)
-        self.spinBox_countDarkRead.setMinimum(1)
-        self.spinBox_countDarkRead.setMaximum(1000)
-        self.spinBox_countDarkRead.setValue(100) # Standard 100 Scans
-        self.spinBox_countDarkRead.setSuffix(" Scans")
-        self.horizontalLayout_2.addWidget(self.spinBox_countDarkRead)
-        
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
-
-        self.pushButton_acquireSingle = QPushButton("Single", self.frame)
-        self.horizontalLayout_2.addWidget(self.pushButton_acquireSingle)
-        
-        self.pushButton_acquireContinuous = QPushButton("Start", self.frame)
-        self.pushButton_acquireContinuous.setCheckable(True) 
-        self.horizontalLayout_2.addWidget(self.pushButton_acquireContinuous)
-        self.verticalLayout_acquisition.addLayout(self.horizontalLayout_2)
-        self.verticalLayout.addLayout(self.verticalLayout_acquisition)
-
-        # --- Plot Widget Placeholder ---
-        self.widget_plot = QWidget(self.frame)
-        self.widget_plot.setMinimumSize(QSize(380, 200))
-        sizePolicyPlot = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.widget_plot.setSizePolicy(sizePolicyPlot)
-        self.verticalLayout.addWidget(self.widget_plot)
-
-        self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
-        self.retranslateUi(Form)
-        QMetaObject.connectSlotsByName(Form)
-
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Spectrometer", None))
+try:
+    # 1. Versuch: Relativer Import (Der Punkt ist wichtig!)
+    # Sucht im gleichen Ordner wie diese Datei (modules/spectrometer/)
+    from .ui_SpectrometerWidget import Ui_Form 
+except ImportError:
+    try:
+        # 2. Versuch: Absoluter Import (Falls Pfade anders konfiguriert sind)
+        from ui_SpectrometerWidget import Ui_Form
+    except ImportError:
+        # 3. Fallback: Wenn Datei wirklich fehlt, NICHT abstürzen, sondern Fehler anzeigen
+        print("CRITICAL ERROR: ui_SpectrometerWidget.py could not be imported!")
 
 # ==========================================================================================
-# Spectrometer Widget Implementation
+# Spectrometer Widget Logic
 # ==========================================================================================
 
 class SpectrometerWidget(QWidget, Ui_Form):
     """
     Verwaltet das Spektrometer-UI mit PyQtGraph.
     
-    Features:
-    - Live-Plotting (Raw, Dark, Corrected im Plot-Kontextmenü steuerbar).
-    - Temperatur-Steuerung (Soll/Ist).
-    - Dunkelstrom-Management.
+    Verbindet die Logik (SpectrometerManager) mit dem Layout (Ui_Form).
     """
 
     def __init__(self, context, parent=None):
         super().__init__(parent)
+        
+        # 1. UI aus deiner Datei laden
         self.setupUi(self)
 
         # Manager aus dem Context holen
         self.spec_mgr = context.spectrometer_manager
         self.log_mgr = context.log_manager
 
-        # Timer für kontinuierliche Messung (Non-Blocking)
+        # --- Timer Setup ---
+        # Timer 1: Kontinuierliche Messung (50ms)
         self.continuous_timer = QTimer(self)
         self.continuous_timer.setInterval(50) 
         self.continuous_timer.timeout.connect(self._on_timer_tick)
 
-        # UI Setup
+        # Timer 2: Temperatur Überwachung (1 Hz)
+        self.temp_poll_timer = QTimer(self)
+        self.temp_poll_timer.setInterval(1000) 
+        self.temp_poll_timer.timeout.connect(self._poll_temperature)
+
+        # --- Initialisierung ---
         self.__setup_pyqtgraph() 
-        self.__setup_ui()
+        self.__setup_initial_values()
         self.__connect_signals()
 
         # Event-Filter für ComboBox (Refresh bei Click)
         self.comboBox_deviceList.installEventFilter(self)
 
-        # Initiale Suche
+        # Initiale Suche nach Geräten
         self.spec_mgr.get_deviceList()
 
     def __setup_pyqtgraph(self):
-        """Initialisiert das PyQtGraph Widget mit 3 Kurven."""
-        # Layout für den Platzhalter 'widget_plot'
-        layout = QVBoxLayout(self.widget_plot)
-        layout.setContentsMargins(0, 0, 0, 0)
+        """Ersetzt den leeren Widget-Platzhalter mit dem PyQtGraph Plot."""
+        # Layout für den Platzhalter 'widget_plot' holen
+        # Falls in deiner UI schon ein Layout drin ist, nutzen wir das.
+        # Falls nicht, erstellen wir eins.
+        if self.widget_plot.layout() is None:
+            layout = QVBoxLayout(self.widget_plot)
+            layout.setContentsMargins(0, 0, 0, 0)
+        else:
+            layout = self.widget_plot.layout()
 
         # PlotWidget erstellen
         self.plot_widget = pg.PlotWidget(title="Spectrum (Not Connected)")
@@ -202,8 +97,10 @@ class SpectrometerWidget(QWidget, Ui_Form):
         self.curve_corrected.setBrush(pg.mkBrush(color=(0, 229, 255, 30))) 
         self.curve_corrected.setFillLevel(0)
 
-    def __setup_ui(self):
-        """Setzt Initiale Werte aus dem Manager."""
+    def __setup_initial_values(self):
+        """Lädt gespeicherte Werte und setzt Styles."""
+
+        # Werte vom Manager holen
         try:
             self.spinBox_integrationTime.setValue(self.spec_mgr.get_integrationtime())
             self.checkBox_correctDarkCounts.setChecked(self.spec_mgr.get_correction_dark_count())
@@ -212,10 +109,11 @@ class SpectrometerWidget(QWidget, Ui_Form):
         except Exception as e:
             self.log_mgr.error(f"Error setting initial UI values: {e}")
 
+        # GUI Status updaten (Disconnected)
         self.on_connection_status_changed(False, "")
 
     def __connect_signals(self):
-        """Verbindet Signale und Slots."""
+        """Verbindet UI-Elemente mit Logik."""
         # --- Manager -> UI ---
         self.spec_mgr.connection_status_changed.connect(self.on_connection_status_changed)
         self.spec_mgr.device_list_updated.connect(self.on_device_list_updated)
@@ -227,10 +125,10 @@ class SpectrometerWidget(QWidget, Ui_Form):
         # --- UI -> Manager ---
         self.pushButton_connect.clicked.connect(self.on_connect_clicked)
         
-        # Messungen
+        # Messungen (Button Namen aus deiner UI Datei verwenden!)
         self.pushButton_acquireSingle.clicked.connect(self._acquire_single_wrapper)
         self.pushButton_acquireContinuous.clicked.connect(self.on_toggle_continuous)
-        self.pushButton_acquireDarkRead.clicked.connect(self.on_acquire_dark_clicked)
+        self.pushButton_acqurieDarkRead.clicked.connect(self.on_acquire_dark_clicked) # Schreibfehler im UI File beachten: acqurie
 
         # Settings
         self.checkBox_correctDarkCounts.toggled.connect(self.spec_mgr.set_correction_dark_count)
@@ -243,15 +141,16 @@ class SpectrometerWidget(QWidget, Ui_Form):
     # --- Interne Logik ---
 
     def _acquire_single_wrapper(self):
-        """Wrapper, um die Single-Messung auszulösen."""
+        """Wrapper für Single Shot."""
         if self.continuous_timer.isActive():
             self.pushButton_acquireContinuous.setChecked(False)
             self.on_toggle_continuous()
         
+        # Signal senden -> Plot update via Slot
         self.spec_mgr.acquire_spectrum()
 
     def _on_timer_tick(self):
-        """Wird vom Timer aufgerufen -> Löst Messung aus."""
+        """Timer Tick für Continuous Mode."""
         if self.spec_mgr.is_connected():
             self.spec_mgr.acquire_spectrum()
         else:
@@ -262,51 +161,48 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
     @Slot()
     def on_toggle_continuous(self):
-        """Startet oder stoppt den kontinuierlichen Mess-Timer."""
+        """Start/Stop Continuous Mode."""
         is_active = self.pushButton_acquireContinuous.isChecked()
         
         if is_active:
             self.pushButton_acquireContinuous.setText("Stop")
             self.pushButton_acquireSingle.setEnabled(False)
-            self.pushButton_acquireDarkRead.setEnabled(False)
+            self.pushButton_acqurieDarkRead.setEnabled(False)
             self.pushButton_connect.setEnabled(False) 
             self.continuous_timer.start()
         else:
             self.pushButton_acquireContinuous.setText("Start")
             self.continuous_timer.stop()
             self.pushButton_acquireSingle.setEnabled(True)
-            self.pushButton_acquireDarkRead.setEnabled(True)
+            self.pushButton_acqurieDarkRead.setEnabled(True)
             self.pushButton_connect.setEnabled(True)
 
     @Slot()
     def on_acquire_dark_clicked(self):
-        """Startet den Dark-Spectrum Prozess."""
+        """Startet Dark Measurement."""
         if self.continuous_timer.isActive():
             self.pushButton_acquireContinuous.setChecked(False)
             self.on_toggle_continuous()
 
         scans = self.spinBox_countDarkRead.value()
         
-        # Visualisierung: Wir machen die Dark-Kurve temporär sichtbar für Feedback
+        # Visualisierung
         self.plot_widget.setTitle("Measuring Dark Spectrum...", color='#ff3333')
         self.curve_dark.setVisible(True)
         
-        # Messung starten
+        # Start
         success = self.spec_mgr.acquire_dark_spectrum(scans)
         
         if success:
             self.plot_widget.setTitle(self.spec_mgr.get_activeDeviceName(), color='w')
-            # Nach Erfolg wieder ausblenden (User soll es bei Bedarf selbst aktivieren)
             self.curve_dark.setVisible(False) 
         else:
             self.plot_widget.setTitle("Dark Measurement Failed", color='r')
 
     @Slot(object, object, int)
     def on_dark_measurement_progress(self, wavelengths, current_avg, progress_pct):
-        """Zeigt den Fortschritt der Dark-Messung an."""
-        if wavelengths is None or current_avg is None:
-            return
-            
+        """Live Update Dark Spectrum."""
+        if wavelengths is None or current_avg is None: return
         self.curve_dark.setData(wavelengths, current_avg)
         self.plot_widget.setTitle(f"Measuring Dark Spectrum... {progress_pct}%", color='#ff3333')
         QCoreApplication.processEvents()
@@ -314,48 +210,59 @@ class SpectrometerWidget(QWidget, Ui_Form):
     @Slot(object, object)
     def on_new_spectrum_acquired(self, wavelengths, intensities):
         """
-        Aktualisiert den Plot.
-        
-        Manager liefert 'Corrected'. Wir rekonstruieren 'Raw' = Corrected + Dark.
-        Wir setzen immer alle Datenpunkte, damit man sie im Plot einblenden kann.
+        Plot Update.
+        Manager liefert 'Corrected'. Wir rekonstruieren 'Raw'.
         """
-        if wavelengths is None or intensities is None:
-            return
+        if wavelengths is None or intensities is None: return
 
-        # 1. Corrected Trace
+        # 1. Corrected
         self.curve_corrected.setData(wavelengths, intensities)
 
-        # 2. Dark & Raw Traces
+        # 2. Dark & Raw
         dark_data = self.spec_mgr.get_dark_spectrum_average()
         
         if dark_data is not None:
             self.curve_dark.setData(wavelengths, dark_data)
             try:
-                # Raw rekonstruieren
+                # Rekonstruktion: Raw = Corrected + Dark
                 raw_data = intensities + dark_data
                 self.curve_raw.setData(wavelengths, raw_data)
             except ValueError:
                 self.curve_raw.setData([], [])
         else:
             self.curve_dark.setData([], [])
-            self.curve_raw.setData(wavelengths, intensities) # Raw = Corrected wenn kein Dark
+            # Ohne Dark ist Raw == Corrected
+            self.curve_raw.setData(wavelengths, intensities)
 
-        # 3. Temperatur Update
-        try:
-            current_temp = self.spec_mgr.get_temperature()
-            self.doubleSpinBox_actualTemp.setValue(current_temp)
-        except:
-            pass
+    def _poll_temperature(self):
+        """1Hz Timer für Temperatur & Styles."""
+        if not self.spec_mgr.is_connected(): return
+
+        # Werte lesen
+        actual_temp = self.spec_mgr.get_temperature()
+        target_temp = self.doubleSpinBox.value()
+        
+        self.doubleSpinBox_actualTemp.setValue(actual_temp)
+
+        # Style Logik via Dynamic Property
+        delta = abs(actual_temp - target_temp)
+        new_state = "ok"
+        if delta > 1.0: new_state = "critical"
+        elif delta > 0.2: new_state = "warning"
+        
+        # Nur updaten wenn geändert (Performance)
+        if self.doubleSpinBox_actualTemp.property("tempState") != new_state:
+            self.doubleSpinBox_actualTemp.setProperty("tempState", new_state)
+            self.doubleSpinBox_actualTemp.style().unpolish(self.doubleSpinBox_actualTemp)
+            self.doubleSpinBox_actualTemp.style().polish(self.doubleSpinBox_actualTemp)
 
     @Slot()
     def on_target_temp_changed(self):
-        """Sendet neue Zieltemperatur an Manager."""
         target = self.doubleSpinBox.value()
         self.spec_mgr.set_temperature(target)
 
     @Slot(list)
     def on_device_list_updated(self, device_names):
-        """Aktualisiert ComboBox."""
         self.comboBox_deviceList.clear()
         self.comboBox_deviceList.addItems(device_names)
         if self.spec_mgr.LastDevice:
@@ -366,29 +273,28 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
     @Slot(bool, str)
     def on_connection_status_changed(self, connected, device_name):
-        """Schaltet UI Elemente an/aus."""
         if connected:
             self.label_device.setText(device_name)
-            self.label_device.setStyleSheet("color: #00ff00;") # Grün
+            self.label_device.setStyleSheet("color: #00ff00;")
             self.pushButton_connect.setText("Disconnect")
             self.plot_widget.setTitle(device_name, color='w')
 
-            # Enable Controls
+            # Enable UI
             self.spinBox_integrationTime.setEnabled(True)
             self.checkBox_correctDarkCounts.setEnabled(True)
             self.checkBox_correctNonLinearity.setEnabled(True)
             self.pushButton_acquireSingle.setEnabled(True)
             self.pushButton_acquireContinuous.setEnabled(True)
-            self.pushButton_acquireDarkRead.setEnabled(True)
+            self.pushButton_acqurieDarkRead.setEnabled(True)
             self.spinBox_countDarkRead.setEnabled(True)
             self.doubleSpinBox.setEnabled(True)
-            
             self.comboBox_deviceList.setEnabled(False)
 
-            # Limits und Initialwerte
+            # Limits & Timers
             min_us, max_us = self.spec_mgr.get_integrationtime_limits_us()
             self.spinBox_integrationTime.setRange(min_us, max_us)
-            self.doubleSpinBox.setValue(self.spec_mgr.get_temperature())
+            self.temp_poll_timer.start()
+            self._poll_temperature()
 
         else:
             self.label_device.setText("Not Connected")
@@ -401,19 +307,23 @@ class SpectrometerWidget(QWidget, Ui_Form):
                 self.pushButton_acquireContinuous.setChecked(False)
                 self.pushButton_acquireContinuous.setText("Start")
 
-            # Disable Controls
+            self.temp_poll_timer.stop()
+            self.doubleSpinBox_actualTemp.setProperty("tempState", "ok")
+            self.doubleSpinBox_actualTemp.style().unpolish(self.doubleSpinBox_actualTemp)
+            self.doubleSpinBox_actualTemp.style().polish(self.doubleSpinBox_actualTemp)
+
+            # Disable UI
             self.spinBox_integrationTime.setEnabled(False)
             self.checkBox_correctDarkCounts.setEnabled(False)
             self.checkBox_correctNonLinearity.setEnabled(False)
             self.pushButton_acquireSingle.setEnabled(False)
             self.pushButton_acquireContinuous.setEnabled(False)
-            self.pushButton_acquireDarkRead.setEnabled(False)
+            self.pushButton_acqurieDarkRead.setEnabled(False)
             self.spinBox_countDarkRead.setEnabled(False)
             self.doubleSpinBox.setEnabled(False)
-            
             self.comboBox_deviceList.setEnabled(True)
             
-            # Plot leeren
+            # Clear Plot
             self.curve_corrected.setData([], [])
             self.curve_raw.setData([], [])
             self.curve_dark.setData([], [])

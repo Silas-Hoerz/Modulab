@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SpectrometerWidgetXgVgXZ.ui'
+## Form generated from reading UI file 'SpectrometerWidgetjtkIBC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(483, 366)
+        Form.resize(508, 384)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -72,6 +72,8 @@ class Ui_Form(object):
         sizePolicy2.setHeightForWidth(self.pushButton_connect.sizePolicy().hasHeightForWidth())
         self.pushButton_connect.setSizePolicy(sizePolicy2)
         self.pushButton_connect.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.pushButton_connect.setStyleSheet(u"QPushButton:checked {color:black;}")
+        self.pushButton_connect.setCheckable(True)
 
         self.horizontalLayout_4.addWidget(self.pushButton_connect)
 
@@ -88,6 +90,13 @@ class Ui_Form(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
+
+        self.line_3 = QFrame(self.frame)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line_3)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -118,6 +127,13 @@ class Ui_Form(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_connection)
 
+        self.line_2 = QFrame(self.frame)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.Shape.VLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.horizontalLayout.addWidget(self.line_2)
+
         self.verticalLayout_settings = QVBoxLayout()
         self.verticalLayout_settings.setObjectName(u"verticalLayout_settings")
         self.verticalLayout_settings.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
@@ -139,19 +155,45 @@ class Ui_Form(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_settings)
 
+        self.line = QFrame(self.frame)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.VLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.horizontalLayout.addWidget(self.line)
+
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_actualTemp = QLabel(self.frame)
         self.label_actualTemp.setObjectName(u"label_actualTemp")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.label_actualTemp.sizePolicy().hasHeightForWidth())
+        self.label_actualTemp.setSizePolicy(sizePolicy4)
+        self.label_actualTemp.setMinimumSize(QSize(70, 0))
+        self.label_actualTemp.setMaximumSize(QSize(70, 16777215))
 
         self.horizontalLayout_5.addWidget(self.label_actualTemp)
 
         self.doubleSpinBox_actualTemp = QDoubleSpinBox(self.frame)
         self.doubleSpinBox_actualTemp.setObjectName(u"doubleSpinBox_actualTemp")
         self.doubleSpinBox_actualTemp.setEnabled(True)
+        sizePolicy3.setHeightForWidth(self.doubleSpinBox_actualTemp.sizePolicy().hasHeightForWidth())
+        self.doubleSpinBox_actualTemp.setSizePolicy(sizePolicy3)
+        self.doubleSpinBox_actualTemp.setMinimumSize(QSize(110, 24))
+        self.doubleSpinBox_actualTemp.setMaximumSize(QSize(110, 16777215))
         self.doubleSpinBox_actualTemp.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.doubleSpinBox_actualTemp.setStyleSheet(u"QDoubleSpinBox[tempState=\"warning\"] {\n"
+"                background-color: #ffff00; \n"
+"                color: black; \n"
+"}\n"
+"QDoubleSpinBox[tempState=\"critical\"] {\n"
+"                background-color: #ff2222; \n"
+"                color: white; \n"
+"}")
         self.doubleSpinBox_actualTemp.setReadOnly(True)
         self.doubleSpinBox_actualTemp.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.doubleSpinBox_actualTemp.setDecimals(1)
@@ -167,14 +209,23 @@ class Ui_Form(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_2 = QLabel(self.frame)
         self.label_2.setObjectName(u"label_2")
+        sizePolicy4.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy4)
+        self.label_2.setMinimumSize(QSize(70, 0))
+        self.label_2.setMaximumSize(QSize(70, 16777215))
 
         self.horizontalLayout_3.addWidget(self.label_2)
 
         self.doubleSpinBox = QDoubleSpinBox(self.frame)
         self.doubleSpinBox.setObjectName(u"doubleSpinBox")
+        sizePolicy3.setHeightForWidth(self.doubleSpinBox.sizePolicy().hasHeightForWidth())
+        self.doubleSpinBox.setSizePolicy(sizePolicy3)
+        self.doubleSpinBox.setMinimumSize(QSize(110, 0))
+        self.doubleSpinBox.setMaximumSize(QSize(110, 16777215))
         self.doubleSpinBox.setDecimals(1)
         self.doubleSpinBox.setMinimum(-100.000000000000000)
         self.doubleSpinBox.setSingleStep(0.100000000000000)
+        self.doubleSpinBox.setValue(-100.000000000000000)
 
         self.horizontalLayout_3.addWidget(self.doubleSpinBox)
 
@@ -190,6 +241,13 @@ class Ui_Form(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.line_4 = QFrame(self.frame)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.Shape.HLine)
+        self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line_4)
 
         self.verticalLayout_acquisition = QVBoxLayout()
         self.verticalLayout_acquisition.setObjectName(u"verticalLayout_acquisition")
@@ -223,6 +281,8 @@ class Ui_Form(object):
         sizePolicy3.setHeightForWidth(self.pushButton_acquireContinuous.sizePolicy().hasHeightForWidth())
         self.pushButton_acquireContinuous.setSizePolicy(sizePolicy3)
         self.pushButton_acquireContinuous.setMaximumSize(QSize(16777215, 16777215))
+        self.pushButton_acquireContinuous.setStyleSheet(u"QPushButton:checked {color: black;}")
+        self.pushButton_acquireContinuous.setCheckable(True)
 
         self.horizontalLayout_2.addWidget(self.pushButton_acquireContinuous)
 
@@ -261,7 +321,7 @@ class Ui_Form(object):
         self.doubleSpinBox_actualTemp.setSuffix(QCoreApplication.translate("Form", u" \u00b0C", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Target Temp:", None))
         self.doubleSpinBox.setPrefix("")
-        self.doubleSpinBox.setSuffix(QCoreApplication.translate("Form", u"\u00b0C", None))
+        self.doubleSpinBox.setSuffix(QCoreApplication.translate("Form", u" \u00b0C", None))
         self.pushButton_acqurieDarkRead.setText(QCoreApplication.translate("Form", u"Read Dark", None))
         self.pushButton_acquireSingle.setText(QCoreApplication.translate("Form", u"Single", None))
         self.pushButton_acquireContinuous.setText(QCoreApplication.translate("Form", u"Start", None))

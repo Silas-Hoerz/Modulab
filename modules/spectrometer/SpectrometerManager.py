@@ -375,13 +375,8 @@ class SpectrometerManager(QObject):
         
     def set_temperature(self, temperature_degC: float):
         """
-        Setzt die Ziel-Temperatur für die Kühlung (TEC), falls vorhanden.
-        
-        Kühlung reduziert das Rauschen. Eine Temperaturänderung macht das 
-        Dunkelspektrum ungültig.
-
-        Args:
-            temperature_degC (float): Zieltemperatur in °C (z.B. -15.0).
+        Setzt die Ziel-Temperatur für die Kühlung (TEC).
+        KORRIGIERT: Greift jetzt korrekt auf das erste Element der Feature-Liste zu.
         """
         self.current_temperature_C = temperature_degC
         self.profile_mgr.write("Spec_temperature_C", temperature_degC)
@@ -389,39 +384,55 @@ class SpectrometerManager(QObject):
         
         if self.is_connected():
             try:
-                # Prüfen auf TEC Feature (Thermo-Electric Cooler)
+                # Prüfen auf TEC Feature
                 if hasattr(self.spectrometer, 'features') and 'thermo_electric' in self.spectrometer.features:
-                    tec = self.spectrometer.features['thermo_electric']
+                    # WICHTIG: Das Dictionary gibt eine LISTE zurück. Wir brauchen das erste Element [0].
+                    tec_features = self.spectrometer.features['thermo_electric']
                     
-                    tec.set_temperature_setpoint_degrees_celsius(temperature_degC)
-                    
-                    tec.enable_tec(True)
-                    
-                    self.log_mgr.info(f"TEC Temperature setpoint set to {temperature_degC}°C")
+                    if tec_features:
+                        tec = tec_features[0] # <--- HIER WAR DER FEHLER
+                        
+                        # 1. Setpoint setzen
+                        tec.set_temperature_setpoint_degrees_celsius(temperature_degC)
+                        
+                        # 2. TEC aktivieren
+                        tec.enable_tec(True)
+                        
+                        self.log_mgr.info(f"TEC Temperature setpoint set to {temperature_degC}°C")
+                    else:
+                        self.log_mgr.warning("Thermo-electric feature found, but list is empty.")
+
                 else:
-                    self.log_mgr.info(f"Temperature value {temperature_degC}°C stored (Hardware control not available/supported).")
+                    self.log_mgr.info(f"Temperature value {temperature_degC}°C stored (Hardware control not available).")
             except Exception as e:
                 self.log_mgr.error(f"Error setting temperature: {e}")
 
     def get_temperature(self) -> float:
         """
         Liest die aktuelle Temperatur des Sensors aus.
-
-        Returns:
-            float: Die gemessene Temperatur in °C. (Oder den Soll-Wert, falls Sensor nicht lesbar).
+        KORRIGIERT: Greift jetzt korrekt auf das erste Element der Feature-Liste zu.
         """
         if self.is_connected():
             try:
-                # TEC Temperatur (genauer Sensor am Detektor)
+                # 1. Versuch: TEC Temperatur (Detektor)
                 if hasattr(self.spectrometer, 'features') and 'thermo_electric' in self.spectrometer.features:
-                    return self.spectrometer.features['thermo_electric'].get_temperature_degrees_celsius()
-                # PCB Temperatur (Allgemeine Board-Temperatur)
+                    tec_features = self.spectrometer.features['thermo_electric']
+                    if tec_features:
+                        # HIER WAR DER FEHLER: Zugriff auf [0] nötig
+                        return tec_features[0].read_temperature_degrees_celsius()
+                
+                # 2. Versuch: PCB Temperatur (Fallback)
                 elif hasattr(self.spectrometer, 'features') and 'temperature' in self.spectrometer.features:
+                     # Das 'temperature' Feature gibt oft direkt eine Liste von Floats zurück
                      temps = self.spectrometer.features['temperature'].get_temperatures_degrees_celsius()
-                     if temps: return temps[0]
+                     if temps: 
+                         return temps[0]
+                     
             except Exception as e:
+                # Wir loggen das nur als Debug, um den Log nicht vollzuspammen, wenn es jede Sekunde passiert
                 self.log_mgr.debug(f"Could not read HW temperature: {e}")
         
+        # Fallback auf gespeicherten Wert
         return self.current_temperature_C if self.current_temperature_C is not None else 0.0
     
     def _invalidate_dark_spectrum(self):
@@ -473,32 +484,21 @@ class SpectrometerManager(QObject):
 
     def acquire_spectrum(self) -> tuple[np.ndarray | None, np.ndarray | None]:
         """
-        Führt eine Messung durch und zieht AUTOMATISCH das Dunkelspektrum ab.
-        
-        Das ist die Standard-Funktion für normale Messungen.
-        Falls kein Dunkelspektrum existiert, wird nichts zurückgegeben (None).
+        Nimmt ein Spektrum auf und zieht automatisch das Dark Spectrum ab.
 
         Returns:
             tuple: (Wellenlängen, Korrigierte Intensitäten).
-                   Gibt (None, None) zurück bei Fehler oder fehlendem Dunkelspektrum.
-        
-        Example:
-            >>> wl, inten = manager.acquire_spectrum()
-            >>> if wl is not None:
-            >>>     plot(wl, inten)
         """
         if self._dark_spectrum_avg is None:
             self.log_mgr.warning("Cannot acquire corrected spectrum: No valid dark spectrum available.")
             return None, None
-            
-        # 1. Normale Messung holen (Rohdaten)
-        wl, inten = self.acquire_spectrum_raw() 
+
+        wl, inten = self.acquire_spectrum_raw(emit_signal=False) 
         
         if wl is None:
             return None, None
 
         try:
-            # 2. Subtraktion (Signal - Dunkel)
             if inten.shape != self._dark_spectrum_avg.shape:
                 self.log_mgr.error("Shape mismatch between measurement and dark spectrum. Invalidating dark.")
                 self._invalidate_dark_spectrum()
@@ -506,24 +506,24 @@ class SpectrometerManager(QObject):
 
             corrected_intensities = inten - self._dark_spectrum_avg
             
+            self.new_spectrum_acquired.emit(wl, corrected_intensities)
+            
             return wl, corrected_intensities
 
         except Exception as e:
             self.log_mgr.error(f"Error calculating dark-corrected spectrum: {e}")
             return None, None
 
-    def acquire_spectrum_raw(self) -> tuple[np.ndarray | None, np.ndarray | None]:
+    def acquire_spectrum_raw(self, emit_signal: bool = True) -> tuple[np.ndarray | None, np.ndarray | None]:
         """
         Führt eine rohe Messung durch, OHNE etwas abzuziehen.
         
-        Dies liefert genau das, was der Sensor sieht (Licht + Dunkelstrom).
-        Sollte genutzt werden, um Referenzen aufzunehmen oder wenn man selbst rechnen will.
+        Args:
+            emit_signal (bool): Wenn True, wird das 'new_spectrum_acquired' Signal gesendet.
+                                Wenn False, geschieht das nicht (wichtig für interne Aufrufe).
 
         Returns:
             tuple: (Wellenlängen, Rohe Intensitäten).
-        
-        Example:
-            >>> wl, raw_data = manager.acquire_spectrum_raw()
         """
         if not self.is_connected():
             self.log_mgr.warning("Cannot acquire spectrum: No spectrometer connected.")
@@ -535,8 +535,8 @@ class SpectrometerManager(QObject):
                 correct_nonlinearity=self.correct_non_linearity
             )
             
-            # Melde GUI, dass neue Daten da sind
-            self.new_spectrum_acquired.emit(wavelengths, intensities)
+            if emit_signal:
+                self.new_spectrum_acquired.emit(wavelengths, intensities)
 
             return wavelengths, intensities
         

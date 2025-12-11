@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SmuWidgeteXuXir.ui'
+## Form generated from reading UI file 'SmuWidgetSfWnlj.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(393, 411)
+        Form.resize(407, 425)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -48,11 +48,12 @@ class Ui_Form(object):
 
         self.comboBox_port = QComboBox(self.frame)
         self.comboBox_port.setObjectName(u"comboBox_port")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Maximum)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.comboBox_port.sizePolicy().hasHeightForWidth())
         self.comboBox_port.setSizePolicy(sizePolicy1)
+        self.comboBox_port.setMinimumSize(QSize(150, 0))
         self.comboBox_port.setMaximumSize(QSize(250, 16777215))
 
         self.horizontalLayout_6.addWidget(self.comboBox_port)
@@ -64,10 +65,12 @@ class Ui_Form(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.pushButton_connect.sizePolicy().hasHeightForWidth())
         self.pushButton_connect.setSizePolicy(sizePolicy2)
+        self.pushButton_connect.setStyleSheet(u"QPushButton:checked {color:black;}")
+        self.pushButton_connect.setCheckable(True)
 
         self.horizontalLayout_6.addWidget(self.pushButton_connect)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(0, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_6.addItem(self.horizontalSpacer)
 
@@ -134,6 +137,7 @@ class Ui_Form(object):
 
         self.pushButton_currentA = QPushButton(self.frame)
         self.pushButton_currentA.setObjectName(u"pushButton_currentA")
+        self.pushButton_currentA.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_currentA.setCheckable(True)
 
         self.gridLayout_channelA.addWidget(self.pushButton_currentA, 2, 1, 1, 1)
@@ -147,6 +151,7 @@ class Ui_Form(object):
 
         self.pushButton_outputA = QPushButton(self.frame)
         self.pushButton_outputA.setObjectName(u"pushButton_outputA")
+        self.pushButton_outputA.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_outputA.setCheckable(True)
 
         self.gridLayout_channelA.addWidget(self.pushButton_outputA, 8, 1, 1, 1)
@@ -175,12 +180,14 @@ class Ui_Form(object):
 
         self.pushButton_remoteA = QPushButton(self.frame)
         self.pushButton_remoteA.setObjectName(u"pushButton_remoteA")
+        self.pushButton_remoteA.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_remoteA.setCheckable(True)
 
         self.gridLayout_channelA.addWidget(self.pushButton_remoteA, 7, 1, 1, 1)
 
         self.pushButton_voltageA = QPushButton(self.frame)
         self.pushButton_voltageA.setObjectName(u"pushButton_voltageA")
+        self.pushButton_voltageA.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_voltageA.setCheckable(True)
         self.pushButton_voltageA.setChecked(True)
 
@@ -214,6 +221,7 @@ class Ui_Form(object):
 
         self.pushButton_localA = QPushButton(self.frame)
         self.pushButton_localA.setObjectName(u"pushButton_localA")
+        self.pushButton_localA.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_localA.setCheckable(True)
         self.pushButton_localA.setChecked(True)
 
@@ -228,6 +236,7 @@ class Ui_Form(object):
 
         self.pushButton_resetA = QPushButton(self.frame)
         self.pushButton_resetA.setObjectName(u"pushButton_resetA")
+        self.pushButton_resetA.setStyleSheet(u"QPushButton:checked {color:black;}")
 
         self.gridLayout_channelA.addWidget(self.pushButton_resetA, 8, 0, 1, 1)
 
@@ -293,6 +302,7 @@ class Ui_Form(object):
 
         self.pushButton_remoteB = QPushButton(self.frame)
         self.pushButton_remoteB.setObjectName(u"pushButton_remoteB")
+        self.pushButton_remoteB.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_remoteB.setCheckable(True)
 
         self.gridLayout_channelB.addWidget(self.pushButton_remoteB, 6, 1, 1, 1)
@@ -312,6 +322,7 @@ class Ui_Form(object):
 
         self.pushButton_currentB = QPushButton(self.frame)
         self.pushButton_currentB.setObjectName(u"pushButton_currentB")
+        self.pushButton_currentB.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_currentB.setCheckable(True)
 
         self.gridLayout_channelB.addWidget(self.pushButton_currentB, 1, 1, 1, 1)
@@ -346,6 +357,7 @@ class Ui_Form(object):
 
         self.pushButton_voltageB = QPushButton(self.frame)
         self.pushButton_voltageB.setObjectName(u"pushButton_voltageB")
+        self.pushButton_voltageB.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_voltageB.setCheckable(True)
         self.pushButton_voltageB.setChecked(True)
 
@@ -353,6 +365,7 @@ class Ui_Form(object):
 
         self.pushButton_localB = QPushButton(self.frame)
         self.pushButton_localB.setObjectName(u"pushButton_localB")
+        self.pushButton_localB.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_localB.setCheckable(True)
         self.pushButton_localB.setChecked(True)
 
@@ -360,11 +373,13 @@ class Ui_Form(object):
 
         self.pushButton_resetB = QPushButton(self.frame)
         self.pushButton_resetB.setObjectName(u"pushButton_resetB")
+        self.pushButton_resetB.setStyleSheet(u"QPushButton:checked {color:black;}")
 
         self.gridLayout_channelB.addWidget(self.pushButton_resetB, 7, 0, 1, 1)
 
         self.pushButton_outputB = QPushButton(self.frame)
         self.pushButton_outputB.setObjectName(u"pushButton_outputB")
+        self.pushButton_outputB.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_outputB.setCheckable(True)
 
         self.gridLayout_channelB.addWidget(self.pushButton_outputB, 7, 1, 1, 1)
@@ -408,7 +423,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"SMU", None))
         self.label.setText(QCoreApplication.translate("Form", u"Port:", None))
         self.pushButton_connect.setText(QCoreApplication.translate("Form", u"Connect", None))
         self.label_status.setText(QCoreApplication.translate("Form", u"No connection", None))
