@@ -4,7 +4,7 @@ import time
 import serial
 from serial.tools import list_ports
 
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, Slot
 
 # Importiere beide Treiber, aber KEINE TSP-Konstanten mehr
 from .Keithley2602 import Keithley2602, DummyKeithley2602
@@ -52,13 +52,17 @@ class SmuManager(QObject):
         self.connected_port = ""
         self.idn_message = ""
 
+        self.LastDevice = None
+
         # Speichert den internen Zustand der Source-Funktion ('V' oder 'I')
         self.channel_source_func = {
             'a': 'V',
             'b': 'V'
         }
 
-        self.LastDevice = self.profile_mgr.read("Smu_LastDevice")
+        self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
+
+        self.get_deviceList()
 
         if self.LastDevice:
             self.log_mgr.info(f"Last connected SMU (Port): {self.LastDevice}. Attempting re-connect...")
@@ -66,6 +70,24 @@ class SmuManager(QObject):
         else:
             self.log_mgr.info("No last SMU saved. Please connect manually")
             self.get_deviceList()
+
+    @Slot(str)
+    def on_profile_loaded(self, profile_name):
+        """
+        Wird aufgerufen, sobald ein Profil geladen wurde.
+        Versucht, die letzte Verbindung wiederherzustellen.
+        """
+        self.log_mgr.info(f"SmuManager: Loading settings from profile '{profile_name}'...")
+        
+        # Jetzt erst lesen wir aus dem Profil
+        self.LastDevice = self.profile_mgr.read("Smu_LastDevice")
+
+        if self.LastDevice:
+            self.log_mgr.info(f"Last connected SMU (Port): {self.LastDevice}. Attempting re-connect...")
+            if not self.connect_LastDevice():
+                self.log_mgr.info("Could not reconnect to last SMU.")
+        else:
+            self.log_mgr.info("No last SMU saved in this profile.")
 
     # --- Verbindungs- und Geräte-Verwaltung
 
@@ -165,7 +187,8 @@ class SmuManager(QObject):
                 self.connected_port = port_name
                 self.idn_message = idn_msg
                 self.LastDevice = port_name
-                self.profile_mgr.write("Smu_LastDevice", self.LastDevice)
+                if self.profile_mgr.get_current_profile_name():
+                    self.profile_mgr.write("Smu_LastDevice", self.LastDevice)
 
                 active_name = self.get_activeDeviceName()
                 self.log_mgr.info(f"Successfully connected to {active_name}")

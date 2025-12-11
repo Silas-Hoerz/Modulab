@@ -1,23 +1,22 @@
 import sys
 import numpy as np
 import pyqtgraph as pg
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel
 from PySide6.QtCore import Slot, Signal, QEvent, QTimer, Qt, QCoreApplication
 
 # ==========================================================================================
-# IMPORT DEINER GENERIERTEN UI DATEI
+# IMPORT UI
 # ==========================================================================================
+# Wir versuchen den relativen Import. Wenn das fehlschlägt, geben wir den genauen Fehler aus.
 try:
-    # 1. Versuch: Relativer Import (Der Punkt ist wichtig!)
-    # Sucht im gleichen Ordner wie diese Datei (modules/spectrometer/)
-    from .ui_SpectrometerWidget import Ui_Form 
-except ImportError:
-    try:
-        # 2. Versuch: Absoluter Import (Falls Pfade anders konfiguriert sind)
-        from ui_SpectrometerWidget import Ui_Form
-    except ImportError:
-        # 3. Fallback: Wenn Datei wirklich fehlt, NICHT abstürzen, sondern Fehler anzeigen
-        print("CRITICAL ERROR: ui_SpectrometerWidget.py could not be imported!")
+    from .ui_SpectrometerWidget import Ui_Form
+except ImportError as e:
+    print("---------------------------------------------------------")
+    print(f"KRITISCHER FEHLER: Konnte 'ui_SpectrometerWidget.py' nicht importieren!")
+    print(f"Fehlermeldung: {e}")
+    print("Stelle sicher, dass die Datei 'ui_SpectrometerWidget.py' im Ordner 'modules/spectrometer/' liegt.")
+    print("---------------------------------------------------------")
+    raise e  # Programm stoppen, damit man den Fehler sieht
 
 # ==========================================================================================
 # Spectrometer Widget Logic
@@ -26,7 +25,6 @@ except ImportError:
 class SpectrometerWidget(QWidget, Ui_Form):
     """
     Verwaltet das Spektrometer-UI mit PyQtGraph.
-    
     Verbindet die Logik (SpectrometerManager) mit dem Layout (Ui_Form).
     """
 
@@ -34,6 +32,7 @@ class SpectrometerWidget(QWidget, Ui_Form):
         super().__init__(parent)
         
         # 1. UI aus deiner Datei laden
+        # Hier wird self.widget_plot erstellt!
         self.setupUi(self)
 
         # Manager aus dem Context holen
@@ -41,17 +40,16 @@ class SpectrometerWidget(QWidget, Ui_Form):
         self.log_mgr = context.log_manager
 
         # --- Timer Setup ---
-        # Timer 1: Kontinuierliche Messung (50ms)
         self.continuous_timer = QTimer(self)
         self.continuous_timer.setInterval(50) 
         self.continuous_timer.timeout.connect(self._on_timer_tick)
 
-        # Timer 2: Temperatur Überwachung (1 Hz)
         self.temp_poll_timer = QTimer(self)
         self.temp_poll_timer.setInterval(1000) 
         self.temp_poll_timer.timeout.connect(self._poll_temperature)
 
         # --- Initialisierung ---
+        # Jetzt existiert self.widget_plot sicher
         self.__setup_pyqtgraph() 
         self.__setup_initial_values()
         self.__connect_signals()
@@ -64,9 +62,13 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
     def __setup_pyqtgraph(self):
         """Ersetzt den leeren Widget-Platzhalter mit dem PyQtGraph Plot."""
-        # Layout für den Platzhalter 'widget_plot' holen
-        # Falls in deiner UI schon ein Layout drin ist, nutzen wir das.
-        # Falls nicht, erstellen wir eins.
+        
+        # Sicherheitscheck (sollte durch setupUi erledigt sein)
+        if not hasattr(self, 'widget_plot'):
+            self.log_mgr.error("CRITICAL: 'widget_plot' not found in UI file. Please re-compile .ui file.")
+            return
+
+        # Layout holen oder erstellen
         if self.widget_plot.layout() is None:
             layout = QVBoxLayout(self.widget_plot)
             layout.setContentsMargins(0, 0, 0, 0)
@@ -99,15 +101,26 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
     def __setup_initial_values(self):
         """Lädt gespeicherte Werte und setzt Styles."""
+        
+        # Stylesheet für den Start-Button setzen (Active State)
+        self.pushButton_acquireContinuous.setStyleSheet("""
+            QPushButton:checked {
+                background-color: #00e5ff; 
+                color: black;
+                border: 1px solid #00e5ff;
+                font-weight: bold;
+            }
+        """)
 
-        # Werte vom Manager holen
+        # Werte vom Manager holen (erst wenn Profil geladen ist, sonst Defaults)
         try:
             self.spinBox_integrationTime.setValue(self.spec_mgr.get_integrationtime())
             self.checkBox_correctDarkCounts.setChecked(self.spec_mgr.get_correction_dark_count())
             self.checkBox_correctNonLinearity.setChecked(self.spec_mgr.get_correction_non_linearity())
-            self.doubleSpinBox.setValue(self.spec_mgr.get_temperature()) # Target Temp
+            self.doubleSpinBox.setValue(self.spec_mgr.get_temperature()) 
         except Exception as e:
-            self.log_mgr.error(f"Error setting initial UI values: {e}")
+            # Fehler ignorieren beim Start (passiert, wenn Profil noch nicht da ist)
+            pass
 
         # GUI Status updaten (Disconnected)
         self.on_connection_status_changed(False, "")
@@ -125,10 +138,10 @@ class SpectrometerWidget(QWidget, Ui_Form):
         # --- UI -> Manager ---
         self.pushButton_connect.clicked.connect(self.on_connect_clicked)
         
-        # Messungen (Button Namen aus deiner UI Datei verwenden!)
+        # Messungen
         self.pushButton_acquireSingle.clicked.connect(self._acquire_single_wrapper)
         self.pushButton_acquireContinuous.clicked.connect(self.on_toggle_continuous)
-        self.pushButton_acqurieDarkRead.clicked.connect(self.on_acquire_dark_clicked) # Schreibfehler im UI File beachten: acqurie
+        self.pushButton_acqurieDarkRead.clicked.connect(self.on_acquire_dark_clicked)
 
         # Settings
         self.checkBox_correctDarkCounts.toggled.connect(self.spec_mgr.set_correction_dark_count)
@@ -137,6 +150,10 @@ class SpectrometerWidget(QWidget, Ui_Form):
         
         # Temperatur
         self.doubleSpinBox.editingFinished.connect(self.on_target_temp_changed)
+        
+        # Auf Profil-Laden warten für UI-Update
+        if hasattr(self.spec_mgr, 'profile_mgr'):
+             self.spec_mgr.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
     # --- Interne Logik ---
 
@@ -146,7 +163,6 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.pushButton_acquireContinuous.setChecked(False)
             self.on_toggle_continuous()
         
-        # Signal senden -> Plot update via Slot
         self.spec_mgr.acquire_spectrum()
 
     def _on_timer_tick(self):
@@ -158,6 +174,17 @@ class SpectrometerWidget(QWidget, Ui_Form):
             self.on_toggle_continuous()
 
     # --- Slots ---
+
+    @Slot(str)
+    def on_profile_loaded(self, profile_name):
+        """Wird aufgerufen, wenn Profil geladen wurde -> UI aktualisieren."""
+        self.spinBox_integrationTime.blockSignals(True)
+        self.spinBox_integrationTime.setValue(self.spec_mgr.get_integrationtime())
+        self.spinBox_integrationTime.blockSignals(False)
+        
+        self.checkBox_correctDarkCounts.blockSignals(True)
+        self.checkBox_correctDarkCounts.setChecked(self.spec_mgr.get_correction_dark_count())
+        self.checkBox_correctDarkCounts.blockSignals(False)
 
     @Slot()
     def on_toggle_continuous(self):
@@ -186,11 +213,9 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
         scans = self.spinBox_countDarkRead.value()
         
-        # Visualisierung
         self.plot_widget.setTitle("Measuring Dark Spectrum...", color='#ff3333')
         self.curve_dark.setVisible(True)
         
-        # Start
         success = self.spec_mgr.acquire_dark_spectrum(scans)
         
         if success:
@@ -238,19 +263,16 @@ class SpectrometerWidget(QWidget, Ui_Form):
         """1Hz Timer für Temperatur & Styles."""
         if not self.spec_mgr.is_connected(): return
 
-        # Werte lesen
         actual_temp = self.spec_mgr.get_temperature()
         target_temp = self.doubleSpinBox.value()
         
         self.doubleSpinBox_actualTemp.setValue(actual_temp)
 
-        # Style Logik via Dynamic Property
         delta = abs(actual_temp - target_temp)
         new_state = "ok"
         if delta > 1.0: new_state = "critical"
         elif delta > 0.2: new_state = "warning"
         
-        # Nur updaten wenn geändert (Performance)
         if self.doubleSpinBox_actualTemp.property("tempState") != new_state:
             self.doubleSpinBox_actualTemp.setProperty("tempState", new_state)
             self.doubleSpinBox_actualTemp.style().unpolish(self.doubleSpinBox_actualTemp)

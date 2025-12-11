@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'WaterfallWidgetMFPxvE.ui'
+## Form generated from reading UI file 'WaterfallWidgetiZsNtU.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -15,16 +15,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDoubleSpinBox,
-    QFrame, QGridLayout, QHBoxLayout, QLabel,
-    QLayout, QPushButton, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QLayout, QPushButton,
+    QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout,
+    QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(402, 424)
+        Form.resize(402, 331)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -44,30 +44,19 @@ class Ui_Form(object):
         self.verticalLayout = QVBoxLayout(self.frame)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(9, 9, -1, -1)
+        self.widget_plot = QWidget(self.frame)
+        self.widget_plot.setObjectName(u"widget_plot")
+        sizePolicy.setHeightForWidth(self.widget_plot.sizePolicy().hasHeightForWidth())
+        self.widget_plot.setSizePolicy(sizePolicy)
+        self.widget_plot.setMinimumSize(QSize(380, 200))
+
+        self.verticalLayout.addWidget(self.widget_plot)
+
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.verticalLayout_connection = QVBoxLayout()
-        self.verticalLayout_connection.setObjectName(u"verticalLayout_connection")
-        self.verticalLayout_connection.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
-
-        self.horizontalLayout.addLayout(self.verticalLayout_connection)
-
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
-
-        self.verticalLayout_settings = QVBoxLayout()
-        self.verticalLayout_settings.setObjectName(u"verticalLayout_settings")
-        self.verticalLayout_settings.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
-
-        self.horizontalLayout.addLayout(self.verticalLayout_settings)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout)
-
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.verticalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.label_integrationTime = QLabel(self.frame)
         self.label_integrationTime.setObjectName(u"label_integrationTime")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
@@ -76,49 +65,64 @@ class Ui_Form(object):
         sizePolicy1.setHeightForWidth(self.label_integrationTime.sizePolicy().hasHeightForWidth())
         self.label_integrationTime.setSizePolicy(sizePolicy1)
 
-        self.horizontalLayout_5.addWidget(self.label_integrationTime)
+        self.verticalLayout_2.addWidget(self.label_integrationTime)
 
-        self.doubleSpinBox_zOffset = QDoubleSpinBox(self.frame)
-        self.doubleSpinBox_zOffset.setObjectName(u"doubleSpinBox_zOffset")
+        self.spinBox_bufferSize = QSpinBox(self.frame)
+        self.spinBox_bufferSize.setObjectName(u"spinBox_bufferSize")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.spinBox_bufferSize.sizePolicy().hasHeightForWidth())
+        self.spinBox_bufferSize.setSizePolicy(sizePolicy2)
+        self.spinBox_bufferSize.setMaximumSize(QSize(200, 16777215))
+        self.spinBox_bufferSize.setMinimum(1)
+        self.spinBox_bufferSize.setMaximum(1999999999)
+        self.spinBox_bufferSize.setValue(100)
 
-        self.horizontalLayout_5.addWidget(self.doubleSpinBox_zOffset)
+        self.verticalLayout_2.addWidget(self.spinBox_bufferSize)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_5)
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
 
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.line = QFrame(self.frame)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.VLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.horizontalLayout.addWidget(self.line)
+
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.label_2 = QLabel(self.frame)
         self.label_2.setObjectName(u"label_2")
 
-        self.horizontalLayout_6.addWidget(self.label_2)
+        self.verticalLayout_3.addWidget(self.label_2)
 
         self.comboBox_colormap = QComboBox(self.frame)
         self.comboBox_colormap.setObjectName(u"comboBox_colormap")
+        sizePolicy2.setHeightForWidth(self.comboBox_colormap.sizePolicy().hasHeightForWidth())
+        self.comboBox_colormap.setSizePolicy(sizePolicy2)
+        self.comboBox_colormap.setMaximumSize(QSize(200, 16777215))
 
-        self.horizontalLayout_6.addWidget(self.comboBox_colormap)
+        self.verticalLayout_3.addWidget(self.comboBox_colormap)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_6)
-
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_status = QLabel(self.frame)
-        self.label_status.setObjectName(u"label_status")
-
-        self.horizontalLayout_4.addWidget(self.label_status)
+        self.horizontalLayout.addLayout(self.verticalLayout_3)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout_4.addItem(self.horizontalSpacer)
-
-        self.checkBox_autoScale = QCheckBox(self.frame)
-        self.checkBox_autoScale.setObjectName(u"checkBox_autoScale")
-
-        self.horizontalLayout_4.addWidget(self.checkBox_autoScale)
+        self.horizontalLayout.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.line_2 = QFrame(self.frame)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line_2)
 
         self.verticalLayout_acquisition = QVBoxLayout()
         self.verticalLayout_acquisition.setObjectName(u"verticalLayout_acquisition")
@@ -150,16 +154,8 @@ class Ui_Form(object):
 
         self.verticalLayout.addLayout(self.verticalLayout_acquisition)
 
-        self.widget_plot = QWidget(self.frame)
-        self.widget_plot.setObjectName(u"widget_plot")
-        sizePolicy.setHeightForWidth(self.widget_plot.sizePolicy().hasHeightForWidth())
-        self.widget_plot.setSizePolicy(sizePolicy)
-        self.widget_plot.setMinimumSize(QSize(380, 200))
 
-        self.verticalLayout.addWidget(self.widget_plot)
-
-
-        self.gridLayout.addWidget(self.frame, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
 
 
         self.retranslateUi(Form)
@@ -169,10 +165,8 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Waterfall", None))
-        self.label_integrationTime.setText(QCoreApplication.translate("Form", u"Z-Offset:", None))
+        self.label_integrationTime.setText(QCoreApplication.translate("Form", u"History Lines:", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Colormap:", None))
-        self.label_status.setText(QCoreApplication.translate("Form", u"Status", None))
-        self.checkBox_autoScale.setText(QCoreApplication.translate("Form", u"Auto Scale", None))
         self.pushButton_clear.setText(QCoreApplication.translate("Form", u"Clear", None))
         self.pushButton_savePlot.setText(QCoreApplication.translate("Form", u"Save Plot", None))
         self.pushButton_saveData.setText(QCoreApplication.translate("Form", u"Save Data", None))

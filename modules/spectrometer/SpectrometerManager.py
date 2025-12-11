@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, Slot
 
 # https://python-seabreeze.readthedocs.io/en/latest/api.html#seabreeze.spectrometers.Spectrometer
 import seabreeze
@@ -47,12 +47,6 @@ class SpectrometerManager(QObject):
     dark_measurement_progress = Signal(object, object, int) 
 
     def __init__(self, log_manager, profile_manager):
-        """
-        Startet den Manager.
-
-        Hier werden Speicherplätze für Daten angelegt, Einstellungen geladen
-        und versucht, das letzte Gerät wieder zu verbinden.
-        """
         super().__init__()
         self.log_mgr = log_manager 
         self.profile_mgr = profile_manager
@@ -63,37 +57,44 @@ class SpectrometerManager(QObject):
         self.available_devices = []
         self.device_name_map = {}
 
-        # Speicher für Dark-Spektren
-        self._dark_spectrum_avg = None      # Das fertig gemittelte Dunkelspektrum
-        self._dark_spectrum_raw_list = []   # Liste aller Einzelmessungen während der Erfassung
+        # WICHTIG: Hier NICHT mehr laden!
+        # Sondern auf das Signal warten.
+        self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
-        # Einstellungen laden
+        # Standardwerte initialisieren (damit der Code nicht crasht, bevor Profil da ist)
+        self.correct_dark_counts = False
+        self.correct_non_linearity = False
+        self.current_integration_time_us = 100000 
+        self.current_temperature_C = -15
+        self.LastDevice = None
+        
+        # Initialer Scan (Hardware suchen darf man immer)
+        self.get_deviceList()
+
+    @Slot(str)
+    def on_profile_loaded(self, profile_name):
+        """Wird aufgerufen, sobald ein Profil erfolgreich geladen wurde."""
+        self.log_mgr.info(f"SpectrometerManager loading settings from '{profile_name}'...")
+
+        # Jetzt erst laden!
         self.correct_dark_counts = self.profile_mgr.read("Spec_correct_dark_counts")
         self.correct_non_linearity = self.profile_mgr.read("Spec_non_linearity")
         self.current_integration_time_us = self.profile_mgr.read("Spec_integration_time_us")
         self.current_temperature_C = self.profile_mgr.read("Spec_temperature_C")
         self.LastDevice = self.profile_mgr.read("Spec_LastDevice")
 
-        # Standardwerte setzen, falls noch nie etwas gespeichert wurde
-        if self.correct_dark_counts is None:
-            self.set_correction_dark_count(False)
+        # Fallbacks (falls im Profil noch nichts steht)
+        if self.correct_dark_counts is None: self.set_correction_dark_count(False)
+        if self.correct_non_linearity is None: self.set_correction_non_linearity(False)
+        if self.current_integration_time_us is None: self.set_integrationtime(100000)
+        if self.current_temperature_C is None: self.set_temperature(-15)
 
-        if self.correct_non_linearity is None:
-            self.set_correction_non_linearity(False)
-
-        if self.current_integration_time_us is None:
-            self.set_integrationtime(100 * 1000) # Standard 100ms
-
-        if self.current_temperature_C is None:
-            self.set_temperature(-15) # Standard -15°C
-
-        # Automatisch verbinden, falls ein Gerät bekannt ist
+        # Auto-Connect Versuch (erst jetzt, wo wir LastDevice kennen)
         if self.LastDevice:
             self.log_mgr.info(f"Last connected spectrometer (SN): {self.LastDevice}. Attempting re-connect...")
             self.connect_LastDevice()
         else:
-            self.log_mgr.info("No last spectrometer saved. Please connect manually.")
-            self.get_deviceList()
+            self.log_mgr.info("No last spectrometer saved in this profile.")
 
     # --- Verbindungs- und Geräte-Verwaltung ---
 
