@@ -14,34 +14,33 @@ class SpectrometerManager(QObject):
     """
     Manager zur Steuerung und Verwaltung von Ocean Optics Spektrometern.
 
-    Diese Klasse kapselt die `python-seabreeze`-Bibliothek, um eine stabile
-    Schnittstelle für die Geräteverbindung, Konfiguration (Integrationszeit, 
-    Korrekturen, Temperatur) und Datenaufnahme (Spektren) bereitzustellen.
-    Zusätzlich verwaltet sie die Erfassung und Subtraktion von Dunkelspektren.
+    Diese Klasse dient als "Dolmetscher" zwischen der Hardware (Seabreeze Bibliothek)
+    und der Benutzeroberfläche. Sie kümmert sich um Verbindung, Einstellungen und
+    die korrekte mathematische Verrechnung von Dunkelspektren.
 
     Args:
-        log_manager (LogManager): Eine Instanz eines Log-Managers (erwartet .info, .error, etc.).
-        profile_manager (ProfileManager): Eine Instanz zur Verwaltung von App-Einstellungen.
+        log_manager (LogManager): Eine Klasse zum Schreiben von Log-Nachrichten (Info/Error).
+        profile_manager (ProfileManager): Eine Klasse zum Speichern/Laden von Einstellungen.
 
-    Signals:
+    Signale (Events für die GUI):
         connection_status_changed (bool, str): 
-            Wird bei Änderung des Verbindungsstatus ausgelöst.
-            (Verbunden [bool], Gerätename [str])
+            Wird gefeuert, wenn sich die Verbindung ändert. 
+            Gibt (IstVerbunden, Gerätename) zurück.
         
         device_list_updated (list): 
-            Wird nach Aktualisierung der Geräteliste ausgelöst.
-            (Liste der Gerätenamen [list[str]])
+            Wird gefeuert, wenn nach Geräten gesucht wurde. 
+            Gibt eine Liste mit Namen zurück (z.B. ["FLAME (SN123)", ...]).
             
         new_spectrum_acquired (numpy.ndarray, numpy.ndarray): 
-            Wird ausgelöst, wenn ein *rohes* Spektrum (acquire_spectrum_raw) gemessen wurde.
-            (Wellenlängen [ndarray], Intensitäten [ndarray])
+            Wird gefeuert, wenn eine *rohe* Messung abgeschlossen ist.
+            Gibt (Wellenlängen, Intensitäten) zurück.
 
         dark_measurement_progress (object, object, int): 
-            Fortschritt der Dunkelspektrum-Messung.
-            (Wellenlängen [ndarray], Aktueller Average [ndarray], Fortschritt in % [int])
+            Wird während der Dunkel-Messung laufend gefeuert.
+            Gibt (Wellenlängen, Aktueller Durchschnitt, Fortschritt in %) zurück.
     """
 
-    # Signale Definitionen
+    # Definition der Signale
     connection_status_changed = Signal(bool, str)
     device_list_updated = Signal(list)
     new_spectrum_acquired = Signal(object, object) 
@@ -49,10 +48,10 @@ class SpectrometerManager(QObject):
 
     def __init__(self, log_manager, profile_manager):
         """
-        Initialisiert den SpectrometerManager.
+        Startet den Manager.
 
-        Lädt die zuletzt verwendete Konfiguration aus dem ProfileManager und 
-        versucht automatisch, eine Verbindung zum zuletzt verwendeten Gerät herzustellen.
+        Hier werden Speicherplätze für Daten angelegt, Einstellungen geladen
+        und versucht, das letzte Gerät wieder zu verbinden.
         """
         super().__init__()
         self.log_mgr = log_manager 
@@ -65,17 +64,17 @@ class SpectrometerManager(QObject):
         self.device_name_map = {}
 
         # Speicher für Dark-Spektren
-        self._dark_spectrum_avg = None      # Das gemittelte Spektrum (numpy array)
-        self._dark_spectrum_raw_list = []   # Liste aller Einzelmessungen
+        self._dark_spectrum_avg = None      # Das fertig gemittelte Dunkelspektrum
+        self._dark_spectrum_raw_list = []   # Liste aller Einzelmessungen während der Erfassung
 
-        # Zuletzt verwendete Konfiguration laden
+        # Einstellungen laden
         self.correct_dark_counts = self.profile_mgr.read("Spec_correct_dark_counts")
         self.correct_non_linearity = self.profile_mgr.read("Spec_non_linearity")
         self.current_integration_time_us = self.profile_mgr.read("Spec_integration_time_us")
         self.current_temperature_C = self.profile_mgr.read("Spec_temperature_C")
         self.LastDevice = self.profile_mgr.read("Spec_LastDevice")
 
-        # Fallbacks setzen, falls Profile leer sind
+        # Standardwerte setzen, falls noch nie etwas gespeichert wurde
         if self.correct_dark_counts is None:
             self.set_correction_dark_count(False)
 
@@ -88,7 +87,7 @@ class SpectrometerManager(QObject):
         if self.current_temperature_C is None:
             self.set_temperature(-15) # Standard -15°C
 
-        # Auto-Connect Versuch
+        # Automatisch verbinden, falls ein Gerät bekannt ist
         if self.LastDevice:
             self.log_mgr.info(f"Last connected spectrometer (SN): {self.LastDevice}. Attempting re-connect...")
             self.connect_LastDevice()
@@ -96,38 +95,22 @@ class SpectrometerManager(QObject):
             self.log_mgr.info("No last spectrometer saved. Please connect manually.")
             self.get_deviceList()
 
-    # --- Interne Hilfsfunktionen ---
-
-    def _invalidate_dark_spectrum(self):
-        #"""
-        #Interner Helper: Löscht das Dunkelspektrum und loggt eine Warnung.
-        #Wird aufgerufen, wenn messrelevante Parameter (Zeit, Temp, etc.) geändert werden.
-        #"""
-        if self._dark_spectrum_avg is not None:
-            self.clear_dark_spectrum()
-            self.log_mgr.warning("Dark spectrum invalidated due to parameter change.")
-
-    def clear_dark_spectrum(self):
-        """
-        Löscht das aktuell gespeicherte Dunkelspektrum manuell.
-
-        Setzt den Durchschnitt und die Rohdaten-Liste zurück.
-        """
-        if self._dark_spectrum_avg is not None:
-            self._dark_spectrum_avg = None
-            self._dark_spectrum_raw_list = []
-            self.log_mgr.info("Dark spectrum cleared.")
-
     # --- Verbindungs- und Geräte-Verwaltung ---
 
     def get_deviceList(self) -> list:
         """
-        Scannt nach verfügbaren Spektrometern.
+        Sucht nach angeschlossenen Spektrometern (via USB).
 
-        Aktualisiert die interne Geräteliste und emittiert `device_list_updated`.
+        Diese Funktion aktualisiert die interne Liste und sendet das Signal
+        `device_list_updated`, damit z.B. eine ComboBox in der GUI gefüllt werden kann.
 
         Returns:
-            list: Liste formatierter Gerätenamen (z.B. ["FLAME (SN123)", ...]).
+            list: Eine Liste von Namen, z.B. ["FLAME (SN123)", "USB2000 (SN999)"].
+
+        Example:
+            >>> devices = manager.get_deviceList()
+            >>> print(devices)
+            ['FLAME (SN12345)']
         """
         device_names = []
         try:
@@ -153,16 +136,21 @@ class SpectrometerManager(QObject):
     
     def connect(self, device_name_or_serial: str) -> bool:
         """
-        Verbindet zu einem Spektrometer.
+        Verbindet den Manager mit einem konkreten Spektrometer.
 
-        Argument kann der Anzeigename oder die Seriennummer sein.
-        Stellt bei Erfolg auch Integrationszeit und Temperatur wieder her.
+        Wenn erfolgreich, werden gespeicherte Einstellungen (Integrationszeit, Temperatur)
+        direkt auf das Gerät angewendet.
 
         Args:
-            device_name_or_serial (str): Name aus `get_deviceList` oder Seriennummer.
+            device_name_or_serial (str): Der Name aus der Liste (z.B. "FLAME (SN...)") 
+                                         oder direkt die Seriennummer.
 
         Returns:
-            bool: True bei Erfolg, sonst False.
+            bool: True, wenn die Verbindung geklappt hat, sonst False.
+
+        Example:
+            >>> manager.connect("FLAME (SN12345)")
+            True
         """
         self.disconnect()
         dev_to_connect = None
@@ -195,10 +183,10 @@ class SpectrometerManager(QObject):
         
     def connect_LastDevice(self) -> bool:
         """
-        Versucht, das zuletzt genutzte Gerät (aus Profile) zu verbinden.
+        Verbindet automatisch das zuletzt genutzte Gerät.
 
         Returns:
-            bool: True bei Erfolg, False wenn kein Gerät gespeichert oder Fehler.
+            bool: True bei Erfolg.
         """
         if self.LastDevice:
             return self.connect(self.LastDevice)
@@ -208,9 +196,10 @@ class SpectrometerManager(QObject):
         
     def disconnect(self):
         """
-        Trennt die Verbindung zum aktuellen Spektrometer.
-
-        Schließt die Hardware-Ressource und invalidiert das Dunkelspektrum.
+        Trennt die Verbindung und gibt das Gerät frei.
+        
+        Wichtig: Das gespeicherte Dunkelspektrum wird hierbei gelöscht, da es
+        für ein neues Gerät (oder nach Neustart) nicht mehr gültig wäre.
         """
         if self.spectrometer:
             try:
@@ -223,10 +212,10 @@ class SpectrometerManager(QObject):
 
     def get_activeDeviceName(self) -> str:
         """
-        Liefert den Namen des aktuell verbundenen Geräts.
+        Gibt den Namen des aktuell verbundenen Geräts zurück.
 
         Returns:
-            str: "Model (Serial)" oder leerer String.
+            str: Name (z.B. "FLAME (SN123)") oder leerer String "", wenn nicht verbunden.
         """
         if self.spectrometer:
             return f"{self.spectrometer.model} ({self.spectrometer.serial_number})"
@@ -234,10 +223,10 @@ class SpectrometerManager(QObject):
     
     def is_connected(self) -> bool: 
         """
-        Prüft den Verbindungsstatus.
+        Prüft, ob aktuell eine Verbindung besteht.
 
         Returns:
-            bool: True wenn verbunden.
+            bool: True = Verbunden, False = Getrennt.
         """
         return self.spectrometer is not None
     
@@ -245,14 +234,19 @@ class SpectrometerManager(QObject):
 
     def set_correction_dark_count(self, enable: bool):
         """ 
-        Aktiviert/Deaktiviert die hardwareseitige Dunkelstrom-Korrektur (Electric Dark).
+        Schaltet die hardwareseitige 'Electric Dark Correction' an oder aus.
         
-        Achtung: Dies ist NICHT die Subtraktion des Dunkelspektrums, sondern
-        die Korrektur basierend auf verdunkelten Pixeln am Sensorrand.
-        Macht das gespeicherte Dunkelspektrum ungültig.
+        Info: Dies nutzt abgedunkelte Pixel am Rand des Sensors, um elektrisches
+        Rauschen abzuziehen. Das ist NICHT das gleiche wie der Abzug eines
+        kompletten Dunkelspektrums (welches Streulicht korrigiert).
+
+        Wichtig: Eine Änderung macht das gespeicherte Dunkelspektrum ungültig!
 
         Args:
-            enable (bool): True zum Aktivieren.
+            enable (bool): True = An, False = Aus.
+        
+        Example:
+            >>> manager.set_correction_dark_count(True)
         """
         if self.correct_dark_counts != enable:
             self.correct_dark_counts = enable
@@ -261,17 +255,20 @@ class SpectrometerManager(QObject):
             self._invalidate_dark_spectrum()
     
     def get_correction_dark_count(self) -> bool:
-        """Gibt den Status der hardwareseitigen Dunkelstrom-Korrektur zurück."""
+        """Gibt zurück, ob Electric Dark Correction aktiv ist."""
         return self.correct_dark_counts
     
     def set_correction_non_linearity(self, enable: bool):
         """ 
-        Aktiviert/Deaktiviert die Linearitäts-Korrektur.
+        Schaltet die Linearitäts-Korrektur an oder aus.
         
-        Macht das gespeicherte Dunkelspektrum ungültig.
+        Info: Sensoren sind bei hoher Intensität oft nicht perfekt linear.
+        Diese Funktion nutzt Kalibrierdaten im Gerät, um das auszugleichen.
+
+        Wichtig: Eine Änderung macht das gespeicherte Dunkelspektrum ungültig!
 
         Args:
-            enable (bool): True zum Aktivieren.
+            enable (bool): True = An, False = Aus.
         """
         if self.correct_non_linearity != enable:
             self.correct_non_linearity = enable
@@ -280,22 +277,29 @@ class SpectrometerManager(QObject):
             self._invalidate_dark_spectrum()
     
     def get_correction_non_linearity(self) -> bool:
-        """Gibt den Status der Linearitäts-Korrektur zurück."""
+        """Gibt zurück, ob Linearitäts-Korrektur aktiv ist."""
         return self.correct_non_linearity
 
     def set_integrationtime(self, time_us: int) -> bool:
         """
-        Setzt die Integrationszeit in Mikrosekunden.
+        Setzt die Belichtungszeit (Integrationszeit) in Mikrosekunden.
 
-        Begrenzt den Wert automatisch auf die Hardware-Limits.
-        Speichert den Wert auch bei getrennter Verbindung für den nächsten Connect.
-        Macht das gespeicherte Dunkelspektrum ungültig.
+        Die Zeit bestimmt, wie lange der Sensor Licht sammelt.
+        - Längere Zeit = Mehr Signal (heller), aber langsamer.
+        - Kürzere Zeit = Weniger Signal (dunkler), aber schneller.
+
+        Die Funktion begrenzt den Wert automatisch auf das, was das Gerät kann (z.B. min 1000us).
+        Eine Änderung löscht das gespeicherte Dunkelspektrum, da sich das Rauschen ändert.
 
         Args:
-            time_us (int): Zeit in Mikrosekunden.
+            time_us (int): Zeit in Mikrosekunden (1 ms = 1000 us).
 
         Returns:
-            bool: True bei Erfolg (oder Speicherung), False bei Fehler.
+            bool: True, wenn erfolgreich gesetzt.
+
+        Example:
+            >>> # Setze auf 100 Millisekunden
+            >>> manager.set_integrationtime(100000)
         """
         if not self.is_connected():
             self.log_mgr.info(f"Storing integration time ({time_us} us) for next connect.")
@@ -327,15 +331,19 @@ class SpectrometerManager(QObject):
             return False
     
     def get_integrationtime(self) -> int:
-        """Gibt die aktuelle Integrationszeit in µs zurück."""
+        """Gibt die aktuelle Integrationszeit in Mikrosekunden (µs) zurück."""
         return self.current_integration_time_us
 
     def get_integrationtime_limits_us(self) -> tuple[int, int]:
         """
-        Liest die Limits für die Integrationszeit aus dem Gerät.
+        Fragt die Hardware, welche Zeiten minimal und maximal möglich sind.
 
         Returns:
-            tuple[int, int]: (min_us, max_us) oder (0,0) bei Fehler/Disconnection.
+            tuple: (Minimum_us, Maximum_us). Gibt (0,0) zurück bei Fehler.
+        
+        Example:
+            >>> min_t, max_t = manager.get_integrationtime_limits_us()
+            >>> print(f"Bereich: {min_t} bis {max_t}")
         """
         if not self.is_connected():
             self.log_mgr.warning(f"Cannot read limits: No spectrometer connected.")
@@ -350,10 +358,11 @@ class SpectrometerManager(QObject):
 
     def get_max_intensity(self) -> float:
         """
-        Gibt die Sättigungsgrenze des Detektors zurück (z.B. 65535).
+        Gibt zurück, bei welchem Wert der Sensor "voll" ist (Sättigung).
+        Meistens 65535 (16-bit) oder ca. 4000 (12-bit).
 
         Returns:
-            float: Maximale Intensität.
+            float: Maximaler Intensitätswert.
         """
         if not self.is_connected():
             return 65535.0 
@@ -366,13 +375,13 @@ class SpectrometerManager(QObject):
         
     def set_temperature(self, temperature_degC: float):
         """
-        Setzt die Soll-Temperatur für TEC-gekühlte Spektrometer.
-
-        Aktiviert automatisch das TEC, falls verfügbar.
-        Macht das gespeicherte Dunkelspektrum ungültig.
+        Setzt die Ziel-Temperatur für die Kühlung (TEC), falls vorhanden.
+        
+        Kühlung reduziert das Rauschen. Eine Temperaturänderung macht das 
+        Dunkelspektrum ungültig.
 
         Args:
-            temperature_degC (float): Temperatur in °C (z.B. -15.0).
+            temperature_degC (float): Zieltemperatur in °C (z.B. -15.0).
         """
         self.current_temperature_C = temperature_degC
         self.profile_mgr.write("Spec_temperature_C", temperature_degC)
@@ -380,9 +389,14 @@ class SpectrometerManager(QObject):
         
         if self.is_connected():
             try:
+                # Prüfen auf TEC Feature (Thermo-Electric Cooler)
                 if hasattr(self.spectrometer, 'features') and 'thermo_electric' in self.spectrometer.features:
-                    self.spectrometer.features['thermo_electric'].set_temperature_setpoint_degrees_celsius(temperature_degC)
-                    self.spectrometer.features['thermo_electric'].enable_tec(True)
+                    tec = self.spectrometer.features['thermo_electric']
+                    
+                    tec.set_temperature_setpoint_degrees_celsius(temperature_degC)
+                    
+                    tec.enable_tec(True)
+                    
                     self.log_mgr.info(f"TEC Temperature setpoint set to {temperature_degC}°C")
                 else:
                     self.log_mgr.info(f"Temperature value {temperature_degC}°C stored (Hardware control not available/supported).")
@@ -391,17 +405,17 @@ class SpectrometerManager(QObject):
 
     def get_temperature(self) -> float:
         """
-        Liest die aktuelle Temperatur des Sensors/PCBs aus.
+        Liest die aktuelle Temperatur des Sensors aus.
 
         Returns:
-            float: Gemessene Temperatur in °C oder gesetzter Setpoint als Fallback.
+            float: Die gemessene Temperatur in °C. (Oder den Soll-Wert, falls Sensor nicht lesbar).
         """
         if self.is_connected():
             try:
                 # TEC Temperatur (genauer Sensor am Detektor)
                 if hasattr(self.spectrometer, 'features') and 'thermo_electric' in self.spectrometer.features:
                     return self.spectrometer.features['thermo_electric'].get_temperature_degrees_celsius()
-                # PCB Temperatur
+                # PCB Temperatur (Allgemeine Board-Temperatur)
                 elif hasattr(self.spectrometer, 'features') and 'temperature' in self.spectrometer.features:
                      temps = self.spectrometer.features['temperature'].get_temperatures_degrees_celsius()
                      if temps: return temps[0]
@@ -410,55 +424,87 @@ class SpectrometerManager(QObject):
         
         return self.current_temperature_C if self.current_temperature_C is not None else 0.0
     
+    def _invalidate_dark_spectrum(self):
+        """
+        Interne Hilfsfunktion: 
+        Löscht das Dunkelspektrum automatisch, wenn sich Parameter ändern 
+        (z.B. Integrationszeit geändert -> Altes Dunkelbild passt nicht mehr).
+        """
+        if self._dark_spectrum_avg is not None:
+            self.clear_dark_spectrum()
+            self.log_mgr.warning("Dark spectrum invalidated due to parameter change.")
+
+    def clear_dark_spectrum(self):
+        """
+        Löscht das gespeicherte Dunkelspektrum manuell.
+        Nach Aufruf dieser Funktion wird keine Subtraktion mehr durchgeführt,
+        bis ein neues Dunkelspektrum aufgenommen wird.
+        
+        Example:
+            >>> manager.clear_dark_spectrum()
+        """
+        if self._dark_spectrum_avg is not None:
+            self._dark_spectrum_avg = None
+            self._dark_spectrum_raw_list = []
+            self.log_mgr.info("Dark spectrum cleared.")
+    
     # --- Daten Erhebung & Dark Spectrum ---
 
     def get_dark_spectrum_average(self) -> np.ndarray | None:
         """
-        Gibt das aktuell gültige, gemittelte Dunkelspektrum zurück.
+        Gibt das aktuell gespeicherte Dunkelspektrum (Durchschnitt) zurück.
         
+        Nützlich, um es in Dateien abzuspeichern oder anzuzeigen.
+
         Returns:
-            np.ndarray | None: Array der Intensitäten oder None.
+            np.ndarray: Array der Intensitäten (oder None, wenn keins existiert).
         """
         return self._dark_spectrum_avg
 
     def get_dark_spectrum_raw(self) -> list[np.ndarray]:
         """
-        Gibt die Liste aller Einzelmessungen der letzten Dunkelstrom-Erfassung zurück.
+        Gibt ALLE Einzelmessungen zurück, aus denen der Durchschnitt berechnet wurde.
+        Nützlich für statistische Auswertungen (Standardabweichung etc.).
 
         Returns:
-            list[np.ndarray]: Liste von Intensitäts-Arrays.
+            list: Eine Liste von Numpy-Arrays.
         """
         return self._dark_spectrum_raw_list
 
     def acquire_spectrum(self) -> tuple[np.ndarray | None, np.ndarray | None]:
         """
-        Nimmt ein Spektrum auf und zieht automatisch das Dark Spectrum ab.
-
-        Voraussetzung: Ein valides Dark Spectrum muss existieren (via acquire_dark_spectrum).
+        Führt eine Messung durch und zieht AUTOMATISCH das Dunkelspektrum ab.
+        
+        Das ist die Standard-Funktion für normale Messungen.
+        Falls kein Dunkelspektrum existiert, wird nichts zurückgegeben (None).
 
         Returns:
-            tuple: (Wellenlängen, Korrigierte Intensitäten) oder (None, None) bei Fehler.
+            tuple: (Wellenlängen, Korrigierte Intensitäten).
+                   Gibt (None, None) zurück bei Fehler oder fehlendem Dunkelspektrum.
+        
+        Example:
+            >>> wl, inten = manager.acquire_spectrum()
+            >>> if wl is not None:
+            >>>     plot(wl, inten)
         """
         if self._dark_spectrum_avg is None:
             self.log_mgr.warning("Cannot acquire corrected spectrum: No valid dark spectrum available.")
             return None, None
             
+        # 1. Normale Messung holen (Rohdaten)
         wl, inten = self.acquire_spectrum_raw() 
         
         if wl is None:
             return None, None
 
         try:
-            # 2. Subtraktion
+            # 2. Subtraktion (Signal - Dunkel)
             if inten.shape != self._dark_spectrum_avg.shape:
                 self.log_mgr.error("Shape mismatch between measurement and dark spectrum. Invalidating dark.")
                 self._invalidate_dark_spectrum()
                 return None, None
 
             corrected_intensities = inten - self._dark_spectrum_avg
-            
-            # Optional: Negative Werte auf 0 setzen
-            # corrected_intensities = np.clip(corrected_intensities, 0, None)
             
             return wl, corrected_intensities
 
@@ -468,13 +514,16 @@ class SpectrometerManager(QObject):
 
     def acquire_spectrum_raw(self) -> tuple[np.ndarray | None, np.ndarray | None]:
         """
-        Nimmt ein rohes Spektrum vom Gerät auf (ohne Dark-Abzug).
+        Führt eine rohe Messung durch, OHNE etwas abzuziehen.
         
-        Berücksichtigt lediglich die Hardware-Settings (Integration Time, Electric Dark, Non-Linearity).
-        Emittiert das Signal `new_spectrum_acquired`.
+        Dies liefert genau das, was der Sensor sieht (Licht + Dunkelstrom).
+        Sollte genutzt werden, um Referenzen aufzunehmen oder wenn man selbst rechnen will.
 
         Returns:
-            tuple: (Wellenlängen, Intensitäten) oder (None, None).
+            tuple: (Wellenlängen, Rohe Intensitäten).
+        
+        Example:
+            >>> wl, raw_data = manager.acquire_spectrum_raw()
         """
         if not self.is_connected():
             self.log_mgr.warning("Cannot acquire spectrum: No spectrometer connected.")
@@ -486,7 +535,7 @@ class SpectrometerManager(QObject):
                 correct_nonlinearity=self.correct_non_linearity
             )
             
-            # Sende das Signal mit den neuen Daten
+            # Melde GUI, dass neue Daten da sind
             self.new_spectrum_acquired.emit(wavelengths, intensities)
 
             return wavelengths, intensities
@@ -498,16 +547,24 @@ class SpectrometerManager(QObject):
 
     def acquire_dark_spectrum(self, n_scans: int) -> bool:
         """
-        Führt eine Dunkelspektrum-Messung durch (Mehrfachmessung mit Mittelung).
+        Startet den Prozess zur Aufnahme eines Dunkelspektrums.
         
-        Der Fortschritt wird über das Signal `dark_measurement_progress` gemeldet.
-        Das Ergebnis wird intern in `_dark_spectrum_avg` gespeichert.
+        Dabei wird der Shutter (falls vorhanden) meist manuell geschlossen oder
+        die Lichtquelle ausgeschaltet (muss der User machen!).
+        Die Funktion misst `n_scans` mal, mittelt alle Messungen und speichert
+        das Ergebnis als Referenz für `acquire_spectrum`.
 
         Args:
-            n_scans (int): Anzahl der zu mittelnden Spektren (muss >= 1 sein).
+            n_scans (int): Wie viele Messungen sollen gemittelt werden? (z.B. 10).
+                           Mehr Scans = Weniger Rauschen im Dunkelbild.
 
         Returns:
-            bool: True bei Erfolg, False bei Abbruch oder Fehler.
+            bool: True bei Erfolg.
+
+        Example:
+            >>> # Lichtquelle aus!
+            >>> manager.acquire_dark_spectrum(10)
+            >>> # Jetzt ist das Dunkelbild gespeichert.
         """
         if not self.is_connected():
             self.log_mgr.error("Cannot measure dark spectrum: No connection.")
@@ -519,7 +576,7 @@ class SpectrometerManager(QObject):
 
         self.log_mgr.info(f"Starting dark spectrum measurement ({n_scans} scans)...")
         
-        # Reset storage
+        # Reset Speicher
         self._dark_spectrum_raw_list = []
         self._dark_spectrum_avg = None
         
@@ -527,28 +584,25 @@ class SpectrometerManager(QObject):
             wavelengths = None
             
             for i in range(n_scans):
-                # Messung durchführen (direkt vom Device, um Signal-Spam zu vermeiden oder settings zu erzwingen)
+                # Messung (direkt vom Device)
                 wl, inten = self.spectrometer.spectrum(
                     correct_dark_counts=self.correct_dark_counts,
                     correct_nonlinearity=self.correct_non_linearity
                 )
                 wavelengths = wl
                 
-                # Zu Rohdaten hinzufügen
+                # Speichern
                 self._dark_spectrum_raw_list.append(inten)
                 
-                # Laufenden Durchschnitt berechnen für Live-View
+                # Live-Durchschnitt berechnen für die Anzeige
                 current_stack = np.vstack(self._dark_spectrum_raw_list)
                 current_avg = np.mean(current_stack, axis=0)
                 
-                # Signal senden für Live-Plot
+                # Signal senden (für Fortschrittsbalken/Plot)
                 progress_pct = int(((i + 1) / n_scans) * 100)
                 self.dark_measurement_progress.emit(wl, current_avg, progress_pct)
                 
-                # Hinweis: Hier könnte 'QCoreApplication.processEvents()' nötig sein, 
-                # falls dies im MainThread läuft, damit die GUI updated.
-
-            # Abschluss-Berechnung
+            # Endergebnis berechnen und speichern
             self._dark_spectrum_avg = np.mean(np.vstack(self._dark_spectrum_raw_list), axis=0)
             self.log_mgr.info("Dark spectrum measurement completed.")
             return True

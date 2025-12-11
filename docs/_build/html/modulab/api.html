@@ -1677,29 +1677,30 @@ Einstellungen zu laden.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.spectrometer.SpectrometerManager.</span></span><span class="sig-name descname"><span class="pre">SpectrometerManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
 <p>Manager zur Steuerung und Verwaltung von Ocean Optics Spektrometern.</p>
-<p>Diese Klasse kapselt die <cite>python-seabreeze</cite>-Bibliothek, um eine stabile
-Schnittstelle für die Geräteverbindung, Konfiguration (Integrationszeit,
-Korrekturen) und Datenaufnahme (Spektren) bereitzustellen.
-Sie nutzt PySide6-Signale, um die GUI über Statusänderungen zu informieren.</p>
+<p>Diese Klasse dient als “Dolmetscher” zwischen der Hardware (Seabreeze Bibliothek)
+und der Benutzeroberfläche. Sie kümmert sich um Verbindung, Einstellungen und
+die korrekte mathematische Verrechnung von Dunkelspektren.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz eines Log-Managers (erwartet .info, .error, etc.).</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von
-App-Einstellungen (Lesen/Schreiben).</p></li>
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Klasse zum Schreiben von Log-Nachrichten (Info/Error).</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Klasse zum Speichern/Laden von Einstellungen.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple">
-<dt>Signale:</dt><dd><dl class="simple">
-<dt>connection_status_changed (bool, str):</dt><dd><p>Wird ausgelöst, wenn sich der Verbindungsstatus ändert.
-Args: (bool: verbunden, str: Gerätename/IDN).</p>
+<dt>Signale (Events für die GUI):</dt><dd><dl class="simple">
+<dt>connection_status_changed (bool, str):</dt><dd><p>Wird gefeuert, wenn sich die Verbindung ändert.
+Gibt (IstVerbunden, Gerätename) zurück.</p>
 </dd>
-<dt>device_list_updated (list):</dt><dd><p>Wird ausgelöst, nachdem die Geräteliste aktualisiert wurde.
-Args: (list: Liste von Gerätenamen [str], z.B. [“FLAME (Q…)”, …]).</p>
+<dt>device_list_updated (list):</dt><dd><p>Wird gefeuert, wenn nach Geräten gesucht wurde.
+Gibt eine Liste mit Namen zurück (z.B. [“FLAME (SN123)”, …]).</p>
 </dd>
-<dt>new_spectrum_acquired (numpy.ndarray, numpy.ndarray):</dt><dd><p>Wird ausgelöst, wenn ein neues Spektrum verfügbar ist.
-Args: (numpy.ndarray: Wellenlängen, numpy.ndarray: Intensitäten).</p>
+<dt>new_spectrum_acquired (numpy.ndarray, numpy.ndarray):</dt><dd><p>Wird gefeuert, wenn eine <em>rohe</em> Messung abgeschlossen ist.
+Gibt (Wellenlängen, Intensitäten) zurück.</p>
+</dd>
+<dt>dark_measurement_progress (object, object, int):</dt><dd><p>Wird während der Dunkel-Messung laufend gefeuert.
+Gibt (Wellenlängen, Aktueller Durchschnitt, Fortschritt in %) zurück.</p>
 </dd>
 </dl>
 </dd>
@@ -1719,44 +1720,38 @@ Args: (numpy.ndarray: Wellenlängen, numpy.ndarray: Intensitäten).</p>
 <span class="sig-name descname"><span class="pre">new_spectrum_acquired</span></span><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.new_spectrum_acquired" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.dark_measurement_progress">
+<span class="sig-name descname"><span class="pre">dark_measurement_progress</span></span><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.dark_measurement_progress" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initialisiert den SpectrometerManager.</p>
-<p>Lädt die zuletzt verwendete Konfiguration (Integrationszeit, Korrekturen)
-aus dem ProfileManager und versucht automatisch, eine Verbindung
-zum zuletzt verwendeten Gerät herzustellen.</p>
+<dd><p>Startet den Manager.</p>
+<p>Hier werden Speicherplätze für Daten angelegt, Einstellungen geladen
+und versucht, das letzte Gerät wieder zu verbinden.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_deviceList">
 <span class="sig-name descname"><span class="pre">get_deviceList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_deviceList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_deviceList" title="Link to this definition">¶</a></dt>
-<dd><p>Scannt nach verfügbaren Spektrometern und aktualisiert die interne Liste.</p>
-<p>Verwendet <cite>seabreeze.list_devices()</cite> und erstellt eine Zuordnung (Map)
-von formatierten Gerätenamen zu Geräteinstanzen. Löst das
-<cite>device_list_updated</cite>-Signal aus.</p>
+<dd><p>Sucht nach angeschlossenen Spektrometern (via USB).</p>
+<p>Diese Funktion aktualisiert die interne Liste und sendet das Signal
+<cite>device_list_updated</cite>, damit z.B. eine ComboBox in der GUI gefüllt werden kann.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Eine Liste formatierter Gerätenamen (z.B. [“Oceanoptics (O…)”, “USB2000 (…)”]).</p>
+<dd class="field-odd"><p>Eine Liste von Namen, z.B. [“FLAME (SN123)”, “USB2000 (SN999)”].</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Eine Geräteliste abrufen und in einer Combobox anzeigen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Annahme: &#39;spectrometer_mgr&#39; ist eine Instanz von SpectrometerManager</span>
-<span class="c1"># und &#39;ui.combo_devices&#39; ist eine QComboBox.</span>
-
-<span class="c1"># Zuerst das Signal verbinden (z.B. in __init__ der GUI)</span>
-<span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">device_list_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">devices</span><span class="p">:</span> <span class="n">ui</span><span class="o">.</span><span class="n">combo_devices</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c1"># Manuell eine Aktualisierung auslösen</span>
-<span class="n">ui</span><span class="o">.</span><span class="n">combo_devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">get_deviceList</span><span class="p">()</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">devices</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_deviceList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span>
+<span class="go">[&#39;FLAME (SN12345)&#39;]</span>
 </pre></div>
 </div>
 </div>
@@ -1765,34 +1760,25 @@ von formatierten Gerätenamen zu Geräteinstanzen. Löst das
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.connect">
 <span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name_or_serial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect" title="Link to this definition">¶</a></dt>
-<dd><p>Verbindet ein Spektrometer über seinen Namen oder seine Seriennummer.</p>
-<p>Trennt zuerst eine eventuell bestehende Verbindung.
-Speichert die Seriennummer bei Erfolg für die Wiederverbindung.</p>
+<dd><p>Verbindet den Manager mit einem konkreten Spektrometer.</p>
+<p>Wenn erfolgreich, werden gespeicherte Einstellungen (Integrationszeit, Temperatur)
+direkt auf das Gerät angewendet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>device_name_or_serial</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Kann entweder der formatierte Name aus <cite>get_deviceList()</cite>
-(z.B. “FLAME (Q…)”) oder die reine Seriennummer
-(z.B. “Q…”) sein.</p>
+<dd class="field-odd"><p><strong>device_name_or_serial</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name aus der Liste (z.B. “FLAME (SN…)”)
+oder direkt die Seriennummer.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei erfolgreicher Verbindung, sonst False.</p>
+<dd class="field-even"><p>True, wenn die Verbindung geklappt hat, sonst False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Verbindung über den formatierten Namen (z.B. aus einer Combobox):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;FLAME (QEP20488)&quot;</span>
-<span class="n">success</span> <span class="o">=</span> <span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Verbunden mit&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Verbindung direkt über die Seriennummer:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">serial</span> <span class="o">=</span> <span class="s2">&quot;QEP20488&quot;</span>
-<span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">serial</span><span class="p">)</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;FLAME (SN12345)&quot;</span><span class="p">)</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </div>
@@ -1801,15 +1787,10 @@ Speichert die Seriennummer bei Erfolg für die Wiederverbindung.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.connect_LastDevice">
 <span class="sig-name descname"><span class="pre">connect_LastDevice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.connect_LastDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect_LastDevice" title="Link to this definition">¶</a></dt>
-<dd><p>Versucht, die Verbindung mit dem zuletzt genutzten Gerät wiederherzustellen.</p>
-<p>Verwendet die im Profil gespeicherte Seriennummer (<cite>self.LastDevice</cite>).</p>
+<dd><p>Verbindet automatisch das zuletzt genutzte Gerät.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>True bei Erfolg, False, wenn kein Gerät gespeichert war</dt><dd><p>oder die Verbindung fehlschlägt.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>True bei Erfolg.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -1820,22 +1801,18 @@ Speichert die Seriennummer bei Erfolg für die Wiederverbindung.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.disconnect">
 <span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.disconnect" title="Link to this definition">¶</a></dt>
-<dd><p>Trennt die aktive Verbindung zum Spektrometer.</p>
-<p>Schließt das Gerät über <cite>spectrometer.close()</cite> und löst
-<cite>connection_status_changed</cite> aus.</p>
+<dd><p>Trennt die Verbindung und gibt das Gerät frei.</p>
+<p>Wichtig: Das gespeicherte Dunkelspektrum wird hierbei gelöscht, da es
+für ein neues Gerät (oder nach Neustart) nicht mehr gültig wäre.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_activeDeviceName">
 <span class="sig-name descname"><span class="pre">get_activeDeviceName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_activeDeviceName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_activeDeviceName" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt den formatierten Namen des aktuell verbundenen Geräts zurück.</p>
+<dd><p>Gibt den Namen des aktuell verbundenen Geräts zurück.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>Der formatierte Gerätename (z.B. “FLAME (Q…)”)</dt><dd><p>oder “” (leer, wenn nicht verbunden).</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>Name (z.B. “FLAME (SN123)”) oder leerer String “”, wenn nicht verbunden.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
@@ -1846,10 +1823,10 @@ Speichert die Seriennummer bei Erfolg für die Wiederverbindung.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.is_connected">
 <span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.is_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.is_connected" title="Link to this definition">¶</a></dt>
-<dd><p>Prüft, ob eine aktive Verbindung zum Spektrometer besteht.</p>
+<dd><p>Prüft, ob aktuell eine Verbindung besteht.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True, wenn verbunden, sonst False.</p>
+<dd class="field-odd"><p>True = Verbunden, False = Getrennt.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -1860,18 +1837,19 @@ Speichert die Seriennummer bei Erfolg für die Wiederverbindung.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.set_correction_dark_count">
 <span class="sig-name descname"><span class="pre">set_correction_dark_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.set_correction_dark_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_correction_dark_count" title="Link to this definition">¶</a></dt>
-<dd><p>Aktiviert/Deaktiviert die Korrektur des Dunkelstroms (Dark Counts).</p>
-<p>Wenn aktiviert, wird der Durchschnittswert der elektrisch verdunkelten
-Pixel vom Spektrum abgezogen.</p>
+<dd><p>Schaltet die hardwareseitige ‘Electric Dark Correction’ an oder aus.</p>
+<p>Info: Dies nutzt abgedunkelte Pixel am Rand des Sensors, um elektrisches
+Rauschen abzuziehen. Das ist NICHT das gleiche wie der Abzug eines
+kompletten Dunkelspektrums (welches Streulicht korrigiert).</p>
+<p>Wichtig: Eine Änderung macht das gespeicherte Dunkelspektrum ungültig!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, um die Korrektur zu aktivieren, False zum Deaktivieren.</p>
+<dd class="field-odd"><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True = An, False = Aus.</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Dunkelstrom-Korrektur aktivieren:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">set_correction_dark_count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">set_correction_dark_count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1880,13 +1858,10 @@ Pixel vom Spektrum abgezogen.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_correction_dark_count">
 <span class="sig-name descname"><span class="pre">get_correction_dark_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_correction_dark_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_correction_dark_count" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt den aktuellen Status der Dunkelstrom-Korrektur zurück.</p>
+<dd><p>Gibt zurück, ob Electric Dark Correction aktiv ist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True, wenn die Korrektur aktiv ist.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1894,33 +1869,24 @@ Pixel vom Spektrum abgezogen.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.set_correction_non_linearity">
 <span class="sig-name descname"><span class="pre">set_correction_non_linearity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.set_correction_non_linearity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_correction_non_linearity" title="Link to this definition">¶</a></dt>
-<dd><p>Aktiviert/Deaktiviert die Nichtlinearitäts-Korrektur.</p>
-<p>Wenn aktiviert und vom Gerät unterstützt, werden die Messwerte
-anhand der im EEPROM gespeicherten Koeffizienten linearisiert.</p>
+<dd><p>Schaltet die Linearitäts-Korrektur an oder aus.</p>
+<p>Info: Sensoren sind bei hoher Intensität oft nicht perfekt linear.
+Diese Funktion nutzt Kalibrierdaten im Gerät, um das auszugleichen.</p>
+<p>Wichtig: Eine Änderung macht das gespeicherte Dunkelspektrum ungültig!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, um die Korrektur zu aktivieren, False zum Deaktivieren.</p>
+<dd class="field-odd"><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True = An, False = Aus.</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Nichtlinearitäts-Korrektur deaktivieren:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">set_correction_non_linearity</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_correction_non_linearity">
 <span class="sig-name descname"><span class="pre">get_correction_non_linearity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_correction_non_linearity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_correction_non_linearity" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt den aktuellen Status der Nichtlinearitäts-Korrektur zurück.</p>
+<dd><p>Gibt zurück, ob Linearitäts-Korrektur aktiv ist.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True, wenn die Korrektur aktiv ist.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1928,32 +1894,27 @@ anhand der im EEPROM gespeicherten Koeffizienten linearisiert.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.set_integrationtime">
 <span class="sig-name descname"><span class="pre">set_integrationtime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_us</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.set_integrationtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_integrationtime" title="Link to this definition">¶</a></dt>
-<dd><p>Stellt die Integrationszeit des Spektrometers in Mikrosekunden (us) ein.</p>
-<p>Die Zeit wird automatisch auf die vom Gerät unterstützten Hardware-Limits
-begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
+<dd><p>Setzt die Belichtungszeit (Integrationszeit) in Mikrosekunden.</p>
+<p>Die Zeit bestimmt, wie lange der Sensor Licht sammelt.
+- Längere Zeit = Mehr Signal (heller), aber langsamer.
+- Kürzere Zeit = Weniger Signal (dunkler), aber schneller.</p>
+<p>Die Funktion begrenzt den Wert automatisch auf das, was das Gerät kann (z.B. min 1000us).
+Eine Änderung löscht das gespeicherte Dunkelspektrum, da sich das Rauschen ändert.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>time_us</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Die gewünschte Integrationszeit in Mikrosekunden.</p>
+<dd class="field-odd"><p><strong>time_us</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Zeit in Mikrosekunden (1 ms = 1000 us).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>True, wenn die Zeit erfolgreich gesetzt (oder zwischengespeichert)</dt><dd><p>wurde, False bei einem Hardware-Fehler.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>True, wenn erfolgreich gesetzt.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Integrationszeit auf 100 Millisekunden (100.000 µs) setzen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">set_integrationtime</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Integrationszeit auf 2 Sekunden (2.000.000 µs) setzen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">set_integrationtime</span><span class="p">(</span><span class="mi">2_000_000</span><span class="p">)</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setze auf 100 Millisekunden</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">set_integrationtime</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1962,13 +1923,10 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_integrationtime">
 <span class="sig-name descname"><span class="pre">get_integrationtime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_integrationtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_integrationtime" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt die zuletzt erfolgreich gesetzte Integrationszeit in Mikrosekunden (us) zurück.</p>
+<dd><p>Gibt die aktuelle Integrationszeit in Mikrosekunden (µs) zurück.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Die Integrationszeit in Mikrosekunden.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1976,25 +1934,19 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_integrationtime_limits_us">
 <span class="sig-name descname"><span class="pre">get_integrationtime_limits_us</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_integrationtime_limits_us"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_integrationtime_limits_us" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt die Hardware-Limits (min, max) der Integrationszeit in Mikrosekunden zurück.</p>
+<dd><p>Fragt die Hardware, welche Zeiten minimal und maximal möglich sind.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>(min_integrationszeit_us, max_integrationszeit_us).</dt><dd><p>Gibt (0, 0) zurück, wenn nicht verbunden.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>(Minimum_us, Maximum_us). Gibt (0,0) zurück bei Fehler.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[int, int]</p>
+<dd class="field-even"><p>tuple</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Minimale und maximale Zeit abfragen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span> <span class="o">=</span> <span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">get_integrationtime_limits_us</span><span class="p">()</span>
-<span class="k">if</span> <span class="n">max_t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unterstützter Bereich: </span><span class="si">{</span><span class="n">min_t</span><span class="si">}</span><span class="s2"> µs bis </span><span class="si">{</span><span class="n">max_t</span><span class="si">}</span><span class="s2"> µs&quot;</span><span class="p">)</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_integrationtime_limits_us</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bereich: </span><span class="si">{</span><span class="n">min_t</span><span class="si">}</span><span class="s2"> bis </span><span class="si">{</span><span class="n">max_t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2003,15 +1955,11 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_max_intensity">
 <span class="sig-name descname"><span class="pre">get_max_intensity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_max_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_max_intensity" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt die maximal mögliche Intensität (ADC-Sättigungswert) des Spektrometers zurück.</p>
-<p>Dies ist typischerweise 65535.0 (für 16-bit ADC) oder 4095.0 (für 12-bit ADC).</p>
+<dd><p>Gibt zurück, bei welchem Wert der Sensor “voll” ist (Sättigung).
+Meistens 65535 (16-bit) oder ca. 4000 (12-bit).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>Der maximale Sättigungswert.</dt><dd><p>Gibt 65535.0 als Fallback zurück, wenn nicht verbunden.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>Maximaler Intensitätswert.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>float</p>
@@ -2020,35 +1968,157 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum">
-<span class="sig-name descname"><span class="pre">acquire_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum" title="Link to this definition">¶</a></dt>
-<dd><p>Nimmt ein einzelnes Spektrum mit den aktuell gesetzten Korrekturen auf.</p>
-<p>Löst bei Erfolg das <cite>new_spectrum_acquired</cite>-Signal aus.</p>
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.set_temperature">
+<span class="sig-name descname"><span class="pre">set_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature_degC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.set_temperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_temperature" title="Link to this definition">¶</a></dt>
+<dd><p>Setzt die Ziel-Temperatur für die Kühlung (TEC), falls vorhanden.</p>
+<p>Kühlung reduziert das Rauschen. Eine Temperaturänderung macht das
+Dunkelspektrum ungültig.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Ein Tupel aus (wavelengths, intensities) bei Erfolg.
-(None, None) bei einem Messfehler oder wenn nicht verbunden.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[np.ndarray | None, np.ndarray | None]</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>temperature_degC</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Zieltemperatur in °C (z.B. -15.0).</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Ein Spektrum aufnehmen und verarbeiten:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Annahme: &#39;spectrometer_mgr&#39; ist eine Instanz von SpectrometerManager</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">set_temperature</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
-<span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span> <span class="o">=</span> <span class="n">spectrometer_mgr</span><span class="o">.</span><span class="n">acquire_spectrum</span><span class="p">()</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_temperature">
+<span class="sig-name descname"><span class="pre">get_temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_temperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_temperature" title="Link to this definition">¶</a></dt>
+<dd><p>Liest die aktuelle Temperatur des Sensors aus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Die gemessene Temperatur in °C. (Oder den Soll-Wert, falls Sensor nicht lesbar).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="k">if</span> <span class="n">wavelengths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># Finde die Wellenlänge mit der maximalen Intensität</span>
-    <span class="n">peak_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">intensities</span><span class="p">)</span>
-    <span class="n">peak_wl</span> <span class="o">=</span> <span class="n">wavelengths</span><span class="p">[</span><span class="n">peak_index</span><span class="p">]</span>
-    <span class="n">peak_int</span> <span class="o">=</span> <span class="n">intensities</span><span class="p">[</span><span class="n">peak_index</span><span class="p">]</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.clear_dark_spectrum">
+<span class="sig-name descname"><span class="pre">clear_dark_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.clear_dark_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.clear_dark_spectrum" title="Link to this definition">¶</a></dt>
+<dd><p>Löscht das gespeicherte Dunkelspektrum manuell.
+Nach Aufruf dieser Funktion wird keine Subtraktion mehr durchgeführt,
+bis ein neues Dunkelspektrum aufgenommen wird.</p>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">clear_dark_spectrum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stärkstes Signal bei </span><span class="si">{</span><span class="n">peak_wl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> nm mit </span><span class="si">{</span><span class="n">peak_int</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> Counts&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spektrum-Aufnahme fehlgeschlagen.&quot;</span><span class="p">)</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_dark_spectrum_average">
+<span class="sig-name descname"><span class="pre">get_dark_spectrum_average</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_dark_spectrum_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_dark_spectrum_average" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt das aktuell gespeicherte Dunkelspektrum (Durchschnitt) zurück.</p>
+<p>Nützlich, um es in Dateien abzuspeichern oder anzuzeigen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array der Intensitäten (oder None, wenn keins existiert).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.get_dark_spectrum_raw">
+<span class="sig-name descname"><span class="pre">get_dark_spectrum_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.get_dark_spectrum_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_dark_spectrum_raw" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt ALLE Einzelmessungen zurück, aus denen der Durchschnitt berechnet wurde.
+Nützlich für statistische Auswertungen (Standardabweichung etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Eine Liste von Numpy-Arrays.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum">
+<span class="sig-name descname"><span class="pre">acquire_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum" title="Link to this definition">¶</a></dt>
+<dd><p>Führt eine Messung durch und zieht AUTOMATISCH das Dunkelspektrum ab.</p>
+<p>Das ist die Standard-Funktion für normale Messungen.
+Falls kein Dunkelspektrum existiert, wird nichts zurückgegeben (None).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>(Wellenlängen, Korrigierte Intensitäten).</dt><dd><p>Gibt (None, None) zurück bei Fehler oder fehlendem Dunkelspektrum.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span><span class="p">,</span> <span class="n">inten</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">acquire_spectrum</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">wl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">plot</span><span class="p">(</span><span class="n">wl</span><span class="p">,</span> <span class="n">inten</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw">
+<span class="sig-name descname"><span class="pre">acquire_spectrum_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw" title="Link to this definition">¶</a></dt>
+<dd><p>Führt eine rohe Messung durch, OHNE etwas abzuziehen.</p>
+<p>Dies liefert genau das, was der Sensor sieht (Licht + Dunkelstrom).
+Sollte genutzt werden, um Referenzen aufzunehmen oder wenn man selbst rechnen will.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(Wellenlängen, Rohe Intensitäten).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span><span class="p">,</span> <span class="n">raw_data</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">acquire_spectrum_raw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_dark_spectrum">
+<span class="sig-name descname"><span class="pre">acquire_dark_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_scans</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_dark_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_dark_spectrum" title="Link to this definition">¶</a></dt>
+<dd><p>Startet den Prozess zur Aufnahme eines Dunkelspektrums.</p>
+<p>Dabei wird der Shutter (falls vorhanden) meist manuell geschlossen oder
+die Lichtquelle ausgeschaltet (muss der User machen!).
+Die Funktion misst <cite>n_scans</cite> mal, mittelt alle Messungen und speichert
+das Ergebnis als Referenz für <cite>acquire_spectrum</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_scans</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Wie viele Messungen sollen gemittelt werden? (z.B. 10).
+Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Lichtquelle aus!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">acquire_dark_spectrum</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Jetzt ist das Dunkelbild gespeichert.</span>
 </pre></div>
 </div>
 </div>
@@ -2056,7 +2126,7 @@ begrenzt (clamping). Die Einstellung wird auch im Profil gespeichert.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;SpectrometerManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=connection_status_changed(bool,QString),</span> <span class="pre">parameters=bool,</span> <span class="pre">QString</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=device_list_updated(QVariantList),</span> <span class="pre">parameters=QVariantList</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_acquired(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;SpectrometerManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=connection_status_changed(bool,QString),</span> <span class="pre">parameters=bool,</span> <span class="pre">QString</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=device_list_updated(QVariantList),</span> <span class="pre">parameters=QVariantList</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_acquired(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=dark_measurement_progress(PyObject,PyObject,int),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject,</span> <span class="pre">int</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2653,6 +2723,7 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connection_status_changed"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.connection_status_changed</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.device_list_updated"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.device_list_updated</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.new_spectrum_acquired"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.new_spectrum_acquired</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.dark_measurement_progress"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.dark_measurement_progress</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_deviceList"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_deviceList()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.connect()</span></code></a></li>
@@ -2668,7 +2739,14 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_integrationtime"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_integrationtime()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_integrationtime_limits_us"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_integrationtime_limits_us()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_max_intensity"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_max_intensity()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_temperature"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.set_temperature()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_temperature"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_temperature()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.clear_dark_spectrum"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.clear_dark_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_dark_spectrum_average"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_dark_spectrum_average()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_dark_spectrum_raw"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_dark_spectrum_raw()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.acquire_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.acquire_spectrum_raw()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_dark_spectrum"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.acquire_dark_spectrum()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.staticMetaObject</span></code></a></li>
 </ul>
 </li>
