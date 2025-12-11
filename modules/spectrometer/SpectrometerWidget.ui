@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>348</height>
+    <width>483</width>
+    <height>366</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -49,6 +49,9 @@
    </property>
    <item row="0" column="0">
     <widget class="QFrame" name="frame">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="frameShape">
       <enum>QFrame::Shape::StyledPanel</enum>
      </property>
@@ -197,6 +200,9 @@
           </property>
           <item>
            <widget class="QCheckBox" name="checkBox_correctDarkCounts">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -223,6 +229,92 @@
           </item>
          </layout>
         </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="label_actualTemp">
+              <property name="text">
+               <string>Actual Temp:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_actualTemp">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::FocusPolicy::NoFocus</enum>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+              </property>
+              <property name="suffix">
+               <string> °C</string>
+              </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>-100.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Target Temp:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <property name="prefix">
+               <string/>
+              </property>
+              <property name="suffix">
+               <string>°C</string>
+              </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>-100.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </item>
       <item>
@@ -232,6 +324,26 @@
           <property name="sizeConstraint">
            <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
           </property>
+          <item>
+           <widget class="QPushButton" name="pushButton_acqurieDarkRead">
+            <property name="text">
+             <string>Read Dark</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_countDarkRead">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>100000</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
           <item>
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
@@ -246,7 +358,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_acquire">
+           <widget class="QPushButton" name="pushButton_acquireSingle">
+            <property name="text">
+             <string>Single</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_acquireContinuous">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -260,7 +379,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Measure</string>
+             <string>Start</string>
             </property>
            </widget>
           </item>

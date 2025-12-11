@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SpectrometerWidgetHGKfKV.ui'
+## Form generated from reading UI file 'SpectrometerWidgetXgVgXZ.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.3
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,16 +15,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QGridLayout, QHBoxLayout, QLabel, QLayout,
-    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractSpinBox, QApplication, QCheckBox, QComboBox,
+    QDoubleSpinBox, QFrame, QGridLayout, QHBoxLayout,
+    QLabel, QLayout, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(400, 348)
+        Form.resize(483, 366)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -39,6 +39,7 @@ class Ui_Form(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 6)
         self.frame = QFrame(Form)
         self.frame.setObjectName(u"frame")
+        self.frame.setEnabled(True)
         self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout = QVBoxLayout(self.frame)
@@ -122,6 +123,7 @@ class Ui_Form(object):
         self.verticalLayout_settings.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         self.checkBox_correctDarkCounts = QCheckBox(self.frame)
         self.checkBox_correctDarkCounts.setObjectName(u"checkBox_correctDarkCounts")
+        self.checkBox_correctDarkCounts.setEnabled(False)
         sizePolicy3.setHeightForWidth(self.checkBox_correctDarkCounts.sizePolicy().hasHeightForWidth())
         self.checkBox_correctDarkCounts.setSizePolicy(sizePolicy3)
 
@@ -137,6 +139,55 @@ class Ui_Form(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_settings)
 
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.label_actualTemp = QLabel(self.frame)
+        self.label_actualTemp.setObjectName(u"label_actualTemp")
+
+        self.horizontalLayout_5.addWidget(self.label_actualTemp)
+
+        self.doubleSpinBox_actualTemp = QDoubleSpinBox(self.frame)
+        self.doubleSpinBox_actualTemp.setObjectName(u"doubleSpinBox_actualTemp")
+        self.doubleSpinBox_actualTemp.setEnabled(True)
+        self.doubleSpinBox_actualTemp.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.doubleSpinBox_actualTemp.setReadOnly(True)
+        self.doubleSpinBox_actualTemp.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
+        self.doubleSpinBox_actualTemp.setDecimals(1)
+        self.doubleSpinBox_actualTemp.setMinimum(-100.000000000000000)
+        self.doubleSpinBox_actualTemp.setSingleStep(0.100000000000000)
+
+        self.horizontalLayout_5.addWidget(self.doubleSpinBox_actualTemp)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_5)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_2 = QLabel(self.frame)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_3.addWidget(self.label_2)
+
+        self.doubleSpinBox = QDoubleSpinBox(self.frame)
+        self.doubleSpinBox.setObjectName(u"doubleSpinBox")
+        self.doubleSpinBox.setDecimals(1)
+        self.doubleSpinBox.setMinimum(-100.000000000000000)
+        self.doubleSpinBox.setSingleStep(0.100000000000000)
+
+        self.horizontalLayout_3.addWidget(self.doubleSpinBox)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_3)
+
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
@@ -145,17 +196,35 @@ class Ui_Form(object):
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.pushButton_acqurieDarkRead = QPushButton(self.frame)
+        self.pushButton_acqurieDarkRead.setObjectName(u"pushButton_acqurieDarkRead")
+
+        self.horizontalLayout_2.addWidget(self.pushButton_acqurieDarkRead)
+
+        self.spinBox_countDarkRead = QSpinBox(self.frame)
+        self.spinBox_countDarkRead.setObjectName(u"spinBox_countDarkRead")
+        self.spinBox_countDarkRead.setMinimum(1)
+        self.spinBox_countDarkRead.setMaximum(100000)
+        self.spinBox_countDarkRead.setValue(100)
+
+        self.horizontalLayout_2.addWidget(self.spinBox_countDarkRead)
+
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
 
-        self.pushButton_acquire = QPushButton(self.frame)
-        self.pushButton_acquire.setObjectName(u"pushButton_acquire")
-        sizePolicy3.setHeightForWidth(self.pushButton_acquire.sizePolicy().hasHeightForWidth())
-        self.pushButton_acquire.setSizePolicy(sizePolicy3)
-        self.pushButton_acquire.setMaximumSize(QSize(16777215, 16777215))
+        self.pushButton_acquireSingle = QPushButton(self.frame)
+        self.pushButton_acquireSingle.setObjectName(u"pushButton_acquireSingle")
 
-        self.horizontalLayout_2.addWidget(self.pushButton_acquire)
+        self.horizontalLayout_2.addWidget(self.pushButton_acquireSingle)
+
+        self.pushButton_acquireContinuous = QPushButton(self.frame)
+        self.pushButton_acquireContinuous.setObjectName(u"pushButton_acquireContinuous")
+        sizePolicy3.setHeightForWidth(self.pushButton_acquireContinuous.sizePolicy().hasHeightForWidth())
+        self.pushButton_acquireContinuous.setSizePolicy(sizePolicy3)
+        self.pushButton_acquireContinuous.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_2.addWidget(self.pushButton_acquireContinuous)
 
 
         self.verticalLayout_acquisition.addLayout(self.horizontalLayout_2)
@@ -188,6 +257,13 @@ class Ui_Form(object):
         self.label_integrationTime.setText(QCoreApplication.translate("Form", u"Integration Time [us]:", None))
         self.checkBox_correctDarkCounts.setText(QCoreApplication.translate("Form", u"Correct dark counts", None))
         self.checkBox_correctNonLinearity.setText(QCoreApplication.translate("Form", u"Correct non linearity", None))
-        self.pushButton_acquire.setText(QCoreApplication.translate("Form", u"Measure", None))
+        self.label_actualTemp.setText(QCoreApplication.translate("Form", u"Actual Temp:", None))
+        self.doubleSpinBox_actualTemp.setSuffix(QCoreApplication.translate("Form", u" \u00b0C", None))
+        self.label_2.setText(QCoreApplication.translate("Form", u"Target Temp:", None))
+        self.doubleSpinBox.setPrefix("")
+        self.doubleSpinBox.setSuffix(QCoreApplication.translate("Form", u"\u00b0C", None))
+        self.pushButton_acqurieDarkRead.setText(QCoreApplication.translate("Form", u"Read Dark", None))
+        self.pushButton_acquireSingle.setText(QCoreApplication.translate("Form", u"Single", None))
+        self.pushButton_acquireContinuous.setText(QCoreApplication.translate("Form", u"Start", None))
     # retranslateUi
 
