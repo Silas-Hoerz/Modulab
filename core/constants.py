@@ -1,4 +1,4 @@
 # core/constants.py
 
 APP_TITLE = "Modulab"
-APP_VERSION = "0.1.10"
+APP_VERSION = "0.1.9"

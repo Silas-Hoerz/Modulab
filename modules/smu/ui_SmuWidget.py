@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SmuWidgetSfWnlj.ui'
+## Form generated from reading UI file 'SmuWidgetkxFSdB.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -67,6 +67,7 @@ class Ui_Form(object):
         self.pushButton_connect.setSizePolicy(sizePolicy2)
         self.pushButton_connect.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_connect.setCheckable(True)
+        self.pushButton_connect.setChecked(False)
 
         self.horizontalLayout_6.addWidget(self.pushButton_connect)
 
@@ -424,7 +425,7 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"SMU", None))
-        self.label.setText(QCoreApplication.translate("Form", u"Port:", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Device:", None))
         self.pushButton_connect.setText(QCoreApplication.translate("Form", u"Connect", None))
         self.label_status.setText(QCoreApplication.translate("Form", u"No connection", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Channel A", None))

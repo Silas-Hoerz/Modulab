@@ -1,570 +1,303 @@
+# modules/smu/SmuWidget.py
 # -*- coding: utf-8 -*-
-"""
-============================================================================
- File:          SmuWidget.py
- Author:        (Dein Name)
- Creation date: 2025-11-17
- Last modified: 2025-11-17 (Bugfix: findChildren entfernt, manuelle Widget-Liste)
-============================================================================
- Description:
-     Diese Klasse verwaltet das SMU-UI-Panel.
-     Sie verbindet die UI-Elemente (aus ui_SmuWidget.py)
-    mit dem SmuManager und dessen neuer, intuitiver API.
-    Sie steuert Kanal A und B komplett getrennt.
-============================================================================
-"""
-
-# import re # <-- ENTFERNT, da fehlerhaft
 from PySide6.QtWidgets import (
-    QWidget, QButtonGroup, QAbstractItemView, QHeaderView, QWidget
+    QWidget, QButtonGroup, QAbstractItemView, QHeaderView, QWidget, QVBoxLayout, QLabel
 )
 from PySide6.QtGui import QDoubleValidator, QStandardItemModel, QStandardItem
 from PySide6.QtCore import Slot, QEvent, Qt, QDateTime, QLocale
 
-# Importiere die generierte UI-Klasse (Name aus deinem UI-File)
+# Import UI
 try:
-    # Annahme: Deine neue Datei heißt 'ui_SmuWidget.py'
     from .ui_SmuWidget import Ui_Form 
 except ImportError:
-    print("Error: Could not find 'ui_SmuWidget.py'.")
-    # Notfall-Fallback
-    from PySide6.QtWidgets import QVBoxLayout, QLabel
     class Ui_Form:
-        def setupUi(self, Form):
-            self.vLayout = QVBoxLayout(Form)
-            self.label_progress = QLabel("UI File 'ui_SmuWidget.py' not loaded", Form)
-            self.vLayout.addWidget(self.label_progress)
-        def retranslateUi(self, Form): pass
-
+        def setupUi(self, Form): pass
 
 class SmuWidget(QWidget, Ui_Form):
     """
     Diese Klasse verwaltet das SMU-UI-Panel.
-    Sie verbindet die UI-Elemente mit dem SmuManager.
+    
+    Sie empfängt keine Daten direkt aus dem Profil, sondern synchronisiert sich
+    ausschließlich mit dem SmuManager (Single Source of Truth).
     """
 
     def __init__(self, context, parent=None):
         super().__init__(parent)
         self.setupUi(self)
 
-        # Manager aus dem Kontext-Objekt holen
         self.smu_mgr = context.smu_manager
         self.log_mgr = context.log_manager
-        self.profile_mgr = context.profile_manager
+
+        # Wir warten auf das Profil-Laden-Signal
+        # Wenn das Profil geladen ist, aktualisieren wir die UI, 
+        # falls der Manager bereits verbunden ist.
+        if hasattr(self.smu_mgr, 'profile_mgr'):
+             self.smu_mgr.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
         self.__setup_ui()
         self.__connect_signals()
 
-        # Event-Filter für die ComboBox
         self.comboBox_port.installEventFilter(self)
-
-        # Beim Start sofort nach Geräten suchen
         self.smu_mgr.get_deviceList()
 
     def __setup_ui(self):
-        """Setzt den anfänglichen Zustand der UI-Elemente."""
+        """Setzt Initiale UI-Konfiguration (Tabellen, Gruppen)."""
         
-        # 1. ButtonGroups für die neuen PushButtons erstellen
-        self.source_group_A = QButtonGroup(self)
-        self.source_group_A.addButton(self.pushButton_voltageA)
-        self.source_group_A.addButton(self.pushButton_currentA)
-        # Standard-Auswahl ist bereits in .ui gesetzt (voltageA.checked = True)
+        # 1. ButtonGroups
+        self.bg_src_a = QButtonGroup(self)
+        self.bg_src_a.addButton(self.pushButton_voltageA)
+        self.bg_src_a.addButton(self.pushButton_currentA)
 
-        self.sense_group_A = QButtonGroup(self)
-        self.sense_group_A.addButton(self.pushButton_localA)
-        self.sense_group_A.addButton(self.pushButton_remoteA)
-        # Standard-Auswahl ist bereits in .ui gesetzt (localA.checked = True)
+        self.bg_sns_a = QButtonGroup(self)
+        self.bg_sns_a.addButton(self.pushButton_localA)
+        self.bg_sns_a.addButton(self.pushButton_remoteA)
         
-        self.source_group_B = QButtonGroup(self)
-        self.source_group_B.addButton(self.pushButton_voltageB)
-        self.source_group_B.addButton(self.pushButton_currentB)
-        # Standard-Auswahl ist bereits in .ui gesetzt (voltageB.checked = True)
+        self.bg_src_b = QButtonGroup(self)
+        self.bg_src_b.addButton(self.pushButton_voltageB)
+        self.bg_src_b.addButton(self.pushButton_currentB)
 
-        self.sense_group_B = QButtonGroup(self)
-        self.sense_group_B.addButton(self.pushButton_localB)
-        self.sense_group_B.addButton(self.pushButton_remoteB)
-        # Standard-Auswahl ist bereits in .ui gesetzt (localB.checked = True)
+        self.bg_sns_b = QButtonGroup(self)
+        self.bg_sns_b.addButton(self.pushButton_localB)
+        self.bg_sns_b.addButton(self.pushButton_remoteB)
 
-        # 2. Validatoren für LineEdits (für alle 4 Felder)
+        # 2. Validatoren
         double_validator = QDoubleValidator()
-        # Verwende englisches Locale für Punkte statt Kommas
         double_validator.setLocale(QLocale(QLocale.Language.English, QLocale.Country.UnitedStates)) 
-        self.lineEdit_levelA.setValidator(double_validator)
-        self.lineEdit_limitA.setValidator(double_validator)
-        self.lineEdit_levelB.setValidator(double_validator)
-        self.lineEdit_limitB.setValidator(double_validator)
+        for le in [self.lineEdit_levelA, self.lineEdit_limitA, self.lineEdit_levelB, self.lineEdit_limitB]:
+            le.setValidator(double_validator)
         
-        # 3. Standardwerte
-        self.lineEdit_levelA.setText("0.0")
-        self.lineEdit_limitA.setText("0.1") # 100mA als sicherer Standard
-        self.lineEdit_levelB.setText("0.0")
-        self.lineEdit_limitB.setText("0.1")
-
-        # 4. Setup für die Mess-Tabellen (Modell A und B)
-        self.modelA = QStandardItemModel(0, 3, self) # 0 Zeilen, 3 Spalten (Zeit, V, I)
-        self.modelA.setHorizontalHeaderLabels(["Timestamp", "Spannung (V)", "Strom (A)"])
+        # 3. Tabellen
+        self.modelA = QStandardItemModel(0, 3, self)
+        self.modelA.setHorizontalHeaderLabels(["Time", "Volt", "Curr"])
         self.tableView_measurementsA.setModel(self.modelA)
         
-        self.modelB = QStandardItemModel(0, 3, self) # 0 Zeilen, 3 Spalten
-        self.modelB.setHorizontalHeaderLabels(["Timestamp", "Spannung (V)", "Strom (A)"])
+        self.modelB = QStandardItemModel(0, 3, self)
+        self.modelB.setHorizontalHeaderLabels(["Time", "Volt", "Curr"])
         self.tableView_measurementsB.setModel(self.modelB)
         
-        # UI-Verhalten für die Tabellen einstellen
-        self._setup_table_behavior(self.tableView_measurementsA)
-        self._setup_table_behavior(self.tableView_measurementsB)
+        for tv in [self.tableView_measurementsA, self.tableView_measurementsB]:
+            tv.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+            tv.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+            tv.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
-        # 5. Dynamische Labels initial setzen (basierend auf .ui-Standard)
+        # 4. Initiale Labels und Zustand
         self._update_channel_labels('a')
         self._update_channel_labels('b')
-
-        # 6. Initialen (getrennten) Zustand setzen
         self.on_connection_status_changed(False, "")
 
-    def _setup_table_behavior(self, table_view):
-        """Hilfsfunktion zum Konfigurieren der Tabellen-Ansicht."""
-        table_view.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        table_view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        header = table_view.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents) # Timestamp
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch) # Spannung
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch) # Strom
-
     def __connect_signals(self):
-        """Verbindet alle Signale und Slots."""
-        
-        # 1. Manager-Signale an UI-Slots (diese Klasse)
+        """Verbindet Signale."""
         self.smu_mgr.connection_status_changed.connect(self.on_connection_status_changed)
         self.smu_mgr.device_list_updated.connect(self.on_device_list_updated)
         self.smu_mgr.new_measurement_acquired.connect(self.on_new_measurement_acquired)
-        if self.profile_mgr:
-            self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
-        # 2. UI-Elemente (Verbindung)
         self.pushButton_connect.clicked.connect(self.on_connect_clicked)
 
-        # 3. UI-Elemente (Kanal A) - Verwende die neuen PushButtons
+        # --- Channel A ---
         self.pushButton_resetA.clicked.connect(self.on_reset_A_clicked)
-        self.pushButton_measureA.clicked.connect(self.on_measure_A_clicked)
-        self.pushButton_outputA.toggled.connect(self.on_output_A_toggled)
-        # Source-Buttons (V/I)
-        self.pushButton_voltageA.toggled.connect(self.on_source_A_changed)
-        self.pushButton_currentA.toggled.connect(self.on_source_A_changed)
-        # Sense-Buttons (Local/Remote)
-        self.pushButton_localA.toggled.connect(self.on_sense_A_changed)
-        self.pushButton_remoteA.toggled.connect(self.on_sense_A_changed)
-        # LineEdits
+        self.pushButton_measureA.clicked.connect(lambda: self.smu_mgr.measure_iv('a'))
+        self.pushButton_outputA.toggled.connect(lambda s: self.smu_mgr.set_output_state('a', s))
+        
+        self.pushButton_voltageA.toggled.connect(lambda c: self.smu_mgr.set_source_voltage('a') if c else None)
+        self.pushButton_currentA.toggled.connect(lambda c: self.smu_mgr.set_source_current('a') if c else None)
+        self.bg_src_a.buttonToggled.connect(lambda: self._update_channel_labels('a'))
+
+        self.pushButton_localA.toggled.connect(lambda c: self.smu_mgr.set_sense_local('a') if c else None)
+        self.pushButton_remoteA.toggled.connect(lambda c: self.smu_mgr.set_sense_remote('a') if c else None)
+        
         self.lineEdit_levelA.editingFinished.connect(self.on_level_A_changed)
         self.lineEdit_limitA.editingFinished.connect(self.on_limit_A_changed)
 
-        # 4. UI-Elemente (Kanal B) - Verwende die neuen PushButtons
+        # --- Channel B ---
         self.pushButton_resetB.clicked.connect(self.on_reset_B_clicked)
-        self.pushButton_measureB.clicked.connect(self.on_measure_B_clicked)
-        self.pushButton_outputB.toggled.connect(self.on_output_B_toggled)
-        # Source-Buttons (V/I)
-        self.pushButton_voltageB.toggled.connect(self.on_source_B_changed)
-        self.pushButton_currentB.toggled.connect(self.on_source_B_changed)
-        # Sense-Buttons (Local/Remote)
-        self.pushButton_localB.toggled.connect(self.on_sense_B_changed)
-        self.pushButton_remoteB.toggled.connect(self.on_sense_B_changed)
-        # LineEdits
+        self.pushButton_measureB.clicked.connect(lambda: self.smu_mgr.measure_iv('b'))
+        self.pushButton_outputB.toggled.connect(lambda s: self.smu_mgr.set_output_state('b', s))
+        
+        self.pushButton_voltageB.toggled.connect(lambda c: self.smu_mgr.set_source_voltage('b') if c else None)
+        self.pushButton_currentB.toggled.connect(lambda c: self.smu_mgr.set_source_current('b') if c else None)
+        self.bg_src_b.buttonToggled.connect(lambda: self._update_channel_labels('b'))
+
+        self.pushButton_localB.toggled.connect(lambda c: self.smu_mgr.set_sense_local('b') if c else None)
+        self.pushButton_remoteB.toggled.connect(lambda c: self.smu_mgr.set_sense_remote('b') if c else None)
+        
         self.lineEdit_levelB.editingFinished.connect(self.on_level_B_changed)
         self.lineEdit_limitB.editingFinished.connect(self.on_limit_B_changed)
 
-    # --- Hilfsfunktionen ---
-    
+    # ==========================================================================
+    # KERN-LOGIK: Sync UI from Manager
+    # ==========================================================================
+
+    def sync_ui_from_manager(self, ch: str):
+        """
+        Holt den aktuellen Status vom Manager und setzt die UI-Elemente.
+        Nutzt blockSignals, damit wir keine endlosen Loops erzeugen.
+        """
+        state = self.smu_mgr.get_channel_state(ch)
+        
+        # Elemente auswählen je nach Kanal
+        if ch == 'a':
+            btn_v, btn_i = self.pushButton_voltageA, self.pushButton_currentA
+            btn_loc, btn_rem = self.pushButton_localA, self.pushButton_remoteA
+            le_lev, le_lim = self.lineEdit_levelA, self.lineEdit_limitA
+            btn_out = self.pushButton_outputA
+        else:
+            btn_v, btn_i = self.pushButton_voltageB, self.pushButton_currentB
+            btn_loc, btn_rem = self.pushButton_localB, self.pushButton_remoteB
+            le_lev, le_lim = self.lineEdit_levelB, self.lineEdit_limitB
+            btn_out = self.pushButton_outputB
+
+        # Signale blockieren
+        widgets = [btn_v, btn_i, btn_loc, btn_rem, le_lev, le_lim, btn_out]
+        for w in widgets: w.blockSignals(True)
+
+        # Werte setzen
+        if state['source_func'] == 'V': btn_v.setChecked(True)
+        else: btn_i.setChecked(True)
+        
+        if state['sense'] == 'remote': btn_rem.setChecked(True)
+        else: btn_loc.setChecked(True)
+        
+        le_lev.setText(str(state['level']))
+        le_lim.setText(str(state['limit']))
+        
+        # Output State
+        btn_out.setChecked(state['output'])
+        btn_out.setText("ON" if state['output'] else "OFF")
+
+        # Signale freigeben
+        for w in widgets: w.blockSignals(False)
+            
+        # Labels aktualisieren
+        self._update_channel_labels(ch)
+
     @Slot(str)
     def on_profile_loaded(self, profile_name):
-        """Synchronisiert die UI mit den geladenen Profilwerten."""
-        self.log_mgr.info(f"SmuWidget: Syncing UI to profile '{profile_name}'.")
-
-        for ch in ['a', 'b']:
-            ch_upper = ch.upper()
-            
-            # Source/Sense ButtonGroups und LineEdits für den aktuellen Kanal holen
-            source_group = self.source_group_A if ch == 'a' else self.source_group_B
-            sense_group = self.sense_group_A if ch == 'a' else self.sense_group_B
-            btn_voltage = self.pushButton_voltageA if ch == 'a' else self.pushButton_voltageB
-            btn_current = self.pushButton_currentA if ch == 'a' else self.pushButton_currentB
-            btn_local = self.pushButton_localA if ch == 'a' else self.pushButton_localB
-            btn_remote = self.pushButton_remoteA if ch == 'a' else self.pushButton_remoteB
-            line_level = self.lineEdit_levelA if ch == 'a' else self.lineEdit_levelB
-            line_limit = self.lineEdit_limitA if ch == 'a' else self.lineEdit_limitB
-            btn_output = self.pushButton_outputA if ch == 'a' else self.pushButton_outputB
-
-            # Blockiere Signale, um Zyklen zu verhindern
-            source_group.blockSignals(True)
-            sense_group.blockSignals(True)
-            line_level.blockSignals(True)
-            line_limit.blockSignals(True)
-
-            # 1. Source Function
-            source_func = self.profile_mgr.read(f"Smu_Ch{ch_upper}_SourceFunc", 'V') # Default 'V'
-            if source_func == 'I':
-                btn_current.setChecked(True)
-            else:
-                btn_voltage.setChecked(True)
-
-            # 2. Sense Mode
-            sense_mode = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Sense", 'local') # Default 'local'
-            if sense_mode == 'remote':
-                btn_remote.setChecked(True)
-            else:
-                btn_local.setChecked(True)
-
-            # 3. Level
-            level = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Level", 0.0) # Default 0.0
-            line_level.setText(str(level))
-
-            # 4. Limit
-            limit = self.profile_mgr.read(f"Smu_Ch{ch_upper}_Limit", 0.1) # Default 0.1
-            line_limit.setText(str(limit))
-
-            # 5. Safety: Output immer aus
-            btn_output.setChecked(False)
-            btn_output.setText("OFF")
-
-            # Signale wieder freigeben
-            source_group.blockSignals(False)
-            sense_group.blockSignals(False)
-            line_level.blockSignals(False)
-            line_limit.blockSignals(False)
-            
-            # UI-Labels aktualisieren, nachdem die Buttons gesetzt sind
-            self._update_channel_labels(ch)
-
-    def _set_channel_controls_enabled(self, channel_char: str, enabled: bool):
         """
-        Aktiviert oder deaktiviert alle Steuerelemente für einen Kanal.
-        (KORRIGIERTE VERSION - manuelle Auflistung)
+        Wird aufgerufen, wenn Profil geladen wurde.
+        Falls Manager schon verbunden ist (durch Autoconnect), UI updaten.
         """
-        widgets_to_toggle = []
-        if channel_char == 'a':
-            widgets_to_toggle = [
-                self.label_2, self.line_3, self.pushButton_measureA,
-                self.lineEdit_levelA, self.label_limitA, self.lineEdit_limitA,
-                self.pushButton_currentA, self.label_levelA, self.pushButton_outputA,
-                self.label_voltageA, self.pushButton_remoteA, self.pushButton_voltageA,
-                self.label_currentA, self.line_2, self.pushButton_localA,
-                self.label_6, self.pushButton_resetA, self.tableView_measurementsA
-            ]
-        elif channel_char == 'b':
-            widgets_to_toggle = [
-                self.label_channel, self.line_4, self.label_currentB,
-                self.pushButton_measureB, self.pushButton_remoteB, self.line,
-                self.pushButton_currentB, self.label_limitB, self.label_voltageB,
-                self.label_levelB, self.pushButton_voltageB, self.pushButton_localB,
-                self.pushButton_resetB, self.pushButton_outputB, self.label_3,
-                self.lineEdit_levelB, self.lineEdit_limitB, self.tableView_measurementsB
-            ]
-        else:
-            return
-
-        for widget in widgets_to_toggle:
-            # Stelle sicher, dass das Widget existiert (ist bei QFrame/line der Fall)
-            if isinstance(widget, QWidget): 
-                widget.setEnabled(enabled)
-
-    def _update_channel_labels(self, channel: str):
-        """
-        NEU: Aktualisiert die [V]/[A] Labels basierend auf dem Source-Modus.
-        """
-        if channel == 'a':
-            is_voltage_source = self.pushButton_voltageA.isChecked()
-            if is_voltage_source:
-                self.label_levelA.setText("Level [V]")
-                self.label_limitA.setText("Limit [A]")
-            else:
-                self.label_levelA.setText("Level [A]")
-                self.label_limitA.setText("Limit [V]")
-        
-        elif channel == 'b':
-            is_voltage_source = self.pushButton_voltageB.isChecked()
-            if is_voltage_source:
-                self.label_levelB.setText("Level [V]")
-                self.label_limitB.setText("Limit [A]")
-            else:
-                self.label_levelB.setText("Level [A]")
-                self.label_limitB.setText("Limit [V]")
-
-    def _format_si(self, value: float, unit: str) -> str:
-        """
-        Formatiert einen Float-Wert mit SI-Präfixen (z.B. m, µ, k).
-        """
-        if value == 0:
-            return f"0.00 {unit}"
-        
-        abs_val = abs(value)
-        
-        if abs_val >= 1e9:
-            return f"{value / 1e9:.2f} G{unit}"
-        if abs_val >= 1e6:
-            return f"{value / 1e6:.2f} M{unit}"
-        if abs_val >= 1e3:
-            return f"{value / 1e3:.2f} k{unit}"
-        if abs_val >= 1:
-            return f"{value:.3f} {unit}"
-        if abs_val >= 1e-3:
-            return f"{value * 1e3:.2f} m{unit}"
-        if abs_val >= 1e-6:
-            return f"{value * 1e6:.2f} µ{unit}"
-        if abs_val >= 1e-9:
-            return f"{value * 1e9:.2f} n{unit}"
-        if abs_val >= 1e-12:
-            return f"{value * 1e12:.2f} p{unit}"
-        
-        # Fallback für sehr kleine Zahlen
-        return f"{value:.2e} {unit}"
-
-    # --- Slots für Signale vom SmuManager ---
-
-    @Slot(list)
-    def on_device_list_updated(self, port_names):
-        """Aktualisiert die ComboBox, wenn der Manager Ports gefunden hat."""
-        current_selection = self.comboBox_port.currentText()
-        self.comboBox_port.clear()
-        self.comboBox_port.addItems(port_names)
-        
-        last_device = self.smu_mgr.LastDevice
-        if last_device in port_names:
-            self.comboBox_port.setCurrentText(last_device)
-        elif current_selection in port_names:
-            self.comboBox_port.setCurrentText(current_selection)
+        if self.smu_mgr.is_connected():
+            self.sync_ui_from_manager('a')
+            self.sync_ui_from_manager('b')
 
     @Slot(bool, str)
     def on_connection_status_changed(self, connected, device_name):
-        """
-        Schaltet die UI-Zustände um, wenn die Verbindung aufgebaut oder getrennt wird.
-        """
+        """Verbindung geändert -> UI aktivieren/deaktivieren und syncen."""
         if connected:
             self.label_status.setText(f"Connected")
             self.label_status.setStyleSheet("color: green;")
             self.pushButton_connect.setText("Disconnect")
             self.comboBox_port.setEnabled(False)
             
-            # Beide Kanäle aktivieren
-            self._set_channel_controls_enabled('a', True)
-            self._set_channel_controls_enabled('b', True)
+            self._set_channel_enabled('a', True)
+            self._set_channel_enabled('b', True)
+            
+            # WICHTIG: UI mit Hardware abgleichen (da Manager Settings geladen hat)
+            self.sync_ui_from_manager('a')
+            self.sync_ui_from_manager('b')
         
-        else: # Nicht verbunden
+        else:
             self.label_status.setText("Not Connected")
             self.label_status.setStyleSheet("color: red;")
             self.pushButton_connect.setText("Connect")
             self.comboBox_port.setEnabled(True)
             
-            # Beide Kanäle deaktivieren
-            self._set_channel_controls_enabled('a', False)
-            self._set_channel_controls_enabled('b', False)
-        
-            # Labels und Buttons auf Default zurücksetzen
-            self._sync_ui_to_reset_state('a')
-            self._sync_ui_to_reset_state('b')
-            # Tabellen leeren
+            self._set_channel_enabled('a', False)
+            self._set_channel_enabled('b', False)
             self.modelA.setRowCount(0)
             self.modelB.setRowCount(0)
 
+    # --- Helpers ---
 
-    @Slot(str, float, float)
-    def on_new_measurement_acquired(self, channel, current, voltage):
-        """
-        Aktualisiert die Readout-Labels UND fügt die Messung zur richtigen Tabelle hinzu.
-        """
-        # --- NEU: Werte mit SI-Präfix formatieren ---
-        formatted_voltage = self._format_si(voltage, "V")
-        formatted_current = self._format_si(current, "A")
-        
-        timestamp = QDateTime.currentDateTime().toString("yyyy-MM-dd hh:mm:ss")
-        item_time = QStandardItem(timestamp)
-        # --- NEU: Formatierte Werte für die Tabelle verwenden ---
-        item_volt = QStandardItem(formatted_voltage)
-        item_curr = QStandardItem(formatted_current)
-        
-        # Zellen-Ausrichtung
-        item_volt.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        item_curr.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        
-        if channel == 'a':
-            # --- NEU: Formatierte Werte für Labels verwenden ---
-            self.label_voltageA.setText(formatted_voltage)
-            self.label_currentA.setText(formatted_current)
-            self.modelA.insertRow(0, [item_time, item_volt, item_curr])
-        
-        elif channel == 'b':
-            # --- NEU: Formatierte Werte für Labels verwenden ---
-            self.label_voltageB.setText(formatted_voltage)
-            self.label_currentB.setText(formatted_current)
-            self.modelB.insertRow(0, [item_time, item_volt, item_curr])
+    def _set_channel_enabled(self, ch: str, en: bool):
+        # Alle Widgets im jeweiligen Grid enablen/disablen
+        layout = self.gridLayout_channelA if ch == 'a' else self.gridLayout_channelB
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            if item.widget():
+                item.widget().setEnabled(en)
 
-    # --- Slots für UI-Aktionen (Verbindung) ---
-
-    @Slot()
-    def on_connect_clicked(self):
-        """Wird aufgerufen, wenn der Verbinden/Trennen-Button geklickt wird."""
-        if self.smu_mgr.is_connected():
-            self.smu_mgr.disconnect()
+    def _update_channel_labels(self, ch: str):
+        if ch == 'a':
+            is_v = self.pushButton_voltageA.isChecked()
+            self.label_levelA.setText("Level [V]" if is_v else "Level [A]")
+            self.label_limitA.setText("Limit [A]" if is_v else "Limit [V]")
         else:
-            selected_port = self.comboBox_port.currentText()
-            if not selected_port:
-                self.log_mgr.warning("Kein SMU-Port zur Verbindung ausgewählt.")
-                return
-            self.smu_mgr.connect(selected_port)
+            is_v = self.pushButton_voltageB.isChecked()
+            self.label_levelB.setText("Level [V]" if is_v else "Level [A]")
+            self.label_limitB.setText("Limit [A]" if is_v else "Limit [V]")
 
-    # --- Hilfsfunktion für Reset (aktualisiert) ---
-    
-    def _sync_ui_to_reset_state(self, channel: str):
-        """
-        Setzt alle UI-Elemente eines Kanals auf den bekannten
-        Geräte-Default-Zustand (nach Reset) zurück.
-        """
-        if channel == 'a':
-            # Blockiere Signale, um Endlosschleifen (toggled -> changed) zu verhindern
-            self.pushButton_voltageA.blockSignals(True)
-            self.pushButton_localA.blockSignals(True)
-            
-            self.pushButton_voltageA.setChecked(True) # Default ist Voltage
-            self.pushButton_localA.setChecked(True) # Default ist Local
-            
-            self.pushButton_voltageA.blockSignals(False)
-            self.pushButton_localA.blockSignals(False)
-            
-            self.lineEdit_levelA.setText("0.0") # Default ist 0V
-            self.lineEdit_limitA.setText("10e-6") # 10µA (Geräte-Default)
-            self.pushButton_outputA.setChecked(False) 
-            self.pushButton_outputA.setText("OFF")
-            self.label_voltageA.setText("--- V")
-            self.label_currentA.setText("--- A")
-            self._update_channel_labels('a') # Wichtig: Labels [V]/[A] aktualisieren
-        
-        elif channel == 'b':
-            self.pushButton_voltageB.blockSignals(True)
-            self.pushButton_localB.blockSignals(True)
-            
-            self.pushButton_voltageB.setChecked(True) # Default ist Voltage
-            self.pushButton_localB.setChecked(True) # Default ist Local
-            
-            self.pushButton_voltageB.blockSignals(False)
-            self.pushButton_localB.blockSignals(False)
-            
-            self.lineEdit_levelB.setText("0.0") # Default ist 0V
-            self.lineEdit_limitB.setText("10e-6") # 10µA (Geräte-Default)
-            self.pushButton_outputB.setChecked(False) 
-            self.pushButton_outputB.setText("OFF")
-            self.label_voltageB.setText("--- V")
-            self.label_currentB.setText("--- A")
-            self._update_channel_labels('b') # Wichtig: Labels [V]/[A] aktualisieren
+    def _format_si(self, value: float, unit: str) -> str:
+        """Formatiert mit SI-Suffix (m, k, u)."""
+        if value == 0: return f"0.00 {unit}"
+        abs_val = abs(value)
+        if abs_val >= 1e3: return f"{value/1e3:.2f} k{unit}"
+        if abs_val >= 1: return f"{value:.3f} {unit}"
+        if abs_val >= 1e-3: return f"{value*1e3:.2f} m{unit}"
+        if abs_val >= 1e-6: return f"{value*1e6:.2f} µ{unit}"
+        return f"{value:.2e} {unit}"
 
-    # --- Slots für UI-Aktionen (KANAL A) ---
+    # --- Slots Inputs ---
 
-    @Slot()
-    def on_measure_A_clicked(self):
-        self.smu_mgr.measure_iv('a')
+    def on_level_A_changed(self):
+        try: self.smu_mgr.set_source_level('a', float(self.lineEdit_levelA.text()))
+        except: pass
+    def on_limit_A_changed(self):
+        try: self.smu_mgr.set_source_limit('a', float(self.lineEdit_limitA.text()))
+        except: pass
+    def on_level_B_changed(self):
+        try: self.smu_mgr.set_source_level('b', float(self.lineEdit_levelB.text()))
+        except: pass
+    def on_limit_B_changed(self):
+        try: self.smu_mgr.set_source_limit('b', float(self.lineEdit_limitB.text()))
+        except: pass
 
     @Slot()
     def on_reset_A_clicked(self):
         self.smu_mgr.reset_channel('a')
-        self.modelA.setRowCount(0) # Tabelle leeren
-        self._sync_ui_to_reset_state('a') # UI auf Default setzen
-
-    @Slot(bool)
-    def on_output_A_toggled(self, is_on):
-        self.smu_mgr.set_output_state('a', is_on)
-        self.pushButton_outputA.setText("ON" if is_on else "OFF")
-
-    @Slot()
-    def on_source_A_changed(self):
-        # Wird getriggert, wenn V ODER C gecheckt wird
-        # Nur senden, wenn der Button auch wirklich 'checked' ist
-        if self.pushButton_voltageA.isChecked():
-            self.smu_mgr.set_source_voltage('a')
-        elif self.pushButton_currentA.isChecked():
-            self.smu_mgr.set_source_current('a')
-        # IMMER die Labels aktualisieren
-        self._update_channel_labels('a')
-
-    @Slot()
-    def on_sense_A_changed(self):
-        # Wird getriggert, wenn Local ODER Remote gecheckt wird
-        if self.pushButton_remoteA.isChecked():
-            self.smu_mgr.set_sense_remote('a')
-        elif self.pushButton_localA.isChecked():
-            self.smu_mgr.set_sense_local('a')
-    
-    @Slot()
-    def on_level_A_changed(self):
-        try:
-            level = float(self.lineEdit_levelA.text())
-            self.smu_mgr.set_source_level('a', level)
-        except ValueError:
-            self.log_mgr.warning(f"Ungültige Level-Eingabe (A): '{self.lineEdit_levelA.text()}'")
-
-    @Slot()
-    def on_limit_A_changed(self):
-        try:
-            limit = float(self.lineEdit_limitA.text()) 
-            self.smu_mgr.set_source_limit('a', limit)
-        except ValueError:
-            self.log_mgr.warning(f"Ungültige Limit-Eingabe (A): '{self.lineEdit_limitA.text()}'")
-
-    # --- Slots für UI-Aktionen (KANAL B) ---
-
-    @Slot()
-    def on_measure_B_clicked(self):
-        self.smu_mgr.measure_iv('b')
+        self.modelA.setRowCount(0)
+        self.sync_ui_from_manager('a') # Reset -> State ändert sich -> UI Sync
 
     @Slot()
     def on_reset_B_clicked(self):
         self.smu_mgr.reset_channel('b')
-        self.modelB.setRowCount(0) # Tabelle leeren
-        self._sync_ui_to_reset_state('b') # UI auf Default setzen
+        self.modelB.setRowCount(0)
+        self.sync_ui_from_manager('b')
 
-    @Slot(bool)
-    def on_output_B_toggled(self, is_on):
-        # HINWEIS: Dies funktioniert, da du outputB 'checkable' gemacht hast.
-        self.smu_mgr.set_output_state('b', is_on)
-        self.pushButton_outputB.setText("ON" if is_on else "OFF")
+    @Slot(str, float, float)
+    def on_new_measurement_acquired(self, ch, curr, volt):
+        ts = QDateTime.currentDateTime().toString("HH:mm:ss")
+        # Formatierung
+        s_volt = self._format_si(volt, "V")
+        s_curr = self._format_si(curr, "A")
+        
+        row = [QStandardItem(ts), QStandardItem(s_volt), QStandardItem(s_curr)]
+        if ch == 'a':
+            self.label_voltageA.setText(s_volt); self.label_currentA.setText(s_curr)
+            self.modelA.insertRow(0, row)
+        else:
+            self.label_voltageB.setText(s_volt); self.label_currentB.setText(s_curr)
+            self.modelB.insertRow(0, row)
 
-    @Slot()
-    def on_source_B_changed(self):
-        if self.pushButton_voltageB.isChecked():
-            self.smu_mgr.set_source_voltage('b')
-        elif self.pushButton_currentB.isChecked():
-            self.smu_mgr.set_source_current('b')
-        # IMMER die Labels aktualisieren
-        self._update_channel_labels('b')
-
-    @Slot()
-    def on_sense_B_changed(self):
-        if self.pushButton_remoteB.isChecked():
-            self.smu_mgr.set_sense_remote('b')
-        elif self.pushButton_localB.isChecked():
-            self.smu_mgr.set_sense_local('b')
-    
-    @Slot()
-    def on_level_B_changed(self):
-        try:
-            level = float(self.lineEdit_levelB.text())
-            self.smu_mgr.set_source_level('b', level)
-        except ValueError:
-            self.log_mgr.warning(f"Ungültige Level-Eingabe (B): '{self.lineEdit_levelB.text()}'")
+    @Slot(list)
+    def on_device_list_updated(self, ports):
+        cur = self.comboBox_port.currentText()
+        self.comboBox_port.clear()
+        self.comboBox_port.addItems(ports)
+        if self.smu_mgr.LastDevice in ports:
+            self.comboBox_port.setCurrentText(self.smu_mgr.LastDevice)
+        elif cur in ports:
+            self.comboBox_port.setCurrentText(cur)
 
     @Slot()
-    def on_limit_B_changed(self):
-        try:
-            limit = float(self.lineEdit_limitB.text()) 
-            self.smu_mgr.set_source_limit('b', limit)
-        except ValueError:
-            self.log_mgr.warning(f"Ungültige Limit-Eingabe (B): '{self.lineEdit_limitB.text()}'")
+    def on_connect_clicked(self):
+        if self.smu_mgr.is_connected():
+            self.smu_mgr.disconnect()
+        else:
+            self.smu_mgr.connect(self.comboBox_port.currentText())
 
-    # --- Event Filter für ComboBox ---
-    
-    def eventFilter(self, watched_object, event):
-        """
-        Fängt Events ab, um das Öffnen der ComboBox zu erkennen.       
-        """
-        if watched_object == self.comboBox_port:
-            if event.type() == QEvent.Type.MouseButtonPress:
-                if not self.comboBox_port.view().isVisible():
-                    # ComboBox wird gerade geöffnet -> Liste aktualisieren
-                    self.smu_mgr.get_deviceList()
-
-        # Event an die Basisklasse weiterleiten
-        return super().eventFilter(watched_object, event)
+    def eventFilter(self, watched, event):
+        if watched == self.comboBox_port and event.type() == QEvent.Type.MouseButtonPress:
+            if not self.comboBox_port.view().isVisible():
+                self.smu_mgr.get_deviceList()
+        return super().eventFilter(watched, event)

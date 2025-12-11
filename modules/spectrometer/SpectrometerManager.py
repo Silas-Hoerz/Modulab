@@ -32,7 +32,7 @@ class SpectrometerManager(QObject):
             Gibt eine Liste mit Namen zurück (z.B. ["FLAME (SN123)", ...]).
             
         new_spectrum_acquired (numpy.ndarray, numpy.ndarray): 
-            Wird gefeuert, wenn eine *rohe* Messung abgeschlossen ist.
+            Wird gefeuert, wenn eine Messung (roh oder korrigiert) abgeschlossen ist.
             Gibt (Wellenlängen, Intensitäten) zurück.
 
         dark_measurement_progress (object, object, int): 
@@ -47,6 +47,12 @@ class SpectrometerManager(QObject):
     dark_measurement_progress = Signal(object, object, int) 
 
     def __init__(self, log_manager, profile_manager):
+        """
+        Initialisiert den SpectrometerManager.
+
+        Hier werden Speicherplätze für Daten angelegt, Einstellungen geladen
+        und versucht, das letzte Gerät wieder zu verbinden.
+        """
         super().__init__()
         self.log_mgr = log_manager 
         self.profile_mgr = profile_manager
@@ -57,9 +63,10 @@ class SpectrometerManager(QObject):
         self.available_devices = []
         self.device_name_map = {}
 
-        # WICHTIG: Hier NICHT mehr laden!
-        # Sondern auf das Signal warten.
-        self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
+        # WICHTIG: Speicher für Dark-Spektren initialisieren
+        # Das hat im vorherigen Code gefehlt und zum Absturz geführt!
+        self._dark_spectrum_avg = None      # Das fertig gemittelte Dunkelspektrum
+        self._dark_spectrum_raw_list = []   # Liste aller Einzelmessungen während der Erfassung
 
         # Standardwerte initialisieren (damit der Code nicht crasht, bevor Profil da ist)
         self.correct_dark_counts = False
@@ -67,6 +74,9 @@ class SpectrometerManager(QObject):
         self.current_integration_time_us = 100000 
         self.current_temperature_C = -15
         self.LastDevice = None
+
+        # WICHTIG: Auf das Signal warten, statt sofort zu laden!
+        self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
         
         # Initialer Scan (Hardware suchen darf man immer)
         self.get_deviceList()
@@ -381,8 +391,13 @@ class SpectrometerManager(QObject):
         
     def set_temperature(self, temperature_degC: float):
         """
-        Setzt die Ziel-Temperatur für die Kühlung (TEC).
-        KORRIGIERT: Greift jetzt korrekt auf das erste Element der Feature-Liste zu.
+        Setzt die Ziel-Temperatur für die Kühlung (TEC), falls vorhanden.
+        
+        Kühlung reduziert das Rauschen. Eine Temperaturänderung macht das 
+        Dunkelspektrum ungültig.
+
+        Args:
+            temperature_degC (float): Zieltemperatur in °C (z.B. -15.0).
         """
         self.current_temperature_C = temperature_degC
         if self.profile_mgr.get_current_profile_name():
@@ -397,7 +412,7 @@ class SpectrometerManager(QObject):
                     tec_features = self.spectrometer.features['thermo_electric']
                     
                     if tec_features:
-                        tec = tec_features[0] # <--- HIER WAR DER FEHLER
+                        tec = tec_features[0] 
                         
                         # 1. Setpoint setzen
                         tec.set_temperature_setpoint_degrees_celsius(temperature_degC)
@@ -417,7 +432,9 @@ class SpectrometerManager(QObject):
     def get_temperature(self) -> float:
         """
         Liest die aktuelle Temperatur des Sensors aus.
-        KORRIGIERT: Greift jetzt korrekt auf das erste Element der Feature-Liste zu.
+
+        Returns:
+            float: Die gemessene Temperatur in °C. (Oder den Soll-Wert, falls Sensor nicht lesbar).
         """
         if self.is_connected():
             try:
@@ -425,7 +442,6 @@ class SpectrometerManager(QObject):
                 if hasattr(self.spectrometer, 'features') and 'thermo_electric' in self.spectrometer.features:
                     tec_features = self.spectrometer.features['thermo_electric']
                     if tec_features:
-                        # HIER WAR DER FEHLER: Zugriff auf [0] nötig
                         return tec_features[0].read_temperature_degrees_celsius()
                 
                 # 2. Versuch: PCB Temperatur (Fallback)
@@ -461,10 +477,10 @@ class SpectrometerManager(QObject):
         Example:
             >>> manager.clear_dark_spectrum()
         """
-        if self._dark_spectrum_avg is not None:
-            self._dark_spectrum_avg = None
-            self._dark_spectrum_raw_list = []
-            self.log_mgr.info("Dark spectrum cleared.")
+        # Auch wenn es None ist, sicherheitshalber setzen
+        self._dark_spectrum_avg = None
+        self._dark_spectrum_raw_list = []
+        self.log_mgr.info("Dark spectrum cleared.")
     
     # --- Daten Erhebung & Dark Spectrum ---
 
@@ -499,13 +515,15 @@ class SpectrometerManager(QObject):
         if self._dark_spectrum_avg is None:
             self.log_mgr.warning("Cannot acquire corrected spectrum: No valid dark spectrum available.")
             return None, None
-
+            
+        # 1. Normale Messung holen (Rohdaten), ABER Signal-Emission unterdrücken!
         wl, inten = self.acquire_spectrum_raw(emit_signal=False) 
         
         if wl is None:
             return None, None
 
         try:
+            # 2. Subtraktion (Signal - Dunkel)
             if inten.shape != self._dark_spectrum_avg.shape:
                 self.log_mgr.error("Shape mismatch between measurement and dark spectrum. Invalidating dark.")
                 self._invalidate_dark_spectrum()
@@ -513,6 +531,7 @@ class SpectrometerManager(QObject):
 
             corrected_intensities = inten - self._dark_spectrum_avg
             
+            # 3. JETZT senden wir das Signal mit den KORRIGIERTEN Daten
             self.new_spectrum_acquired.emit(wl, corrected_intensities)
             
             return wl, corrected_intensities
@@ -542,6 +561,7 @@ class SpectrometerManager(QObject):
                 correct_nonlinearity=self.correct_non_linearity
             )
             
+            # Nur senden, wenn gewünscht (Standardverhalten bei direktem Aufruf)
             if emit_signal:
                 self.new_spectrum_acquired.emit(wavelengths, intensities)
 

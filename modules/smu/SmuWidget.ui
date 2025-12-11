@@ -46,7 +46,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Port:</string>
+           <string>Device:</string>
           </property>
          </widget>
         </item>
@@ -88,6 +88,9 @@
           </property>
           <property name="checkable">
            <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
