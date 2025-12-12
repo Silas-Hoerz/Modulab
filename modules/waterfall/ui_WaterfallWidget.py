@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'WaterfallWidgetiZsNtU.ui'
+## Form generated from reading UI file 'WaterfallWidgetSgvNju.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(402, 331)
+        Form.resize(446, 296)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -56,10 +56,10 @@ class Ui_Form(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
+        self.verticalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.label_integrationTime = QLabel(self.frame)
         self.label_integrationTime.setObjectName(u"label_integrationTime")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.label_integrationTime.sizePolicy().hasHeightForWidth())
@@ -93,9 +93,14 @@ class Ui_Form(object):
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
+        self.verticalLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.label_2 = QLabel(self.frame)
         self.label_2.setObjectName(u"label_2")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy3)
 
         self.verticalLayout_3.addWidget(self.label_2)
 
@@ -110,49 +115,61 @@ class Ui_Form(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
 
+        self.line_3 = QFrame(self.frame)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.Shape.VLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.horizontalLayout.addWidget(self.line_3)
+
+        self.verticalLayout_5 = QVBoxLayout()
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.pushButton_savePlot = QPushButton(self.frame)
+        self.pushButton_savePlot.setObjectName(u"pushButton_savePlot")
+        sizePolicy1.setHeightForWidth(self.pushButton_savePlot.sizePolicy().hasHeightForWidth())
+        self.pushButton_savePlot.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_5.addWidget(self.pushButton_savePlot)
+
+        self.pushButton_saveData = QPushButton(self.frame)
+        self.pushButton_saveData.setObjectName(u"pushButton_saveData")
+        sizePolicy1.setHeightForWidth(self.pushButton_saveData.sizePolicy().hasHeightForWidth())
+        self.pushButton_saveData.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_5.addWidget(self.pushButton_saveData)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_5)
+
+        self.line_4 = QFrame(self.frame)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.Shape.VLine)
+        self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.horizontalLayout.addWidget(self.line_4)
+
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalSpacer = QSpacerItem(20, 26, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Maximum)
+
+        self.verticalLayout_6.addItem(self.verticalSpacer)
+
+        self.pushButton_clear = QPushButton(self.frame)
+        self.pushButton_clear.setObjectName(u"pushButton_clear")
+        sizePolicy1.setHeightForWidth(self.pushButton_clear.sizePolicy().hasHeightForWidth())
+        self.pushButton_clear.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_6.addWidget(self.pushButton_clear)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_6)
+
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout)
-
-        self.line_2 = QFrame(self.frame)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.Shape.HLine)
-        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout.addWidget(self.line_2)
-
-        self.verticalLayout_acquisition = QVBoxLayout()
-        self.verticalLayout_acquisition.setObjectName(u"verticalLayout_acquisition")
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
-        self.pushButton_clear = QPushButton(self.frame)
-        self.pushButton_clear.setObjectName(u"pushButton_clear")
-
-        self.horizontalLayout_2.addWidget(self.pushButton_clear)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
-
-        self.pushButton_savePlot = QPushButton(self.frame)
-        self.pushButton_savePlot.setObjectName(u"pushButton_savePlot")
-
-        self.horizontalLayout_2.addWidget(self.pushButton_savePlot)
-
-        self.pushButton_saveData = QPushButton(self.frame)
-        self.pushButton_saveData.setObjectName(u"pushButton_saveData")
-
-        self.horizontalLayout_2.addWidget(self.pushButton_saveData)
-
-
-        self.verticalLayout_acquisition.addLayout(self.horizontalLayout_2)
-
-
-        self.verticalLayout.addLayout(self.verticalLayout_acquisition)
 
 
         self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
@@ -167,8 +184,8 @@ class Ui_Form(object):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Waterfall", None))
         self.label_integrationTime.setText(QCoreApplication.translate("Form", u"History Lines:", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Colormap:", None))
-        self.pushButton_clear.setText(QCoreApplication.translate("Form", u"Clear", None))
         self.pushButton_savePlot.setText(QCoreApplication.translate("Form", u"Save Plot", None))
         self.pushButton_saveData.setText(QCoreApplication.translate("Form", u"Save Data", None))
+        self.pushButton_clear.setText(QCoreApplication.translate("Form", u"Clear", None))
     # retranslateUi
 
