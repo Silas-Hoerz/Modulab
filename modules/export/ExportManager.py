@@ -398,52 +398,94 @@ class ExportManager(QObject):
 
     def export_session_data(self, data_dict: dict, filepath: str) -> bool:
         """
-        Speichert einen kompletten Datensatz (Bulk) in eine Datei.
-        Nützlich für den Export aus dem LivePlot-Widget.
+        Speichert eine komplette Session (aus dem LivePlot) final ab.
+        Dies ist der "Explicit Save".
 
         Args:
-            data_dict (dict): {'x': [1,2,3], 'y': [4,5,6], 'metadata': {...}}
-            filepath (str): Zielpfad (.h5 oder .csv).
-
-        Returns:
-            bool: True bei Erfolg.
+            data_dict (dict): Struktur:
+                {
+                    'x': [...], 
+                    'y': [...], 
+                    'metadata': {'Name': '...', 'Device': '...'},
+                    # Optional für Multi-Plot:
+                    'plots': {
+                        'log_iv': {'x': ..., 'y': ...},
+                        'spec': ...
+                    }
+                }
+            filepath (str): Zielpfad.
         """
         try:
-            if filepath.endswith('.csv'):
-                # CSV Export
-                import csv
-                with open(filepath, 'w', newline='') as csvfile:
-                    writer = csv.writer(csvfile)
-                    # Header
-                    writer.writerow(['X', 'Y']) 
-                    # Data
-                    rows = zip(data_dict['x'], data_dict['y'])
-                    writer.writerows(rows)
-                self.log_mgr.info(f"Session exported to CSV: {filepath}")
-                return True
+            # Ordner erstellen falls nicht existent
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-            elif filepath.endswith('.h5'):
-                # HDF5 Export
-                with h5py.File(filepath, 'w') as f:
-                    grp = f.create_group("SessionData")
-                    grp.create_dataset("x", data=data_dict['x'])
-                    grp.create_dataset("y", data=data_dict['y'])
+            if filepath.endswith('.csv'):
+                import csv
+                from itertools import zip_longest
+                
+                with open(filepath, 'w', newline='') as f:
+                    writer = csv.writer(f)
                     
-                    # Metadaten speichern
+                    # 1. Header (Metadaten)
+                    writer.writerow(["# Modulab Export (CSV)"])
                     if 'metadata' in data_dict:
                         for k, v in data_dict['metadata'].items():
-                            grp.attrs[k] = v
-                            
-                    # Globale Infos
+                            writer.writerow([f"# {k}: {v}"])
+                    writer.writerow([]) 
+
+                    # 2. Daten vorbereiten
+                    header = []
+                    cols = []
+                    
+                    # Unterscheiden: Einfacher Plot oder Multi-Plot Struktur?
+                    if 'plots' in data_dict:
+                        # Multi-Plot (z.B. IV + Spektrum)
+                        for key, pdata in data_dict['plots'].items():
+                            header.extend([f"{key}_X", f"{key}_Y"])
+                            cols.append(pdata['x'])
+                            cols.append(pdata['y'])
+                    else:
+                        # Einfacher Plot (Fallback)
+                        header = ["X", "Y"]
+                        cols = [data_dict.get('x', []), data_dict.get('y', [])]
+
+                    writer.writerow(header)
+                    writer.writerows(zip_longest(*cols, fillvalue=''))
+                    
+                self.log_mgr.info(f"Export (CSV) successful: {filepath}")
+                return True
+
+            else: # HDF5 Default
+                if not filepath.endswith('.h5'): filepath += ".h5"
+                
+                with h5py.File(filepath, 'w') as f:
+                    # Globale Attribute
                     f.attrs['Export_Date'] = datetime.now().isoformat()
                     f.attrs['Software'] = f"{APP_TITLE} {APP_VERSION}"
                     
-                self.log_mgr.info(f"Session exported to HDF5: {filepath}")
+                    # Metadaten aus der Session
+                    if 'metadata' in data_dict:
+                        for k, v in data_dict['metadata'].items():
+                            # HDF5 mag keine None-Types
+                            if v is None: v = "None"
+                            f.attrs[k] = v
+
+                    # Daten schreiben
+                    if 'plots' in data_dict:
+                        for key, pdata in data_dict['plots'].items():
+                            grp = f.create_group(key)
+                            grp.create_dataset('x', data=pdata['x'])
+                            grp.create_dataset('y', data=pdata['y'])
+                            # Extra Infos pro Plot
+                            if 'log_y' in pdata: grp.attrs['log_y'] = pdata['log_y']
+                            
+                    else:
+                        # Fallback simple
+                        f.create_dataset('x', data=data_dict.get('x', []))
+                        f.create_dataset('y', data=data_dict.get('y', []))
+
+                self.log_mgr.info(f"Export (HDF5) successful: {filepath}")
                 return True
-                
-            else:
-                self.log_mgr.error("Unsupported file format.")
-                return False
 
         except Exception as e:
             self.log_mgr.error(f"Bulk export failed: {e}")

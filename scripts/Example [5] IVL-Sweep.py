@@ -3,100 +3,81 @@ import time
 
 def run_experiment(api):
     """
-    IVL-Sweep mit Multi-Plot (Linear + Logarithmisch) in EINEM Tab.
+    IVL-Sweep: Nur Visualisierung im Live-Plot.
+    Speicherung erfolgt explizit durch den User über den 'Export'-Button im Tab.
     """
-    # 1. Manager holen (Lokale Variablen)
-    log_mgr = api.log_mgr
-    smu_mgr = api.smu_mgr
-    spectrometer_mgr = api.spectrometer_mgr 
-    export_mgr = api.export_mgr 
-    liveplot_mgr = api.liveplot_mgr 
-    device_mgr = api.device_mgr
+    log = api.log_mgr
+    smu = api.smu_mgr
+    spec = api.spectrometer_mgr
+    # export = api.export_mgr
+    plot = api.liveplot_mgr
+    dev_mgr = api.device_mgr
+    profile = api.profile_mgr
 
-    # 2. Parameter
-    start_v = -2.0
-    end_v = 5.0
-    steps = 100
-    channel = 'a'
+    # 1. Parameter & Metadaten sammeln
+    start_v = -2.0; end_v = 5.0; steps = 20; channel = 'a'
     
-    if not smu_mgr.is_connected():
-        log_mgr.warning("SMU nicht verbunden! Nutze DUMMY.")
-        smu_mgr.connect("DUMMY")
+    metadata = {
+        "Created_By": profile.read("User_Name") or "Unknown",
+        "Date": time.strftime("%Y-%m-%d %H_%M_%S"),
+        "Sweep_Start": start_v,
+        "Sweep_End": end_v,
+        "Device": "None"
+    }
     
-    # --- Live Plot Setup (Multi-Plot) ---
-    session = "IVL Sweep"
-    
-    # 1. Tab erstellen
-    liveplot_mgr.start_session(session)
-    
-    # 2. Plots definieren (werden ins Grid gepackt)
-    # Plot A: Linear
-    liveplot_mgr.define_plot(session, "lin_iv", "Linear IV", "Voltage [V]", "Current [A]")
-    
-    # Plot B: Logarithmisch (Absolutwert)
-    liveplot_mgr.define_plot(session, "log_iv", "Log IV (|I|)", "Voltage [V]", "Log Current [A]", log_y=True)
-    
-    # Plot C: Spektrum (optional)
-    if spectrometer_mgr.is_connected():
-        liveplot_mgr.define_plot(session, "spec", "Last Spectrum", "Wavelength", "Counts")
+    active_dev = dev_mgr.get_active_device()
+    if active_dev:
+        metadata["Device"] = active_dev.name
+        metadata["Area_m2"] = active_dev.get_area()
 
-    # --- Export Setup ---
-    if not export_mgr.new("IVL_Sweep_Live", dataset_name="IVL_Data"):
-        log_mgr.error("Export Fehler.")
-        return
-
-    # Messung Vorbereiten
-    smu_mgr.reset_channel(channel)
-    smu_mgr.set_source_voltage(channel)
-    smu_mgr.set_source_limit(channel, 0.05)
-    smu_mgr.set_output_state(channel, True)
+    # Hardware Init
+    if not smu.is_connected(): smu.connect("DUMMY")
+    
+    # 2. Live Plot Session starten (Mit Metadaten!)
+    session = f"IVL {time.strftime('%H_%M_%S')}"
+    plot.start_session(session, metadata=metadata)
+    
+    # Plots definieren
+    plot.define_plot(session, "iv_lin", "J-V Linear", "Voltage [V]", "Current Density [mA/cm^2]")
+    plot.define_plot(session, "iv_log", "J-V Log", "Voltage [V]", "Log J [mA/cm^2]", log_y=True)
+    
+    # 3. Messung
+    smu.reset_channel(channel)
+    smu.set_source_voltage(channel)
+    smu.set_source_limit(channel, 0.1)
+    smu.set_output_state(channel, True)
     
     voltages = np.linspace(start_v, end_v, steps)
-    log_mgr.info("Starte Sweep...")
+    log.info("Starte Sweep (Daten werden im LivePlot gesammelt)...")
 
     try:
-        for i, v_target in enumerate(voltages):
+        for i, v in enumerate(voltages):
             if api._is_stopped: break
             while api._is_paused: time.sleep(0.1)
 
-            # Messen
-            smu_mgr.set_source_level(channel, v_target)
+            # SMU
+            smu.set_source_level(channel, v)
             time.sleep(0.1)
-            val_current, val_voltage = smu_mgr.measure_iv(channel) or (0, 0)
+            curr, meas_v = smu.measure_iv(channel) or (0,0)
             
-            # Spektrum
-            spectrum_corr = None
-            if spectrometer_mgr.is_connected():
-                wl, spectrum_corr = spectrometer_mgr.acquire_spectrum()
+            # Berechnung Dichte
+            area = active_dev.get_area() if active_dev else 1.0
+            if area == 0: area = 1.0
+            j = (curr / area) * 0.1 # A/m^2 -> mA/cm^2 (Faktor 0.1 stimmt nicht ganz, 1A/m2 = 0.1mA/cm2)
+            # A/m^2 = 1000 mA / 10000 cm^2 = 0.1 mA/cm^2. Korrekt.
 
-            # --- Daten an Plot senden ---
-            # 1. Linear
-            liveplot_mgr.append_data(session, "lin_iv", val_voltage, val_current)
-            
-            # 2. Logarithmisch (WICHTIG: Absolutwert für Log-Plot, da log(-x) nan ist)
-            # PyQtGraph logMode macht log10(y). Wir müssen sicherstellen, dass y > 0 ist.
-            # Bei logMode=True erwartet pg den rohen Wert, rechnet aber selbst.
-            # Wir übergeben abs(I) + epsilon um 0 zu vermeiden.
-            liveplot_mgr.append_data(session, "log_iv", val_voltage, abs(val_current) + 1e-13)
+            # Daten an Plot senden
+            plot.append_data(session, "iv_lin", meas_v, j)
+            # Log Plot (abs + epsilon)
+            plot.append_data(session, "iv_log", meas_v, abs(j) + 1e-12)
 
-            # 3. Spektrum (Setzen statt Append)
-            if spectrum_corr is not None:
-                liveplot_mgr.set_data(session, "spec", wl, spectrum_corr)
-
-            # --- Daten an Export senden ---
-            export_mgr.add("Voltage", val_voltage, "V")
-            export_mgr.add("Current", val_current, "A")
-            if spectrum_corr is not None:
-                export_mgr.add("Spectrum", spectrum_corr, "cnt")
-            export_mgr.commit()
-
-            log_mgr.info(f"Step {i+1}/{steps}: {val_voltage:.2f}V -> {val_current:.2e}A")
+            log.info(f"Step {i+1}/{steps}: {meas_v:.2f}V")
 
     except Exception as e:
-        log_mgr.error(f"Fehler: {e}")
+        log.error(f"Fehler: {e}")
     
     finally:
-        smu_mgr.set_source_level(channel, 0)
-        smu_mgr.set_output_state(channel, False)
-        export_mgr.stop()
-        log_mgr.info("Fertig.")
+        smu.set_source_level(channel, 0)
+        smu.set_output_state(channel, False)
+        plot.stop_session(session)
+        log.info("Messung fertig. Bitte Tab exportieren zum Speichern!")

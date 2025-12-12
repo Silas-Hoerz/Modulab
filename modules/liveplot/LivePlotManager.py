@@ -65,35 +65,43 @@ class LivePlotManager(QObject):
 
     # --- Session API (Push) ---
 
-    def start_session(self, name: str):
-        """Erstellt einen neuen leeren Reiter."""
+    def start_session(self, name: str, metadata: dict = None):
+        """
+        Startet Session mit optionalen Metadaten (Device, User, Config).
+        """
         if name in self.active_sessions:
             self.log_mgr.warning(f"Session '{name}' overwritten.")
         
-        self.active_sessions[name] = {} # Dict für Plots
+        self.active_sessions[name] = {
+            'plots': {},      # Hier landen die Kurven (lin_iv, spec, etc.)
+            'metadata': metadata if metadata else {}
+        }
         self.log_mgr.info(f"Session started: {name}")
         self.session_started.emit(name)
 
-    def define_plot(self, session: str, key: str, title: str, 
-                    x_label: str, y_label: str, log_y: bool = False, log_x: bool = False):
-        """
-        Fügt dem Session-Tab einen neuen Plot hinzu.
-        """
+    def define_plot(self, session, key, title, xl, yl, log_x=False, log_y=False):
         if session not in self.active_sessions: return
-        
-        # Speicher für diesen Plot anlegen
-        self.active_sessions[session][key] = {'x': [], 'y': [], 'is_array': False}
-        
-        self.plot_defined.emit(session, key, title, x_label, y_label, log_x, log_y)
+        # Struktur update: Wir speichern unter ['plots'][key]
+        if 'plots' not in self.active_sessions[session]:
+             self.active_sessions[session]['plots'] = {}
+             
+        self.active_sessions[session]['plots'][key] = {
+            'x': [], 'y': [], 'is_array': False,
+            'title': title, 'log_y': log_y
+        }
+        self.plot_defined.emit(session, key, title, xl, yl, log_x, log_y)
 
-    def append_data(self, session: str, key: str, x: float, y: float):
-        """Fügt einen Punkt hinzu (für IV-Kurven etc.)."""
-        if session not in self.active_sessions or key not in self.active_sessions[session]: return
+    def append_data(self, session, key, x, y):
+        # Zugriff angepasst auf ['plots']
+        if session not in self.active_sessions: return
+        plots = self.active_sessions[session].get('plots', {})
+        if key not in plots: return
         
-        self.active_sessions[session][key]['x'].append(x)
-        self.active_sessions[session][key]['y'].append(y)
-        
+        plots[key]['x'].append(x)
+        plots[key]['y'].append(y)
         self.data_appended.emit(session, key, x, y)
+        
+    # set_data analog anpassen...
 
     def set_data(self, session: str, key: str, x_arr, y_arr):
         """Ersetzt die Daten komplett (für Spektren)."""

@@ -1,18 +1,27 @@
 import sys
 import os
+import csv
+from itertools import zip_longest # Wichtig für CSV Export unterschiedlicher Längen
 import numpy as np
+import h5py
+from datetime import datetime
 import pyqtgraph as pg
 from collections import deque
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, 
-                               QPushButton, QLabel, QFileDialog, QSpinBox, QTabBar)
+                               QPushButton, QLabel, QFileDialog, QSizePolicy, 
+                               QSpinBox, QTabBar)
 from PySide6.QtCore import Slot, Qt, QTimer
 
+# Import UI
 try:
     from .ui_LivePlotWidget import Ui_LivePlot 
 except ImportError:
-    class Ui_LivePlot:
-        def setupUi(self, Form): pass
+    try:
+        from ui_LivePlotWidget import Ui_LivePlot
+    except ImportError:
+        class Ui_LivePlot:
+            def setupUi(self, Form): pass
 
 # ==============================================================================
 # Helper: Multi-Plot Session Tab
@@ -24,23 +33,27 @@ class SessionTabWidget(QWidget):
         self.session_name = name 
         
         # Grid Logic
-        self.plot_items = {} # Key -> PlotItem
-        self.curves = {}     # Key -> PlotDataItem
+        self.plot_items = {} 
+        self.curves = {}     
         self.next_row = 0
         self.next_col = 0
         
+        # Lokaler Cache für Visualisierung (damit wir beim Append nicht flackern)
+        self.local_data_cache = {}
+
         # Layout
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(5, 5, 5, 5)
         
         # Header
         header = QHBoxLayout()
+        header.addWidget(QLabel("Measurement:"))
         self.name_edit = QLineEdit(name)
         self.name_edit.textChanged.connect(self.update_tab_title)
-        header.addWidget(QLabel("Measurement:"))
         header.addWidget(self.name_edit)
         layout.addLayout(header)
 
-        # Graphics Container (Das Grid für die Plots)
+        # Graphics Container
         self.glw = pg.GraphicsLayoutWidget()
         self.glw.setBackground('k')
         layout.addWidget(self.glw)
@@ -55,50 +68,34 @@ class SessionTabWidget(QWidget):
 
     def add_plot(self, key, title, xl, yl, log_x, log_y):
         """Erstellt einen neuen Plot im Grid."""
-        # Neuer Plot
         p = self.glw.addPlot(row=self.next_row, col=self.next_col, title=title)
         p.setLabel('bottom', xl)
         p.setLabel('left', yl)
         p.showGrid(x=True, y=True, alpha=0.3)
         p.setLogMode(x=log_x, y=log_y)
+        p.addLegend(offset=(10, 10))
         
-        # Kurve
-        curve = p.plot(pen=pg.mkPen('#ffff00', width=2), symbol='o', symbolSize=3)
+        curve = p.plot(pen=pg.mkPen('#ffff00', width=2), symbol='o', symbolSize=3, name="Data")
         
-        # Merken
         self.plot_items[key] = p
         self.curves[key] = curve
+        self.local_data_cache[key] = {'x': [], 'y': []}
         
-        # Grid weiterschalten (2 Spalten Layout)
         self.next_col += 1
         if self.next_col > 1:
             self.next_col = 0
             self.next_row += 1
 
     def update_curve(self, key, x, y, append=True):
-        """Aktualisiert die Daten einer Kurve."""
+        """Aktualisiert die Daten einer Kurve (nur Visualisierung)."""
         if key not in self.curves: return
         
-        # Hinweis: Das Widget hält keine Datenkopie mehr (das macht der Manager).
-        # Wir bekommen hier direkt die Daten zum Zeichnen (bei Append allerdings nur den Punkt).
-        # Da wir für Append den ganzen Verlauf brauchen, holen wir ihn aus dem Manager Cache?
-        # NEIN -> Performance. 
-        # BESSER: Das Widget hält DOCH einen lokalen Cache für die Visualisierung.
-        
-        if not hasattr(self, 'local_data_cache'):
-            self.local_data_cache = {}
-            
-        if key not in self.local_data_cache:
-            self.local_data_cache[key] = {'x': [], 'y': []}
-            
         if append:
             self.local_data_cache[key]['x'].append(x)
             self.local_data_cache[key]['y'].append(y)
             self.curves[key].setData(self.local_data_cache[key]['x'], self.local_data_cache[key]['y'])
         else:
-            # Replace Mode (Spectrum)
             self.curves[key].setData(x, y)
-            # Cache updaten (für Export via Widget falls nötig, sonst via Manager)
             self.local_data_cache[key]['x'] = x
             self.local_data_cache[key]['y'] = y
 
@@ -107,37 +104,47 @@ class SessionTabWidget(QWidget):
         if idx != -1: self.main_widget.tabWidget.setTabText(idx, new_text)
 
     def on_export_clicked(self):
-        # Wir holen die Daten lieber frisch aus dem Manager, da dort die "Wahrheit" liegt
+        """Exportiert Session Daten (HDF5 oder CSV)."""
+        # 1. Daten direkt aus dem Manager holen (Single Source of Truth)
+        # Das verhindert den 'KeyError: x', da der Manager die Struktur {'plots': ...} hat.
         mgr_data = self.main_widget.plot_mgr.active_sessions.get(self.session_name, {})
         
-        # Aber wir brauchen den Dateinamen
+        if not mgr_data:
+            self.main_widget.log_mgr.warning("No data found for this session.")
+            return
+
+        # 2. Pfad ermitteln
         profile = self.main_widget.context.profile_manager
-        export_mgr = self.main_widget.context.export_manager
-        last_dir = profile.read("Export_LastDir") or os.path.expanduser("~")
         
-        file_path, _ = QFileDialog.getSaveFileName(
-            self, "Save Session", os.path.join(last_dir, f"{self.name_edit.text()}.h5"), "HDF5 Files (*.h5)"
+        # Default Pfad: User/Modulab/Exports (statt nur User Home)
+        default_base = os.path.join(os.path.expanduser("~"), "Modulab", "Exports")
+        if not os.path.exists(default_base): os.makedirs(default_base, exist_ok=True)
+        
+        last_dir = profile.read("Export_LastDir") or default_base
+        suggested_name = f"{self.name_edit.text()}.h5" # Default HDF5
+        
+        file_path, filter_str = QFileDialog.getSaveFileName(
+            self, "Save Session", 
+            os.path.join(last_dir, suggested_name), 
+            "HDF5 Files (*.h5);;CSV Files (*.csv)" 
         )
         
-        if file_path:
-            # Multi-Dataset Export via ExportManager
-            # Wir müssen das Format etwas anpassen für den ExportManager
-            # Hier ist ein Custom Export sinnvoll:
-            import h5py
-            from datetime import datetime
-            
-            try:
-                with h5py.File(file_path, 'w') as f:
-                    f.attrs['Export_Date'] = datetime.now().isoformat()
-                    
-                    for plot_key, plot_data in mgr_data.items():
-                        g = f.create_group(plot_key)
-                        g.create_dataset('x', data=plot_data['x'])
-                        g.create_dataset('y', data=plot_data['y'])
-                
-                self.main_widget.log_mgr.info(f"Session exported to {file_path}")
-            except Exception as e:
-                self.main_widget.log_mgr.error(f"Export failed: {e}")
+        if not file_path:
+            return
+
+        # 3. Pfad merken
+        profile.write("Export_LastDir", os.path.dirname(file_path))
+        
+        # 4. Datenpaket für ExportManager vorbereiten
+        # Wir müssen sicherstellen, dass Metadaten (User, Device) dabei sind.
+        # Der Manager hat sie schon in 'metadata', falls beim Start übergeben.
+        # Wir ergänzen den aktuellen Namen aus dem Textfeld.
+        if 'metadata' not in mgr_data: mgr_data['metadata'] = {}
+        mgr_data['metadata']['Session_Name_Edited'] = self.name_edit.text()
+
+        # 5. Export auslösen
+        if hasattr(self.main_widget, 'export_session'):
+            self.main_widget.export_session(mgr_data, file_path)
 
 
 # ==============================================================================
@@ -189,19 +196,19 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
         layout.setContentsMargins(0,0,0,0)
 
         toolbar = QHBoxLayout()
-        lbl_hist = QLabel("<b>History Points:</b>")
+        lbl_hist = QLabel("History Points:")
         self.spinBox_history = QSpinBox()
         self.spinBox_history.setRange(100, 100000)
         self.spinBox_history.setSingleStep(100)
-        self.spinBox_history.setSuffix(" pts")
+
         self.spinBox_history.valueChanged.connect(self.on_history_size_changed)
         toolbar.addWidget(lbl_hist); toolbar.addWidget(self.spinBox_history); toolbar.addStretch()
-        layout.addLayout(toolbar)
+
         
         self.dash_layout = pg.GraphicsLayoutWidget()
         self.dash_layout.setBackground('k')
         layout.addWidget(self.dash_layout)
-        
+        layout.addLayout(toolbar)
         # Plots (Monitor)
         self.p_volt = self.dash_layout.addPlot(row=0, col=0, title="Voltage")
         self.p_volt.setLabel('left', "V", units='V')
@@ -263,11 +270,13 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
             if 'a' in data and len(data['a']['v']) > 0:
                 self.curve_volt_a.setData(to_np(data['a']['v']))
                 self.curve_curr_a.setData(to_np(data['a']['i']))
-                self.curve_log_a.setData(np.abs(to_np(data['a']['i'])) + 1e-15)
+                i_a = to_np(data['a']['i'])
+                self.curve_log_a.setData(np.abs(i_a) + 1e-15)
             if 'b' in data and len(data['b']['v']) > 0:
                 self.curve_volt_b.setData(to_np(data['b']['v']))
                 self.curve_curr_b.setData(to_np(data['b']['i']))
-                self.curve_log_b.setData(np.abs(to_np(data['b']['i'])) + 1e-15)
+                i_b = to_np(data['b']['i'])
+                self.curve_log_b.setData(np.abs(i_b) + 1e-15)
             self._pending_monitor_data = None
 
         if self._pending_spectrum_data:
