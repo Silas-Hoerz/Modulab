@@ -3,48 +3,47 @@ import time
 def run_experiment(api):
     """
     Führt einen einfachen Voltage-Sweep auf der SMU durch.
+    Zeigt die Nutzung der neuen, sicheren SMU-Methoden.
     """
     logger = api.log_mgr
-    smu = api.smu_mgr # Zugriff auf SmuManager 
+    smu = api.smu_mgr
 
-    # 1. Verbinden (Nutze DUMMY für Tests ohne Hardware) 
-    port = "DUMMY" 
-    # port = "COM3" # Für echte Hardware
-    
-    if not smu.connect(port):
-        logger.error("Konnte SMU nicht verbinden. Abbruch.")
-        return
+    # 1. Verbinden
+    # Wir nutzen 'connect_LastDevice', um das Profil zu respektieren
+    if not smu.is_connected():
+        if not smu.connect_LastDevice():
+            smu.connect("DUMMY")
 
     logger.info(f"Verbunden mit: {smu.get_activeDeviceName()}") 
 
     channel = 'a'
 
-    # 2. Kanal konfigurieren 
+    # 2. Kanal konfigurieren (Werte werden im Profil gespeichert!)
     smu.reset_channel(channel)
-    smu.set_sense_local(channel)        # 2-Wire Messung
-    smu.set_source_voltage(channel)     # Wir geben Spannung vor
-    smu.set_source_limit(channel, 0.1)  # Strombegrenzung auf 100mA (Compliance)
+    smu.set_sense_local(channel)        
+    smu.set_source_voltage(channel)     
+    smu.set_source_limit(channel, 0.1)  # 100mA Limit
     
-    # 3. Output einschalten [cite: 578]
+    # 3. Output einschalten
     smu.set_output_state(channel, True)
 
-    # 4. Einfacher Sweep
     logger.info("Starte Sweep...")
+    
+    # Wir nutzen hier KEINEN LivePlot, sondern schauen nur auf das Dashboard
     for i in range(5):
-        voltage_target = i * 1.0 # 0V, 1V, 2V, ...
+        if api._is_stopped: break
         
-        # Spannung setzen 
+        voltage_target = i * 1.0
         smu.set_source_level(channel, voltage_target)
         
-        time.sleep(0.2) # Einschwingzeit
+        time.sleep(0.5) # Langsam, damit man das Dashboard beobachten kann
         
-        # Messen
         result = smu.measure_iv(channel)
         if result:
             current, voltage = result
             logger.info(f"Set: {voltage_target}V -> Meas: {voltage:.3f}V, {current:.3e}A")
 
-    # 5. Aufräumen
+    # 4. Aufräumen
     smu.set_source_level(channel, 0.0)
     smu.set_output_state(channel, False)
-    smu.disconnect()
+    # smu.disconnect() -> Lassen wir verbunden für weitere Tests

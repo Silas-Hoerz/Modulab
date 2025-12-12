@@ -396,6 +396,59 @@ class ExportManager(QObject):
             self.log_mgr.info("Export stopped.")
             self.export_finished.emit(fname)
 
+    def export_session_data(self, data_dict: dict, filepath: str) -> bool:
+        """
+        Speichert einen kompletten Datensatz (Bulk) in eine Datei.
+        Nützlich für den Export aus dem LivePlot-Widget.
+
+        Args:
+            data_dict (dict): {'x': [1,2,3], 'y': [4,5,6], 'metadata': {...}}
+            filepath (str): Zielpfad (.h5 oder .csv).
+
+        Returns:
+            bool: True bei Erfolg.
+        """
+        try:
+            if filepath.endswith('.csv'):
+                # CSV Export
+                import csv
+                with open(filepath, 'w', newline='') as csvfile:
+                    writer = csv.writer(csvfile)
+                    # Header
+                    writer.writerow(['X', 'Y']) 
+                    # Data
+                    rows = zip(data_dict['x'], data_dict['y'])
+                    writer.writerows(rows)
+                self.log_mgr.info(f"Session exported to CSV: {filepath}")
+                return True
+
+            elif filepath.endswith('.h5'):
+                # HDF5 Export
+                with h5py.File(filepath, 'w') as f:
+                    grp = f.create_group("SessionData")
+                    grp.create_dataset("x", data=data_dict['x'])
+                    grp.create_dataset("y", data=data_dict['y'])
+                    
+                    # Metadaten speichern
+                    if 'metadata' in data_dict:
+                        for k, v in data_dict['metadata'].items():
+                            grp.attrs[k] = v
+                            
+                    # Globale Infos
+                    f.attrs['Export_Date'] = datetime.now().isoformat()
+                    f.attrs['Software'] = f"{APP_TITLE} {APP_VERSION}"
+                    
+                self.log_mgr.info(f"Session exported to HDF5: {filepath}")
+                return True
+                
+            else:
+                self.log_mgr.error("Unsupported file format.")
+                return False
+
+        except Exception as e:
+            self.log_mgr.error(f"Bulk export failed: {e}")
+            return False
+
     # --- Helpers ---
     def _create_dataset_for(self, name, data, unit):
         """

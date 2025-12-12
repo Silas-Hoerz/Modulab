@@ -15,7 +15,7 @@ from modules.device.DeviceWidget import DeviceWidget
 from modules.profile.ProfileWidget import ProfileWidget
 from modules.spectrometer.SpectrometerWidget import SpectrometerWidget
 from modules.smu.SmuWidget import SmuWidget
-from modules.data.LivePlotWidget import LivePlotWidget
+from modules.liveplot.LivePlotWidget import LivePlotWidget
 from modules.data.Hdf5Viewer import Hdf5Viewer
 from modules.waterfall.WaterfallWidget import WaterfallWidget
 

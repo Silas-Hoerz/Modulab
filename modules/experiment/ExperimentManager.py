@@ -262,6 +262,7 @@ class ExperimentAPI():
         self.spectrometer_mgr = self.context.spectrometer_manager
         self.smu_mgr = self.context.smu_manager
         self.export_mgr = self.context.export_manager
+        self.liveplot_mgr = self.context.liveplot_manager
         
         # self.next_mgr = next_manager                                      # <- Hier 
 

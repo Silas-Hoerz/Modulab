@@ -10,6 +10,7 @@ from modules.export.ExportManager import ExportManager
 from modules.waterfall.WaterfallManager import WaterfallManager
 from modules.spectrometer.SpectrometerManager import SpectrometerManager
 from modules.smu.SmuManager import SmuManager
+from modules.liveplot.LivePlotManager import LivePlotManager
 
 class ApplicationContext:
     """
@@ -50,6 +51,11 @@ class ApplicationContext:
             profile_manager=self.profile_manager
         )
 
+        self.liveplot_manager = LivePlotManager(
+            log_manager=self.log_manager, 
+            profile_manager=self.profile_manager
+        )
+
         # übergeben einfach den ganzen Kontext (self).
         # Damit hat der ExperimentManager Zugriff auf ALLES, was hier definiert ist.
         self.experiment_manager = ExperimentManager(context=self)
@@ -63,7 +69,20 @@ class ApplicationContext:
         Stellt die notwendigen Querverbindungen zwischen den Managern her,
         die außerhalb der UI-Widgets funktionieren sollen.
         """
+        # SMU -> Waterfall
         self.spectrometer_manager.new_spectrum_acquired.connect(
             self.waterfall_manager.add_spectrum
         )
         self.log_manager.debug("Connected SpectrometerManager -> WaterfallManager for spectrum acquisition.")
+
+        # SMU -> LivePlot (Monitor)
+        self.smu_manager.new_measurement_acquired.connect(
+            self.liveplot_manager.on_smu_measurement
+        )
+        self.log_manager.debug("Connected SmuManager -> LivePlotManager for SMU measurements.")
+
+        # Spectrometer -> LivePlot (Monitor)
+        self.spectrometer_manager.new_spectrum_acquired.connect(
+            self.liveplot_manager.on_spectrum_acquired
+        )
+        self.log_manager.debug("Connected SpectrometerManager -> LivePlotManager for spectrum acquisition.")
