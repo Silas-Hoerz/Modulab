@@ -174,6 +174,20 @@ class MainWindow(QMainWindow):
         corner_layout.setContentsMargins(0, 0, 0, 0)
         corner_layout.setSpacing(5)
 
+        #  Folder Button (Links)
+        self.folder_btn = QToolButton(self)
+
+        self.folder_btn.setText("User Folder") # Text optional, falls gewünscht
+        self.folder_btn.setAutoRaise(True)
+        self.folder_btn.setToolTip("Open Modulab Working Directory")
+        
+        # Pfad definieren und Funktion verbinden
+        work_dir = os.path.join(os.path.expanduser('~'), 'Modulab')
+        # Sicherstellen dass der Ordner existiert, bevor wir ihn öffnen
+        if not os.path.exists(work_dir): os.makedirs(work_dir, exist_ok=True)
+        
+        self.folder_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(work_dir)))
+
         self.issue_btn = QToolButton(self)
         self.issue_btn.setText("Issue?")
         self.issue_btn.setAutoRaise(True)
@@ -185,6 +199,7 @@ class MainWindow(QMainWindow):
         self.github_btn.setAutoRaise(True)
         self.github_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/Silas-Hoerz/Modulab")))
 
+        corner_layout.addWidget(self.folder_btn)
         corner_layout.addWidget(self.issue_btn)
         corner_layout.addWidget(self.github_btn)
         self.menuBar().setCornerWidget(corner_widget, Qt.TopRightCorner)

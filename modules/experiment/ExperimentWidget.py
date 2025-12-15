@@ -5,11 +5,13 @@ import sys
 import os
 import webbrowser
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Slot, Signal, QEvent
+from PySide6.QtCore import Slot, Signal, QEvent, QUrl
+from PySide6.QtGui import QDesktopServices
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
 DOC_PATH = os.path.join(PROJECT_ROOT, 'docs','_build', 'html', 'index.html')
+
 
 # Importiere die generierte UI-Klasse
 try:
@@ -74,6 +76,7 @@ class ExperimentWidget(QWidget, Ui_Form):
         self.pushButton_docs.clicked.connect(self.on_docs_clicked)
         self.pushButton_edit.clicked.connect(self.on_edit_clicked)
         self.exp_mgr.experiments_found.connect(self.on_experiments_found)
+        self.pushButton_openDir.clicked.connect(self.on_open_dir_clicked)
 
         # 2. Manager-Signale an UI-Slots (diese Klasse)
         self.exp_mgr.experiments_found.connect(self.on_experiments_found)
@@ -115,7 +118,16 @@ class ExperimentWidget(QWidget, Ui_Form):
         """
         self.exp_mgr.search_experiments()
 
-
+    @Slot()
+    def on_open_dir_clicked(self):
+        """Öffnet den Experiments-Ordner im Datei-Explorer."""
+        # FIX: self.exp_mgr statt self.manager benutzen
+        folder = self.exp_mgr.working_dir
+        
+        if os.path.exists(folder):
+            QDesktopServices.openUrl(QUrl.fromLocalFile(folder))
+        else:
+            self.log_mgr.warning(f"Experiment folder not found: {folder}")
 
     @Slot()
     def on_start_clicked(self):
@@ -250,6 +262,3 @@ class ExperimentWidget(QWidget, Ui_Form):
         # Wichtig: Das Event an die Basisklasse weiterleiten,
         # damit der Klick weiterhin verarbeitet wird (und das Popup öffnet).
         return super().eventFilter(watched_object, event)
-
-
-
