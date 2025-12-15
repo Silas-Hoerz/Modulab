@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SmuWidgetaCPesq.ui'
+## Form generated from reading UI file 'SmuWidgetZnXhBC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(523, 530)
+        Form.resize(523, 509)
         Form.setStyleSheet(u"QPushButton[tempState=\"warning\"] {\n"
 "                background-color: #ffff00; \n"
 "                color: black; \n"
@@ -51,7 +51,7 @@ class Ui_Form(object):
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setContentsMargins(9, 9, 9, 9)
         self.frame = QFrame(Form)
         self.frame.setObjectName(u"frame")
         self.frame.setStyleSheet(u"")

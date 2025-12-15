@@ -94,49 +94,72 @@ class MainWindow(QMainWindow):
         self.sweep_dock.setWidget(self.sweep_widget)
         self.sweep_dock.setObjectName("SweepDock")
 
-        # --- 5. LAYOUT AUFBAU (Schritt für Schritt) ---
-        
-        # Wichtig: Zuerst alle sichtbar machen, damit Qt die Geometrie berechnen kann
+      # Initial alle sichtbar machen
         self.experiment_dock.setVisible(True)
         self.spectrometer_dock.setVisible(True)
         self.smu_dock.setVisible(True)
         self.waterfall_dock.setVisible(True)
         self.liveplot_dock.setVisible(True)
         self.hdf5viewer_dock.setVisible(True)
+        self.sweep_dock.setVisible(True)
 
-        # SCHRITT A: Den "Anker" setzen.
-        # Wir setzen Experiments als Startpunkt, der erst mal ALLES einnimmt.
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.experiment_dock)
+        # ---------------------------------------------------------
+        # SCHRITT 1: Die BASIS (Links Oben)
+        # ---------------------------------------------------------
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.spectrometer_dock)
 
-        # SCHRITT B: Oben und Unten trennen.
-        # Wir "schneiden" Waterfall vertikal unter Experiment.
-        # Jetzt: Oben=Exp, Unten=Waterfall
-        self.splitDockWidget(self.experiment_dock, self.waterfall_dock, Qt.Vertical)
+        # ---------------------------------------------------------
+        # SCHRITT 2: Die HAUPT-TRENNUNG (Spalte Links vs Spalte Rechts)
+        # ---------------------------------------------------------
+        self.splitDockWidget(self.spectrometer_dock, self.smu_dock, Qt.Horizontal)
 
-        # SCHRITT C: Die untere Reihe auffüllen (Waterfall | LivePlot | HDF5)
-        # Wir schneiden LivePlot horizontal rechts neben Waterfall.
-        self.splitDockWidget(self.waterfall_dock, self.liveplot_dock, Qt.Horizontal)
-        # Wir schneiden Hdf5 horizontal rechts neben LivePlot.
+        # ---------------------------------------------------------
+        # SCHRITT 3: Die LINKE SPALTE vervollständigen
+        # ---------------------------------------------------------
+        self.splitDockWidget(self.spectrometer_dock, self.waterfall_dock, Qt.Vertical)
+
+        # ---------------------------------------------------------
+        # SCHRITT 4: Die RECHTE SPALTE in Zeilen teilen (Oben/Unten)
+        # ---------------------------------------------------------
+        self.splitDockWidget(self.smu_dock, self.liveplot_dock, Qt.Vertical)
+
+        # ---------------------------------------------------------
+        # SCHRITT 5: Die UNTERE RECHTE Zeile teilen
+        # ---------------------------------------------------------
         self.splitDockWidget(self.liveplot_dock, self.hdf5viewer_dock, Qt.Horizontal)
 
-        # SCHRITT D: Die obere Reihe in Links und Rechts teilen
-        # Wir schneiden SMU horizontal rechts neben Experiment.
-        # Da Experiment "über" der unteren Reihe liegt, bleibt SMU auch oben.
-        self.splitDockWidget(self.experiment_dock, self.smu_dock, Qt.Horizontal)
+        # ---------------------------------------------------------
+        # SCHRITT 6: Die OBERE RECHTE Zeile teilen
+        # ---------------------------------------------------------
+        self.splitDockWidget(self.smu_dock, self.experiment_dock, Qt.Horizontal)
 
-        # SCHRITT E: Oben-Links vertikal teilen (Experiment / Spectrometer)
-        # Wir wollen, dass Experiment oben und Spectrometer direkt darunter ist.
-        self.splitDockWidget(self.experiment_dock, self.spectrometer_dock, Qt.Vertical)
+        # ---------------------------------------------------------
+        # SCHRITT 7: Den Stapel ganz rechts außen bauen
+        # ---------------------------------------------------------
+        self.splitDockWidget(self.experiment_dock, self.sweep_dock, Qt.Vertical)
 
-        # SCHRITT F: Größenverhältnisse anpassen
-        # Da "Experiments" flach sein soll, ändern wir das Verhältnis zu Spectrometer.
-        # Wir sagen: Exp soll klein, Spectrometer groß sein.
-        self.resizeDocks([self.experiment_dock, self.spectrometer_dock], [100, 500], Qt.Vertical)
+
+        # --- GRÖSSENANPASSUNG (Optimiert für Plot-Höhe) ---
         
-        # Wir geben der SMU rechts etwas mehr Breite, falls nötig
-        self.resizeDocks([self.spectrometer_dock, self.smu_dock], [400, 400], Qt.Horizontal)
+        # 1. Hauptspalten: Links (Spectrometer) vs Rechts (SMU)
+        self.resizeDocks([self.spectrometer_dock, self.smu_dock], [400, 900], Qt.Horizontal)
 
+        # 2. Linke Spalte Vertikal: Spec vs Waterfall
+        self.resizeDocks([self.spectrometer_dock, self.waterfall_dock], [500, 400], Qt.Vertical)
 
+        # 3. Rechte Seite Horizontal Oben: SMU vs Experiment-Stack
+        self.resizeDocks([self.smu_dock, self.experiment_dock], [450, 450], Qt.Horizontal)
+
+        # 4. Rechte Seite Horizontal Unten: LivePlot vs HDF5
+        self.resizeDocks([self.liveplot_dock, self.hdf5viewer_dock], [450, 450], Qt.Horizontal)
+        
+        # 5. Experiment Stack Vertikal: Experiment (klein) vs Sweep (größer)
+        self.resizeDocks([self.experiment_dock, self.sweep_dock], [150, 400], Qt.Vertical)
+
+        # 6. WICHTIGSTER FIX: Rechte Seite Vertikal (Oben vs Unten)
+        # Wir zwingen die obere Zeile (SMU/Exp/Sweep) dazu, klein zu sein (z.B. 250px)
+        # und geben dem unteren Bereich (LivePlot/HDF5) den Rest (z.B. 700px).
+        self.resizeDocks([self.smu_dock, self.liveplot_dock], [250, 700], Qt.Vertical)
         # --- 6. Menu & Corner ---
         menu_bar = self.menuBar()
         self.view_menu = menu_bar.addMenu("View")

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>523</width>
-    <height>530</height>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,16 +43,16 @@ QLabel[tempState=&quot;on&quot;] {
     <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
    </property>
    <property name="leftMargin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <item>
     <widget class="QFrame" name="frame">
