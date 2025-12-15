@@ -22,14 +22,14 @@ QLineEdit[tempState=&quot;warning&quot;] {
                 background-color: #ffff00; 
                 color: black; 
 }
-QLabel[labelState=&quot;on&quot;] {
+QLabel[tempState=&quot;on&quot;] {
                 color: #00FF00; /* Grün leuchtend für bessere Lesbarkeit */
                 background-color: black;
                 /*border: 1px solid #00FF00;*/
                 border-radius: 5px;
                 padding: 5px;
             }
-            QLabel[labelState=&quot;off&quot;] {
+            QLabel[tempState=&quot;off&quot;] {
                 color: white;
                 background-color:black; /* Dunkelgrau statt hartem Schwarz */
                 /*border: 1px solid gray;*/
@@ -195,7 +195,7 @@ QLabel[labelState=&quot;on&quot;] {
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Source</string>
+               <string>Source:</string>
               </property>
              </widget>
             </item>
@@ -242,7 +242,7 @@ QLabel[labelState=&quot;on&quot;] {
                </sizepolicy>
               </property>
               <property name="text">
-               <string>State</string>
+               <string>State:</string>
               </property>
              </widget>
             </item>
@@ -468,7 +468,7 @@ QLabel[labelState=&quot;on&quot;] {
                 <property name="maximumSize">
                  <size>
                   <width>40</width>
-                  <height>40</height>
+                  <height>80</height>
                  </size>
                 </property>
                 <property name="styleSheet">
@@ -499,7 +499,7 @@ QLabel[labelState=&quot;on&quot;] {
                </size>
               </property>
               <property name="text">
-               <string>Limit [A]</string>
+               <string>Limit [A]:</string>
               </property>
              </widget>
             </item>
@@ -515,7 +515,7 @@ QLabel[labelState=&quot;on&quot;] {
                <string/>
               </property>
               <property name="text">
-               <string>Level [V]</string>
+               <string>Level [V]:</string>
               </property>
              </widget>
             </item>
@@ -611,7 +611,7 @@ QLabel[labelState=&quot;on&quot;] {
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Source</string>
+               <string>Source:</string>
               </property>
              </widget>
             </item>
@@ -640,7 +640,7 @@ QLabel[labelState=&quot;on&quot;] {
                </size>
               </property>
               <property name="text">
-               <string>Limit [A]</string>
+               <string>Limit [A]:</string>
               </property>
              </widget>
             </item>
@@ -663,7 +663,7 @@ QLabel[labelState=&quot;on&quot;] {
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Level [V]</string>
+               <string>Level [V]:</string>
               </property>
              </widget>
             </item>
@@ -721,7 +721,7 @@ QLabel[labelState=&quot;on&quot;] {
                </sizepolicy>
               </property>
               <property name="text">
-               <string>State</string>
+               <string>State:</string>
               </property>
              </widget>
             </item>
@@ -850,7 +850,7 @@ QLabel[labelState=&quot;on&quot;] {
                 <property name="maximumSize">
                  <size>
                   <width>40</width>
-                  <height>40</height>
+                  <height>80</height>
                  </size>
                 </property>
                 <property name="styleSheet">

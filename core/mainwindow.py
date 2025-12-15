@@ -18,6 +18,7 @@ from modules.smu.SmuWidget import SmuWidget
 from modules.liveplot.LivePlotWidget import LivePlotWidget
 from modules.data.Hdf5Viewer import Hdf5Viewer
 from modules.waterfall.WaterfallWidget import WaterfallWidget
+from modules.sweep.SweepWidget import SweepWidget
 
 from modules.experiment.ExperimentWidget import ExperimentWidget
 
@@ -88,6 +89,11 @@ class MainWindow(QMainWindow):
         self.hdf5viewer_dock.setWidget(self.hdf5viewer_widget)
         self.hdf5viewer_dock.setObjectName("Hdf5ViewerDock")
 
+        self.sweep_widget = SweepWidget(context=self.context, parent=self)
+        self.sweep_dock = QDockWidget("Standard Sweep", self)
+        self.sweep_dock.setWidget(self.sweep_widget)
+        self.sweep_dock.setObjectName("SweepDock")
+
         # --- 5. LAYOUT AUFBAU (Schritt für Schritt) ---
         
         # Wichtig: Zuerst alle sichtbar machen, damit Qt die Geometrie berechnen kann
@@ -136,7 +142,7 @@ class MainWindow(QMainWindow):
         self.view_menu = menu_bar.addMenu("View")
         
         docks = [self.experiment_dock, self.spectrometer_dock, self.smu_dock, 
-                 self.waterfall_dock, self.liveplot_dock, self.hdf5viewer_dock]
+                 self.waterfall_dock, self.liveplot_dock, self.hdf5viewer_dock,self.sweep_dock]
         for dock in docks:
             self.view_menu.addAction(dock.toggleViewAction())
 

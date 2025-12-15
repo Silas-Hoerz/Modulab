@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>508</width>
-    <height>384</height>
+    <height>398</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -445,6 +445,17 @@ QDoubleSpinBox[tempState=&quot;critical&quot;] {
           </property>
           <item>
            <widget class="QPushButton" name="pushButton_acqurieDarkRead">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Read Dark</string>
             </property>
@@ -478,6 +489,17 @@ QDoubleSpinBox[tempState=&quot;critical&quot;] {
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_acquireSingle">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Single</string>
             </property>
@@ -491,11 +513,22 @@ QDoubleSpinBox[tempState=&quot;critical&quot;] {
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QPushButton:checked {color: black;}</string>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SpectrometerWidgetjtkIBC.ui'
+## Form generated from reading UI file 'SpectrometerWidgetZZhfho.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(508, 384)
+        Form.resize(508, 398)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -256,6 +256,10 @@ class Ui_Form(object):
         self.horizontalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         self.pushButton_acqurieDarkRead = QPushButton(self.frame)
         self.pushButton_acqurieDarkRead.setObjectName(u"pushButton_acqurieDarkRead")
+        self.pushButton_acqurieDarkRead.setMinimumSize(QSize(0, 40))
+        font = QFont()
+        font.setPointSize(10)
+        self.pushButton_acqurieDarkRead.setFont(font)
 
         self.horizontalLayout_2.addWidget(self.pushButton_acqurieDarkRead)
 
@@ -273,6 +277,8 @@ class Ui_Form(object):
 
         self.pushButton_acquireSingle = QPushButton(self.frame)
         self.pushButton_acquireSingle.setObjectName(u"pushButton_acquireSingle")
+        self.pushButton_acquireSingle.setMinimumSize(QSize(0, 40))
+        self.pushButton_acquireSingle.setFont(font)
 
         self.horizontalLayout_2.addWidget(self.pushButton_acquireSingle)
 
@@ -280,7 +286,9 @@ class Ui_Form(object):
         self.pushButton_acquireContinuous.setObjectName(u"pushButton_acquireContinuous")
         sizePolicy3.setHeightForWidth(self.pushButton_acquireContinuous.sizePolicy().hasHeightForWidth())
         self.pushButton_acquireContinuous.setSizePolicy(sizePolicy3)
+        self.pushButton_acquireContinuous.setMinimumSize(QSize(0, 40))
         self.pushButton_acquireContinuous.setMaximumSize(QSize(16777215, 16777215))
+        self.pushButton_acquireContinuous.setFont(font)
         self.pushButton_acquireContinuous.setStyleSheet(u"QPushButton:checked {color: black;}")
         self.pushButton_acquireContinuous.setCheckable(True)
 

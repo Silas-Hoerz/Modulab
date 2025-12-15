@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'SmuWidgetaPDbdE.ui'
+## Form generated from reading UI file 'SmuWidgetaCPesq.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.1
 ##
@@ -297,7 +297,7 @@ class Ui_Form(object):
         sizePolicy6.setHeightForWidth(self.pushButton_outputA.sizePolicy().hasHeightForWidth())
         self.pushButton_outputA.setSizePolicy(sizePolicy6)
         self.pushButton_outputA.setMinimumSize(QSize(40, 40))
-        self.pushButton_outputA.setMaximumSize(QSize(40, 40))
+        self.pushButton_outputA.setMaximumSize(QSize(40, 80))
         self.pushButton_outputA.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_outputA.setCheckable(True)
 
@@ -510,7 +510,7 @@ class Ui_Form(object):
         sizePolicy6.setHeightForWidth(self.pushButton_outputB.sizePolicy().hasHeightForWidth())
         self.pushButton_outputB.setSizePolicy(sizePolicy6)
         self.pushButton_outputB.setMinimumSize(QSize(40, 40))
-        self.pushButton_outputB.setMaximumSize(QSize(40, 40))
+        self.pushButton_outputB.setMaximumSize(QSize(40, 80))
         self.pushButton_outputB.setStyleSheet(u"QPushButton:checked {color:black;}")
         self.pushButton_outputB.setCheckable(True)
 
@@ -602,10 +602,10 @@ class Ui_Form(object):
         self.pushButton_connect.setText(QCoreApplication.translate("Form", u"Connect", None))
         self.label_status.setText(QCoreApplication.translate("Form", u"No connection", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Channel A", None))
-        self.label_6.setText(QCoreApplication.translate("Form", u"Source", None))
+        self.label_6.setText(QCoreApplication.translate("Form", u"Source:", None))
         self.pushButton_resetA.setText(QCoreApplication.translate("Form", u"Reset", None))
         self.pushButton_applyA.setText(QCoreApplication.translate("Form", u"Apply", None))
-        self.label_4.setText(QCoreApplication.translate("Form", u"State", None))
+        self.label_4.setText(QCoreApplication.translate("Form", u"State:", None))
         self.pushButton_voltageA.setText(QCoreApplication.translate("Form", u"Voltage", None))
         self.pushButton_currentA.setText(QCoreApplication.translate("Form", u"Current", None))
         self.pushButton_localA.setText(QCoreApplication.translate("Form", u"Local 2 Wire", None))
@@ -614,19 +614,19 @@ class Ui_Form(object):
         self.label_currentA.setText(QCoreApplication.translate("Form", u"--- A", None))
         self.label_statsA.setText(QCoreApplication.translate("Form", u"Stats", None))
         self.pushButton_outputA.setText(QCoreApplication.translate("Form", u"OFF", None))
-        self.label_limitA.setText(QCoreApplication.translate("Form", u"Limit [A]", None))
+        self.label_limitA.setText(QCoreApplication.translate("Form", u"Limit [A]:", None))
 #if QT_CONFIG(tooltip)
         self.label_levelA.setToolTip("")
 #endif // QT_CONFIG(tooltip)
-        self.label_levelA.setText(QCoreApplication.translate("Form", u"Level [V]", None))
+        self.label_levelA.setText(QCoreApplication.translate("Form", u"Level [V]:", None))
         self.pushButton_singleA.setText(QCoreApplication.translate("Form", u"Single", None))
         self.label_channel.setText(QCoreApplication.translate("Form", u"Channel B", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"Source", None))
-        self.label_limitB.setText(QCoreApplication.translate("Form", u"Limit [A]", None))
-        self.label_levelB.setText(QCoreApplication.translate("Form", u"Level [V]", None))
+        self.label_3.setText(QCoreApplication.translate("Form", u"Source:", None))
+        self.label_limitB.setText(QCoreApplication.translate("Form", u"Limit [A]:", None))
+        self.label_levelB.setText(QCoreApplication.translate("Form", u"Level [V]:", None))
         self.pushButton_voltageB.setText(QCoreApplication.translate("Form", u"Voltage", None))
         self.pushButton_currentB.setText(QCoreApplication.translate("Form", u"Current", None))
-        self.label_5.setText(QCoreApplication.translate("Form", u"State", None))
+        self.label_5.setText(QCoreApplication.translate("Form", u"State:", None))
         self.label_voltageB.setText(QCoreApplication.translate("Form", u"--- V", None))
         self.label_currentB.setText(QCoreApplication.translate("Form", u"--- A", None))
         self.label_statsB.setText(QCoreApplication.translate("Form", u"Stats", None))

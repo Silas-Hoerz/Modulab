@@ -138,8 +138,37 @@ class ExperimentManager(QObject):
         self.worker_thread.started.connect(self.worker.run)
 
         self.worker_thread.start()
-        self.experiment_started.emit()
+        self.experiment_started.emit(experiment_name)
         self.log_mgr.info(f"Experiment started: {experiment_name}")
+
+    def run_custom_function(self, func, **kwargs):
+        """
+        Führt eine Python-Funktion als Experiment aus.
+        """
+        if self.worker_thread and self.worker_thread.isRunning():
+            self.log_mgr.warning("Experiment läuft bereits.")
+            return
+
+        # Api Wrapper (neue Instanz für diesen Run)
+        api = ExperimentAPI(self.context)
+        
+        self.worker_thread = QThread()
+        # FIX: Parameter (api, path=None). Custom func wird injiziert.
+        self.worker = ExperimentWorker(api, None)
+        
+        # Injection
+        self.worker.custom_func = func
+        self.worker.custom_kwargs = kwargs
+        
+        self.worker.moveToThread(self.worker_thread)
+        
+        # Connects
+        self.worker.finished.connect(self.on_worker_finished)
+        self.worker.error.connect(self.on_worker_error)
+        self.worker_thread.started.connect(self.worker.run)
+        
+        self.worker_thread.start()
+        self.experiment_started.emit("Custom Function")
 
     @Slot()
     def on_worker_finished(self):
@@ -156,9 +185,7 @@ class ExperimentManager(QObject):
         """ Fehlerbehandlung """
         self.log_mgr.error(f"Experiment error: {error_message}")
         self.experiment_error.emit(error_message)
-        self.on_worker_finished() # Aufrämen 
-
-
+        if self.worker_thread: self.on_worker_finished()
 
     @Slot()
     def pause_experiment(self):
@@ -175,9 +202,14 @@ class ExperimentManager(QObject):
         if self.worker:
             self.worker.stop()
 
+    def is_experiment_running(self):
+        return self.worker_thread is not None and self.worker_thread.isRunning()
+
     @Slot(int, str)
     def on_worker_progress(self, percent, message):
         self.progress_updated.emit(percent, message)
+
+    
 
 
 
@@ -206,18 +238,22 @@ class ExperimentWorker(QObject):
     def run(self):
         """ Lädt und führt das Experiment-Skript aus. """
         try:
-            self.api.log_mgr.info(f"Loading experiment script: {self.experiment_path}")
+            if hasattr(self, 'custom_func') and self.custom_func:
+                # Direct Function Call
+                self.custom_func(self.api, **self.custom_kwargs)
+            else:
+                self.api.log_mgr.info(f"Loading experiment script: {self.experiment_path}")
 
-            spec = importlib.util.spec_from_file_location("user_experiment", self.experiment_path)
-            user_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(user_module)
+                spec = importlib.util.spec_from_file_location("user_experiment", self.experiment_path)
+                user_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(user_module)
 
-            if not hasattr(user_module, "run_experiment"):
-                raise AttributeError("Experiment script must define a 'run_experiment(api)' function.")
-            
-            self.api.log_mgr.info("Starting experiment...")                         
-            user_module.run_experiment(self.api)               
-            self.api.log_mgr.info("Experiment completed successfully.")
+                if not hasattr(user_module, "run_experiment"):
+                    raise AttributeError("Experiment script must define a 'run_experiment(api)' function.")
+                
+                self.api.log_mgr.info("Starting experiment...")                         
+                user_module.run_experiment(self.api)               
+                self.api.log_mgr.info("Experiment completed successfully.")
 
         except ExperimentStoppedException:
             self.error.emit("Experiment was stopped by user.")
