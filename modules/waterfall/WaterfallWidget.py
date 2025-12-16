@@ -52,7 +52,7 @@ class WaterfallWidget(QWidget, Ui_Form):
         layout.addWidget(self.graphics_layout)
         
         self.plot_item = self.graphics_layout.addPlot(row=0, col=0)
-        self.plot_item.setLabel('bottom', 'Wavelength', units='nm')
+        self.plot_item.setLabel('bottom', 'Pixel')
         self.plot_item.setLabel('left', 'History', units='Scans')
         self.plot_item.invertY(True) 
 

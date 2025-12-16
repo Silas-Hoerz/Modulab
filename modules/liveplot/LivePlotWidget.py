@@ -4,7 +4,7 @@ import numpy as np
 import pyqtgraph as pg
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, 
                                QPushButton, QLabel, QFileDialog, QSizePolicy, 
-                               QSpinBox, QTabBar)
+                               QSpinBox, QTabBar) # Checkbox entfernt
 from PySide6.QtCore import Slot, Qt, QTimer
 
 # Import UI Handling
@@ -78,24 +78,13 @@ class SessionTabWidget(QWidget):
             self.curves[key].setData(x, y)
 
     def on_export_clicked(self):
-        """Öffnet Dialog: HDF5 Standard, CSV Optional."""
         profile = self.main_widget.context.profile_manager
         default_dir = profile.read("Export_LastDir") or os.path.expanduser("~")
-        
-        # Standard Name = Session Name + .h5
         default_file = os.path.join(default_dir, f"{self.session_name}.h5")
-        
-        # FILTER: Der erste String ist der Default im Explorer
         filter_str = "HDF5 Files (*.h5);;CSV Files (*.csv)"
         
-        filepath, selected_filter = QFileDialog.getSaveFileName(
-            self, "Save Measurement Data", 
-            default_file, 
-            filter_str
-        )
-        
+        filepath, _ = QFileDialog.getSaveFileName(self, "Save Measurement Data", default_file, filter_str)
         if filepath:
-            # ExportManager entscheidet anhand der Endung (.h5 oder .csv)
             self.main_widget.export_mgr.save_session_to_disk(self.session_name, filepath)
 
 
@@ -105,7 +94,7 @@ class SessionTabWidget(QWidget):
 class LivePlotWidget(QWidget, Ui_LivePlot):
     def __init__(self, context, parent=None):
         super().__init__(parent)
-        self.setupUi(self) # Lädt das Basis-UI (ohne SpinBox/Label im Dashboard)
+        self.setupUi(self) 
         
         self.context = context 
         self.plot_mgr = context.liveplot_manager
@@ -116,7 +105,7 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.tabCloseRequested.connect(self.on_tab_close_requested)
 
-        # WICHTIG: Erst das Dashboard aufbauen (erzeugt self.spinBox_history)
+        # Dashboard aufbauen
         self.__setup_dashboard_tab()
         
         self.active_session_widgets = {}
@@ -129,7 +118,6 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
         if hasattr(self.context.profile_manager, 'profile_loaded'):
              self.context.profile_manager.profile_loaded.connect(self.on_profile_loaded)
 
-        # JETZT existiert self.spinBox_history, da __setup_dashboard_tab aufgerufen wurde
         if hasattr(self, 'spinBox_history'):
             self.spinBox_history.setValue(self.plot_mgr.monitor_maxlen)
 
@@ -143,18 +131,14 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
         self._pending_spectrum_data = None
 
     def __setup_dashboard_tab(self):
-        """Erstellt das Dashboard und erzeugt Label/Spinbox manuell."""
+        """Erstellt das Dashboard."""
         d_widget = QWidget()
         lay = QVBoxLayout(d_widget)
         lay.setContentsMargins(0,0,0,0)
 
-        # --- TOOLBAR MANUELL ERSTELLEN ---
+        # --- TOOLBAR (Nur History Spinbox) ---
         tb_layout = QHBoxLayout()
-        
-        # Label erstellen
         lbl_hist = QLabel("History Points:")
-        
-        # SpinBox erstellen und der Klassen-Instanz zuweisen!
         self.spinBox_history = QSpinBox()
         self.spinBox_history.setRange(100, 100000)
         self.spinBox_history.setSingleStep(100)
@@ -162,33 +146,90 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
         
         tb_layout.addWidget(lbl_hist)
         tb_layout.addWidget(self.spinBox_history)
-        tb_layout.addStretch() # Rest auffüllen
-        
+        tb_layout.addStretch() 
         lay.addLayout(tb_layout)
-        # ----------------------------------
         
-        # Plot Area
+        # --- PLOTS ---
         self.dl = pg.GraphicsLayoutWidget()
         self.dl.setBackground('k')
         lay.addWidget(self.dl)
         
-        # Plots definieren
+        # 2x2 Layout
+        
+        # 1. Voltage
         self.p_v = self.dl.addPlot(row=0, col=0, title="Voltage Monitor")
         self.p_v.setLabel('left', "V")
-        self.c_v_a = self.p_v.plot(pen='c')
-        self.c_v_b = self.p_v.plot(pen='m')
+        self.p_v.showGrid(x=True, y=True, alpha=0.3)
+        self.p_v.addLegend() # Legend nötig für Interaktion
+        self.c_v_a = self.p_v.plot(pen='c', name="Ch A")
+        self.c_v_b = self.p_v.plot(pen='m', name="Ch B")
+        self._make_legend_interactive(self.p_v) # <--- INTERACTIVE
         
-        self.p_c = self.dl.addPlot(row=0, col=1, title="Current Monitor")
+        # 2. Current Linear
+        self.p_c = self.dl.addPlot(row=0, col=1, title="Current Monitor (Linear)")
         self.p_c.setLabel('left', "I")
-        self.c_c_a = self.p_c.plot(pen='c')
-        self.c_c_b = self.p_c.plot(pen='m')
+        self.p_c.showGrid(x=True, y=True, alpha=0.3)
+        self.p_c.addLegend()
+        self.c_c_a = self.p_c.plot(pen='c', name="Ch A")
+        self.c_c_b = self.p_c.plot(pen='m', name="Ch B")
+        self._make_legend_interactive(self.p_c) # <--- INTERACTIVE
         
-        self.p_s = self.dl.addPlot(row=1, col=0, colspan=2, title="Live Spectrum")
+        # 3. Current Log
+        self.p_log = self.dl.addPlot(row=1, col=0, title="Current Monitor (Log)")
+        self.p_log.setLabel('left', "I (Log)", units='A')
+        self.p_log.setLogMode(y=True) 
+        self.p_log.showGrid(x=True, y=True, alpha=0.3)
+        self.p_log.addLegend()
+        self.c_log_a = self.p_log.plot(pen='c', name="Ch A")
+        self.c_log_b = self.p_log.plot(pen='m', name="Ch B")
+        self._make_legend_interactive(self.p_log) # <--- INTERACTIVE
+
+        # 4. Spectrum
+        self.p_s = self.dl.addPlot(row=1, col=1, title="Live Spectrum")
+        self.p_s.setLabel('bottom', "nm")
+        self.p_s.showGrid(x=True, y=True, alpha=0.3)
         self.c_s = self.p_s.plot(pen='#00ff00', fillLevel=0, brush=(0,255,0,50))
 
         idx = self.tabWidget.addTab(d_widget, "Dashboard")
-        # Dashboard darf nicht geschlossen werden (Close Button rechts entfernen)
         self.tabWidget.tabBar().setTabButton(idx, QTabBar.RightSide, None)
+
+    # --- Feature: Clickable Legend ---
+    
+    def _make_legend_interactive(self, plot_item):
+        """
+        Macht die Legende anklickbar, um Kurven ein/auszuschalten.
+        """
+        legend = plot_item.legend
+        if not legend: return
+
+        # Wir iterieren über die Items in der Legende
+        # pyqtgraph legend.items ist eine Liste von (sample, label)
+        for sample, label in legend.items:
+            # Das 'sample' Objekt hält eine Referenz auf das PlotItem (die Kurve)
+            curve_item = sample.item 
+            
+            # Wir definieren eine Click-Funktion via Closure, um curve_item zu binden
+            def create_click_handler(c_item, l_item, s_item):
+                def click_handler(ev):
+                    # Toggle Visibility
+                    new_state = not c_item.isVisible()
+                    c_item.setVisible(new_state)
+                    
+                    # Visuelles Feedback: Text und Linie dimmen wenn inaktiv
+                    opacity = 1.0 if new_state else 0.3
+                    l_item.setOpacity(opacity)
+                    s_item.setOpacity(opacity)
+                    
+                    # Event akzeptieren (wichtig für PyQt)
+                    ev.accept()
+                return click_handler
+
+            # Funktion erstellen
+            handler = create_click_handler(curve_item, label, sample)
+            
+            # Monkey-Patching: Wir überschreiben das mousePressEvent des Labels und des Samples
+            label.mousePressEvent = handler
+            sample.mousePressEvent = handler
 
     # --- Slots ---
     @Slot(int)
@@ -197,7 +238,7 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
 
     @Slot(int)
     def on_tab_close_requested(self, index):
-        if index == 0: return # Dashboard protect
+        if index == 0: return 
         w = self.tabWidget.widget(index)
         if isinstance(w, SessionTabWidget):
              if w.session_name in self.active_session_widgets: 
@@ -217,12 +258,26 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
     def _refresh_dashboard_plots(self):
         if self._pending_monitor_data:
             d = self._pending_monitor_data
-            if 'a' in d: 
-                self.c_v_a.setData(np.array(d['a']['v']))
-                self.c_c_a.setData(np.array(d['a']['i']))
-            if 'b' in d: 
-                self.c_v_b.setData(np.array(d['b']['v']))
-                self.c_c_b.setData(np.array(d['b']['i']))
+            
+            def get_data(ch, key):
+                if ch in d and len(d[ch][key]) > 0: return np.array(d[ch][key])
+                return np.array([])
+
+            # Channel A
+            va = get_data('a', 'v'); ia = get_data('a', 'i')
+            # Channel B
+            vb = get_data('b', 'v'); ib = get_data('b', 'i')
+
+            # Linear
+            self.c_v_a.setData(va); self.c_c_a.setData(ia)
+            self.c_v_b.setData(vb); self.c_c_b.setData(ib)
+            
+            # Log
+            if len(ia) > 0: self.c_log_a.setData(np.abs(ia) + 1e-13)
+            else: self.c_log_a.setData([])
+            if len(ib) > 0: self.c_log_b.setData(np.abs(ib) + 1e-13)
+            else: self.c_log_b.setData([])
+
             self._pending_monitor_data = None
             
         if self._pending_spectrum_data:
@@ -238,12 +293,17 @@ class LivePlotWidget(QWidget, Ui_LivePlot):
         tab = self.active_session_widgets[s_name]
         tab.update_curve("iv_i", data['x'], data['i'], append=True)
         tab.update_curve("iv_v", data['x'], data['v'], append=True)
+        
+        val_abs = abs(data['i']) + 1e-13
+        tab.update_curve("iv_log", data['x'], val_abs, append=True)
+
         if data['spectrum'] is not None: 
             tab.update_curve("spec", data['wl'], data['spectrum'], append=False)
 
     def _create_session_tab(self, name):
         tab = SessionTabWidget(name, self)
-        tab.add_plot("iv_i", "Current", "Set", "I [A]", False, False)
+        tab.add_plot("iv_i", "Current (Lin)", "Set", "I [A]", False, False)
+        tab.add_plot("iv_log", "Current (Log)", "Set", "I [A]", False, True)
         tab.add_plot("iv_v", "Voltage", "Set", "V [V]", False, False)
         tab.add_plot("spec", "Spectrum", "nm", "Cnt", False, False)
         idx = self.tabWidget.addTab(tab, name)

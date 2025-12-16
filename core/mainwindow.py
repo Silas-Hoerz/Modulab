@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         self.hdf5viewer_dock.setObjectName("Hdf5ViewerDock")
 
         self.sweep_widget = SweepWidget(context=self.context, parent=self)
-        self.sweep_dock = QDockWidget("Standard Sweep", self)
+        self.sweep_dock = QDockWidget("Sweep", self)
         self.sweep_dock.setWidget(self.sweep_widget)
         self.sweep_dock.setObjectName("SweepDock")
 
