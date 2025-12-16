@@ -24,6 +24,8 @@ class Hdf5Viewer(QWidget):
         self.setLayout(self.layout)
 
         self.h5_file_handle = None # Referenz halten, um später sauber zu schließen
+        self.placeholder_label = QLabel("Keine HDF5 Datei geladen.")
+        self.placeholder_label.setVisible(False)
 
         if not SILX_AVAILABLE:
             self.layout.addWidget(QLabel("Fehler: 'silx' ist nicht installiert.\nBitte 'pip install silx' ausführen."))
@@ -31,44 +33,49 @@ class Hdf5Viewer(QWidget):
 
         # --- Das Herzstück: Der HDF5 Tree View ---
         self.tree_view = Hdf5TreeView()
-        
-        # Optionen für bessere Übersicht
         self.tree_view.setSortingEnabled(True) 
-        
-        # Erlaubt das Kontextmenü (Rechtsklick -> Plot / View Data)
-        # Das ist extrem mächtig: Silx bringt eigene Plot-Fenster mit!
         self.tree_view.setSelectionMode(qt.QAbstractItemView.ExtendedSelection)
         
         self.layout.addWidget(self.tree_view)
+        self.layout.addWidget(self.placeholder_label)
 
     @Slot(str)
     def load_file(self, filepath):
         """
         Öffnet eine HDF5-Datei sicher im Read-Only Modus und zeigt sie an.
-        Schließt vorherige Dateien automatisch.
+        Ignoriert CSV Dateien.
         """
         if not SILX_AVAILABLE: return
 
-        # 1. Alte Datei schließen (WICHTIG für File Locking!)
+        # 1. Alte Datei schließen
         self.close_file()
 
         if not filepath or not os.path.exists(filepath):
-            # Falls Pfad leer (z.B. Abbruch), nichts tun
             return
+
+        # --- FIX: Prüfen ob es überhaupt HDF5 ist ---
+        _, ext = os.path.splitext(filepath)
+        if ext.lower() not in ['.h5', '.hdf5', '.nxs', '.nx']:
+            # Es ist eine CSV oder Textdatei -> Viewer leeren, aber keinen Fehler werfen!
+            self.tree_view.setVisible(False)
+            self.placeholder_label.setText(f"Vorschau für {ext}-Dateien nicht verfügbar.\n(Daten wurden erfolgreich gespeichert)")
+            self.placeholder_label.setVisible(True)
+            return
+        
+        # Es ist eine H5 Datei -> Anzeigen
+        self.tree_view.setVisible(True)
+        self.placeholder_label.setVisible(False)
 
         try:
             # 2. Datei explizit mit h5py im Read-Only Modus ('r') öffnen
-            # Das verhindert, dass wir versehentlich Daten ändern.
             self.h5_file_handle = h5py.File(filepath, 'r')
 
             # 3. Dem Model das h5py-Objekt übergeben
             model = self.tree_view.findHdf5TreeModel()
             model.insertH5pyObject(self.h5_file_handle)
             
-            # Optional: Alle Knoten aufklappen
-            # self.tree_view.expandAll() 
-            
         except Exception as e:
+            # Echte HDF5 Fehler (z.B. kaputte Datei) sollen immer noch gemeldet werden
             QMessageBox.critical(self, "Fehler beim Öffnen", f"Konnte HDF5 Datei nicht laden:\n{e}")
             self.close_file()
 
@@ -91,9 +98,5 @@ class Hdf5Viewer(QWidget):
             self.h5_file_handle = None
 
     def closeEvent(self, event):
-        """
-        Wird aufgerufen, wenn das Widget/Fenster zerstört wird.
-        Sorgt dafür, dass die Datei freigegeben wird.
-        """
         self.close_file()
         super().closeEvent(event)
