@@ -59,6 +59,8 @@ class SmuManager(QObject):
         self.idn_message = ""
         self.LastDevice = None
 
+        self.active_channels = ['a', 'b']
+
         # Speichert, ob der Kanal als Spannungs- ('V') oder Stromquelle ('I') dient
         self.channel_source_func = {
             'a': 'V',
@@ -98,6 +100,57 @@ class SmuManager(QObject):
                 self.log_mgr.info("Could not reconnect to last SMU.")
         else:
             self.log_mgr.info("No last SMU saved in this profile.")
+
+    def _disable_channel(self, channel, reason):
+        """Markiert einen Kanal als defekt/nicht vorhanden."""
+        if channel in self.active_channels:
+            self.active_channels.remove(channel)
+            self.log_mgr.warning(f"Channel '{channel}' disabled permanently for this session. Reason: {reason}")
+            # Signal senden, damit das UI (Widget) den Kanal ausgraut
+            self.channel_disabled.emit(channel)
+    
+    def _check_connection(self, action_name="", channel=None) -> bool:
+        """
+        Helper: Prüft Verbindung UND ob der Kanal aktiv ist.
+        """
+        if not self.is_connected():
+            return False
+        
+        # WICHTIG: Hier wird geprüft, ob der Kanal (z.B. 'b') überhaupt noch erlaubt ist
+        if channel is not None and channel not in self.active_channels:
+            # Still und leise abbrechen -> Kein Log Spam
+            return False
+            
+        return True
+    
+    def apply_channel_settings(self):
+        """Wendet die gespeicherten/internen Settings auf das Gerät an."""
+        if not self.is_connected(): return
+        
+        self.log_mgr.info("Applying channel settings...")
+        
+        # --- ÄNDERUNG: Reset active list bei neuem Connect ---
+        self.active_channels = ['a', 'b']
+
+        # Über Kopie der Liste iterieren, falls einer währenddessen rausfliegt
+        for ch in list(self.active_channels):
+            try:
+                state = self.channel_state[ch]
+                
+                if state['func'] == 'V': self.set_source_voltage(ch)
+                else: self.set_source_current(ch)
+                
+                self.set_source_level(ch, state['level'])
+                self.set_source_limit(ch, state['limit'])
+                self.set_sense_mode(ch, state['sense'])
+                self.set_output_state(ch, False)
+                
+            except Exception as e:
+                # Falls schon beim Setup ein Fehler kommt (z.B. Timeout auf Ch B)
+                if isinstance(e, ValueError):
+                    self._disable_channel(ch, "Setup failed (Device rejected command)")
+                else:
+                    self.log_mgr.error(f"Error applying settings to {ch}: {e}")
 
     def _load_channel_settings_from_profile(self):
         """
@@ -300,11 +353,6 @@ class SmuManager(QObject):
     
     # --- Interne Helper ---
 
-    def _check_connection(self, command_name: str) -> bool:
-        if not self.is_connected():
-            self.log_mgr.warning(f"Cannot {command_name}: No SMU connected.")
-            return False
-        return True
 
     # --- API Methoden (Hardware Steuerung) ---
 
@@ -465,18 +513,9 @@ class SmuManager(QObject):
 
     def measure_iv(self, channel: str) -> tuple[float, float] | None:
         """
-        Führt eine Messung durch.
-
-        Args:
-            channel (str): 'a' oder 'b'.
-
-        Returns:
-            tuple: (Strom [A], Spannung [V]) oder None bei Fehler.
-        
-        Example:
-            >>> i, v = manager.measure_iv('a')
+        Führt eine Messung durch. Deaktiviert Kanal bei 'Invalid Response'.
         """
-        if not self._check_connection(f"measure IV for {channel}"): return None
+        if not self._check_connection(f"measure IV", channel): return None
         
         try:
             current, voltage = self.smu_device.measure_iv(channel)
@@ -484,8 +523,17 @@ class SmuManager(QObject):
             return current, voltage
         
         except Exception as e:
-            self.log_mgr.error(f"Error during IV measurement on {channel}: {e}")
-            if isinstance(e, (ConnectionError, serial.SerialException, ValueError)):
-                self.log_mgr.error("Critical error during measurement. Disconnecting SMU.")
+            # --- ÄNDERUNG: Fehlererkennung ---
+            # Wenn ValueError (z.B. leere Antwort), dann existiert der Kanal wohl nicht
+            if isinstance(e, ValueError):
+                self._disable_channel(channel, f"Invalid Response ({e})")
+                return None
+            
+            elif isinstance(e, (ConnectionError, serial.SerialException)):
+                self.log_mgr.error(f"Critical connection error: {e}. Disconnecting.")
                 self.disconnect()
-            return None
+                return None
+            
+            else:
+                self.log_mgr.error(f"Error on {channel}: {e}")
+                return None

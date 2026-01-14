@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Experiment Manager - Modulab 0.1.6 documentation</title>
+        <title>Experiment Manager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -199,6 +199,7 @@
 <li class="toctree-l1"><a class="reference internal" href="smu_manager.html">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="waterfall_manager.html">Waterfall Manager</a></li>
 </ul>
 
 </div>
@@ -257,6 +258,12 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.run_custom_function">
+<span class="sig-name descname"><span class="pre">run_custom_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.run_custom_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.run_custom_function" title="Link to this definition">¶</a></dt>
+<dd><p>Führt eine Python-Funktion als Experiment aus.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">
 <span class="sig-name descname"><span class="pre">on_worker_finished</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.on_worker_finished"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished" title="Link to this definition">¶</a></dt>
 <dd><p>Aufrämen nach Beendigung des Experiments</p>
@@ -302,7 +309,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -332,6 +339,7 @@
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager"><code class="docutils literal notranslate"><span class="pre">ExperimentManager</span></code></a><ul>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.search_experiments"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.search_experiments()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.start_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.start_experiment()</span></code></a></li>
+<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.run_custom_function"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.run_custom_function()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_finished()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_error()</span></code></a></li>
 </ul>
@@ -352,7 +360,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

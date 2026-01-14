@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="prev" title="Spectrometer Manager" href="spectrometer_manager.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Waterfall Manager" href="waterfall_manager.html"><link rel="prev" title="Spectrometer Manager" href="spectrometer_manager.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Export Manager - Modulab 0.1.6 documentation</title>
+        <title>Export Manager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -199,6 +199,7 @@
 <li class="toctree-l1"><a class="reference internal" href="smu_manager.html">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="waterfall_manager.html">Waterfall Manager</a></li>
 </ul>
 
 </div>
@@ -240,258 +241,27 @@
           <section id="module-modules.export.ExportManager">
 <span id="id1"></span><span id="export-manager"></span><h1>Export Manager<a class="headerlink" href="#module-modules.export.ExportManager" title="Link to this heading">¶</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">MeasurementSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Hält alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.to_dataframe" title="Link to this definition">¶</a></dt>
+<dd><p>Konvertiert Session zu Pandas DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">ExportManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Verwaltet den Daten-Export in HDF5-Dateien und fungiert als Datenquelle für Live-Plots.</p>
-<p>Dieser Manager abstrahiert die Komplexität von <cite>h5py</cite>. Er implementiert ein
-Zeilen-basiertes Schreibmodell: Daten werden mit <cite>add()</cite> gesammelt (gestaged)
-und mit <cite>commit()</cite> synchron in die HDF5-Datei geschrieben und gleichzeitig
-an die GUI (z.B. PlotManager) gesendet.</p>
-<dl class="simple">
-<dt>Funktionsweise:</dt><dd><ol class="arabic simple">
-<li><p><strong>Setup:</strong> Zielordner wählen (<cite>select_directory_dialog</cite>).</p></li>
-<li><p><strong>Start:</strong> Neue Datei/Gruppe erstellen (<cite>new</cite>).</p></li>
-<li><p><strong>Metadaten:</strong> Statische Infos speichern (<cite>add_static</cite>).</p></li>
-<li><dl class="simple">
-<dt><strong>Loop:</strong></dt><dd><ul class="simple">
-<li><p>Werte hinzufügen (<cite>add(‘Voltage’, 5.0)</cite>).</p></li>
-<li><p>Werte hinzufügen (<cite>add(‘Current’, 0.001)</cite>).</p></li>
-<li><p>Schreiben &amp; Senden (<cite>commit()</cite>).</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p><strong>Ende:</strong> Datei schließen (<cite>stop</cite>).</p></li>
-</ol>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging.</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Speichern des letzten Pfades.</p></li>
-</ul>
-</dd>
-</dl>
-<dl>
-<dt>Signale:</dt><dd><dl>
-<dt>data_committed (dict):</dt><dd><p>Wird bei jedem <cite>commit()</cite> ausgelöst. Enthält die neuen Datenpunkte für
-Live-Plots.</p>
-<p><strong>Payload-Struktur:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;Voltage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;Current&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">1.2e-3</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;Spectrum&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;cnt&#39;</span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd>
-<dt>export_started (str):</dt><dd><p>Wird ausgelöst, wenn eine neue Datei erstellt wurde.
-Args: (str: Voller Pfad zur Datei).</p>
-</dd>
-<dt>export_finished (str):</dt><dd><p>Wird ausgelöst, wenn der Export beendet wurde.
-Args: (str: Dateiname).</p>
-</dd>
-<dt>export_error (str):</dt><dd><p>Wird bei Schreib-/IO-Fehlern ausgelöst.
-Args: (str: Fehlermeldung).</p>
-</dd>
-</dl>
-</dd>
-</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initialisiert den ExportManager.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.select_directory_dialog">
-<span class="sig-name descname"><span class="pre">select_directory_dialog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.select_directory_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.select_directory_dialog" title="Link to this definition">¶</a></dt>
-<dd><p>Öffnet einen System-Dialog zur Auswahl des Speicherordners.</p>
-<p><strong>Thread-Safety:</strong>
-Diese Funktion erkennt automatisch, ob sie aus einem Worker-Thread (Experiment)
-oder dem Haupt-Thread aufgerufen wird. Wenn sie aus einem Worker-Thread kommt,
-pausiert sie diesen und führt den GUI-Dialog sicher im Haupt-Thread aus.</p>
-<p>Der gewählte Pfad wird automatisch im Profil gespeichert (<cite>Export_LastDir</cite>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Der ausgewählte (oder vorherige) Pfad.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Button-Click Handler in der GUI:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_btn_browse_clicked</span><span class="p">():</span>
-    <span class="n">new_path</span> <span class="o">=</span> <span class="n">export_mgr</span><span class="o">.</span><span class="n">select_directory_dialog</span><span class="p">()</span>
-    <span class="n">ui</span><span class="o">.</span><span class="n">line_edit_path</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.set_export_directory">
-<span class="sig-name descname"><span class="pre">set_export_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.set_export_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.set_export_directory" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt den Export-Pfad manuell und speichert ihn im Profil.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der absolute Pfad zum Zielordner.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.get_export_directory">
-<span class="sig-name descname"><span class="pre">get_export_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.get_export_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.get_export_directory" title="Link to this definition">¶</a></dt>
-<dd><p>Liest den aktuell konfigurierten Export-Pfad aus dem Profil.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Der Pfad oder das Benutzer-Home-Verzeichnis als Fallback.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.new">
-<span class="sig-name descname"><span class="pre">new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Measurement'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.new" title="Link to this definition">¶</a></dt>
-<dd><p>Erstellt eine neue HDF5-Datei und bereitet die Messung vor.</p>
-<p>Der Dateiname wird automatisch mit einem Zeitstempel versehen
-(<cite>Name_YYYYMMDD_HHMMSS.h5</cite>). Schließt eine evtl. offene Datei zuvor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename_base</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Basisname der Datei (z.B. “Experiment_A”).</p></li>
-<li><p><strong>dataset_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name der HDF5-Gruppe für die Daten
-(Standard: “Measurement”).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei Erfolg, False bei IO-Fehlern.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Eine neue Messdatei starten:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">export_mgr</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;OLED_IV_Curve&quot;</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Datei erstellt, bereit für Daten.&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add" title="Link to this definition">¶</a></dt>
-<dd><p>Fügt dynamische Messdaten zum internen Puffer hinzu.</p>
-<p>Diese Daten werden <strong>noch nicht</strong> auf die Festplatte geschrieben.
-Erst der Aufruf von <cite>commit()</cite> schreibt alle mit <cite>add()</cite> gesammelten
-Werte als eine Zeile in die HDF5-Datasets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des Datasets (Spaltenname), z.B. “Voltage”.</p></li>
-<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span> <span class="pre">|</span> <span class="pre">numpy.ndarray</span></code>) – Der Messwert (Skalar) oder ein Array
-(z.B. ganzes Spektrum).</p></li>
-<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Die physikalische Einheit (z.B. “V”, “nm”),
-wird als HDF5-Attribut gespeichert.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Werte für den nächsten Zeitschritt sammeln:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skalar hinzufügen</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Current&quot;</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
-
-<span class="c1"># Array hinzufügen (z.B. Spektrum)</span>
-<span class="n">spectrum_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Spectrum&quot;</span><span class="p">,</span> <span class="n">spectrum_data</span><span class="p">,</span> <span class="s2">&quot;counts&quot;</span><span class="p">)</span>
-
-<span class="c1"># WICHTIG: Jetzt commit aufrufen!</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_static">
-<span class="sig-name descname"><span class="pre">add_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_static"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_static" title="Link to this definition">¶</a></dt>
-<dd><p>Speichert einmalige, statische Daten (Metadaten/Konstanten).</p>
-<p>Im Gegensatz zu <cite>add()</cite> wird hier <strong>sofort</strong> geschrieben.
-Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name des Datasets.</p></li>
-<li><p><strong>data</strong> – Der Wert (String, Zahl, Array).</p></li>
-<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Einheit.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Geräte-Infos speichern:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">export_mgr</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="s2">&quot;Max Mustermann&quot;</span><span class="p">)</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;IntegrationTime&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_group_attribute">
-<span class="sig-name descname"><span class="pre">add_group_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_group_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_group_attribute" title="Link to this definition">¶</a></dt>
-<dd><p>Fügt Metadaten als Attribute zur HDF5-Hauptgruppe hinzu.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Attribut-Name.</p></li>
-<li><p><strong>value</strong> – Attribut-Wert.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.commit">
-<span class="sig-name descname"><span class="pre">commit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.commit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.commit" title="Link to this definition">¶</a></dt>
-<dd><p>Schließt den aktuellen Datenpunkt ab (Synchronisation).</p>
-<p>Führt folgende Schritte aus:
-1. Erstellt HDF5-Datasets für neue Spalten (falls nötig).
-2. Erweitert alle Datasets um eine Zeile.
-3. Schreibt die gepufferten Werte aus <cite>add()</cite> in die neue Zeile.
-4. Füllt fehlende Werte (falls <cite>add</cite> für eine Spalte vergessen wurde) mit NaN.
-5. Sendet das <cite>data_committed</cite>-Signal für Live-Plots.
-6. Leert den Puffer für den nächsten Punkt.</p>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Am Ende einer Messschleife aufrufen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">measuring</span><span class="p">:</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">instrument</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Reading&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-    <span class="n">export_mgr</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> <span class="c1"># Schreibt auf Disk &amp; updated Plot</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.stop" title="Link to this definition">¶</a></dt>
-<dd><p>Beendet den Export und schließt die HDF5-Datei sauber.</p>
-<p>Sendet das <cite>export_finished</cite>-Signal.</p>
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.save_session_to_disk">
+<span class="sig-name descname"><span class="pre">save_session_to_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.save_session_to_disk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.save_session_to_disk" title="Link to this definition">¶</a></dt>
+<dd><p>Exportiert ENTWEDER als HDF5 ODER als CSV, basierend auf der Dateiendung.
+Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
 </dd></dl>
 
 </dd></dl>
@@ -503,7 +273,15 @@ Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="waterfall_manager.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Waterfall Manager</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="spectrometer_manager.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -519,7 +297,7 @@ Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -546,17 +324,12 @@ Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Export Manager</a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession"><code class="docutils literal notranslate"><span class="pre">MeasurementSession</span></code></a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.to_dataframe"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.to_dataframe()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager"><code class="docutils literal notranslate"><span class="pre">ExportManager</span></code></a><ul>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.__init__"><code class="docutils literal notranslate"><span class="pre">ExportManager.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.select_directory_dialog"><code class="docutils literal notranslate"><span class="pre">ExportManager.select_directory_dialog()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.set_export_directory"><code class="docutils literal notranslate"><span class="pre">ExportManager.set_export_directory()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.get_export_directory"><code class="docutils literal notranslate"><span class="pre">ExportManager.get_export_directory()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.new"><code class="docutils literal notranslate"><span class="pre">ExportManager.new()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add"><code class="docutils literal notranslate"><span class="pre">ExportManager.add()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_static"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_static()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_group_attribute"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_group_attribute()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.commit"><code class="docutils literal notranslate"><span class="pre">ExportManager.commit()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.stop"><code class="docutils literal notranslate"><span class="pre">ExportManager.stop()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.save_session_to_disk"><code class="docutils literal notranslate"><span class="pre">ExportManager.save_session_to_disk()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -570,7 +343,7 @@ Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

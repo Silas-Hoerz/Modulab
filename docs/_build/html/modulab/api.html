@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>API-Referenz der Manager - Modulab 0.1.6 documentation</title>
+        <title>API-Referenz der Manager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -249,76 +249,118 @@ des Modulab-Projekts.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.smu.SmuManager.</span></span><span class="sig-name descname"><span class="pre">SmuManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
 <p>Manager zur Steuerung und Verwaltung von SMU-Geräten (Source Measure Units).</p>
-<p>Diese Klasse kapselt die Gerätetreiber (z.B. Keithley2602), verwaltet die
-serielle Verbindung, aktualisiert die Geräteliste und stellt High-Level-Methoden
-für die Konfiguration (Source, Sense, Limits) und Messung (IV) bereit.
-Sie nutzt PySide6-Signale, um die GUI über Statusänderungen zu informieren.</p>
+<p>Diese Klasse kapselt die Gerätetreiber (z.B. Keithley2602) und verwaltet den
+gesamten Status der Kanäle (Spannung, Strom, Limits). Sie dient als
+“Single Source of Truth”: Das UI holt sich den Status von hier.
+Zudem kümmert sie sich um das Speichern und Laden der Einstellungen im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz eines Log-Managers (erwartet .info, .error, etc.).</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von
-App-Einstellungen (Lesen/Schreiben).</p></li>
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging von Ereignissen.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Speichern von Einstellungen.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple">
 <dt>Signale:</dt><dd><dl class="simple">
-<dt>connection_status_changed (bool, str):</dt><dd><p>Wird ausgelöst, wenn sich der Verbindungsstatus ändert.
-Args: (bool: verbunden, str: Gerätename/IDN).</p>
+<dt>connection_status_changed (bool, str):</dt><dd><p>Wird bei Verbindungsänderung ausgelöst.
+Args: (Ist_Verbunden [bool], Gerätename [str])</p>
 </dd>
-<dt>device_list_updated (list):</dt><dd><p>Wird ausgelöst, nachdem die Liste der seriellen Ports aktualisiert wurde.
-Args: (list: Liste von Port-Namen [str]).</p>
+<dt>device_list_updated (list):</dt><dd><p>Wird nach dem Scannen nach Ports ausgelöst.
+Args: (Liste der Portnamen [list[str]])</p>
 </dd>
-<dt>new_measurement_acquired (str, float, float):</dt><dd><p>Wird ausgelöst, wenn eine neue Messung verfügbar ist.
-Args: (str: Kanal, float: Strom, float: Spannung).</p>
+<dt>new_measurement_acquired (str, float, float):</dt><dd><p>Wird ausgelöst, wenn eine Messung erfolgreich war.
+Args: (Kanal [str], Strom [A], Spannung [V])</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_deviceList">
-<span class="sig-name descname"><span class="pre">get_deviceList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_deviceList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_deviceList" title="Link to this definition">¶</a></dt>
-<dd><p>Scannt nach verfügbaren seriellen Ports und aktualisiert die interne Liste.</p>
-<p>Sucht nach allen COM-Ports und fügt zusätzlich einen “DUMMY”-Port
-für Testzwecke hinzu. Löst das <cite>device_list_updated</cite>-Signal aus.</p>
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialisiert den SmuManager.</p>
+<p>Bereitet die interne Datenstruktur vor, verbindet sich mit dem ProfileManager,
+lädt aber noch keine hardware-spezifischen Einstellungen (das passiert erst
+bei <cite>on_profile_loaded</cite>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Wird aufgerufen, sobald der User ein Profil ausgewählt hat.</p>
+<p>Versucht, die letzte Verbindung wiederherzustellen.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Eine Liste der gefundenen Port-Namen (z.B. [‘COM1’, ‘COM3’, ‘DUMMY’]).</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>profile_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name des geladenen Profils.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.apply_channel_settings">
+<span class="sig-name descname"><span class="pre">apply_channel_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.apply_channel_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.apply_channel_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Wendet die gespeicherten/internen Settings auf das Gerät an.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_channel_state">
+<span class="sig-name descname"><span class="pre">get_channel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_channel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_channel_state" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt den aktuellen internen Status eines Kanals zurück.</p>
+<p>Wird vom Widget genutzt, um die UI zu aktualisieren (<cite>sync_ui_from_manager</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mit Keys ‘source_func’, ‘level’, ‘limit’, ‘sense’, ‘output’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_deviceList">
+<span class="sig-name descname"><span class="pre">get_deviceList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_deviceList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_deviceList" title="Link to this definition">¶</a></dt>
+<dd><p>Scannt nach verfügbaren seriellen Ports (COM-Ports).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Liste der Port-Namen (z.B. [‘COM3’, ‘DUMMY’]).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ports</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_deviceList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span>
+<span class="go">[&#39;COM1&#39;, &#39;DUMMY&#39;]</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.connect">
 <span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.connect" title="Link to this definition">¶</a></dt>
-<dd><p>Verbindet eine SMU an einem bestimmten COM-Port.
-…</p>
+<dd><p>Verbindet eine SMU an einem bestimmten Port.</p>
+<p>Lädt bei Erfolg automatisch die letzten Einstellungen aus dem Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>port_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des Ports (z.B. “COM1” oder “DUMMY”).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei erfolgreicher Verbindung, sonst False.</p>
+<dd class="field-even"><p>True bei Erfolg.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Mit einem echten COM-Port verbinden:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &#39;COM3&#39; ist nur ein Beispiel</span>
-<span class="n">success</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;COM3&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Verbunden!&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Mit dem DUMMY-Gerät für Tests verbinden:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;DUMMY&#39;</span><span class="p">)</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;COM3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -327,19 +369,10 @@ für Testzwecke hinzu. Löst das <cite>device_list_updated</cite>-Signal aus.</p
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.connect_LastDevice">
 <span class="sig-name descname"><span class="pre">connect_LastDevice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.connect_LastDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.connect_LastDevice" title="Link to this definition">¶</a></dt>
-<dd><p>Versucht, die Verbindung mit dem zuletzt genutzten Gerät wiederherzustellen.</p>
-<p>Aktualisiert zuerst die Geräteliste und prüft, ob der gespeicherte
-Port (<cite>self.LastDevice</cite>) verfügbar ist.</p>
+<dd><p>Versucht, das zuletzt genutzte Gerät zu verbinden.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>True bei Erfolg, False, wenn kein Gerät gespeichert war</dt><dd><p>oder die Verbindung fehlschlägt.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -347,26 +380,16 @@ Port (<cite>self.LastDevice</cite>) verfügbar ist.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.disconnect">
 <span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.disconnect" title="Link to this definition">¶</a></dt>
-<dd><p>Trennt die aktive Verbindung zum SMU-Gerät.</p>
-<p>Setzt den internen Zustand zurück und löst <cite>connection_status_changed</cite> aus.</p>
+<dd><p>Trennt die Verbindung.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_activeDeviceName">
 <span class="sig-name descname"><span class="pre">get_activeDeviceName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_activeDeviceName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_activeDeviceName" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt einen formatierten Namen des aktuell verbundenen Geräts zurück.</p>
-<p>Parst die IDN-Nachricht, um Modell und Seriennummer zu extrahieren.</p>
+<dd><p>Gibt den Namen des verbundenen Geräts zurück.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>Der formatierte Gerätename</dt><dd><p>(z.B. “MODEL 2602 (SN: 12345) &#64; COM1”)
-oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -374,13 +397,10 @@ oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.is_connected">
 <span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.is_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.is_connected" title="Link to this definition">¶</a></dt>
-<dd><p>Prüft, ob eine aktive und offene Verbindung zur SMU besteht.</p>
+<dd><p>Prüft, ob eine Verbindung besteht.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True, wenn verbunden und der Treiber als ‘offen’ gemeldet ist, sonst False.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -388,10 +408,10 @@ oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.reset_channel">
 <span class="sig-name descname"><span class="pre">reset_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.reset_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.reset_channel" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt einen SMU-Kanal auf Werkseinstellungen zurück.</p>
+<dd><p>Setzt einen Kanal auf Werkseinstellungen zurück.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Kanal, der zurückgesetzt wird (z.B. ‘a’ or ‘b’).</p>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -399,12 +419,11 @@ oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_voltage">
 <span class="sig-name descname"><span class="pre">set_source_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_voltage" title="Link to this definition">¶</a></dt>
-<dd><p>Konfiguriert den Kanal als SPANNUNGSQUELLE (V-Source).</p>
-<p>Aktualisiert auch den internen Zustand, damit <cite>set_source_limit</cite>
-und <cite>set_source_level</cite> korrekt funktionieren.</p>
+<dd><p>Konfiguriert den Kanal als Spannungsquelle.
+Speichert die Einstellung im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -412,34 +431,11 @@ und <cite>set_source_level</cite> korrekt funktionieren.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_current">
 <span class="sig-name descname"><span class="pre">set_source_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_current" title="Link to this definition">¶</a></dt>
-<dd><p>Konfiguriert den Kanal als STROMQUELLE (I-Source).</p>
-<p>Aktualisiert auch den internen Zustand, damit <cite>set_source_limit</cite>
-und <cite>set_source_level</cite> korrekt funktionieren.</p>
+<dd><p>Konfiguriert den Kanal als Stromquelle.
+Speichert die Einstellung im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_local">
-<span class="sig-name descname"><span class="pre">set_sense_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_local" title="Link to this definition">¶</a></dt>
-<dd><p>Stellt den Sense-Modus auf LOKAL (2-Draht-Messung).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_remote">
-<span class="sig-name descname"><span class="pre">set_sense_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_remote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_remote" title="Link to this definition">¶</a></dt>
-<dd><p>Stellt den Sense-Modus auf REMOTE (4-Draht-Messung).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -447,14 +443,13 @@ und <cite>set_source_level</cite> korrekt funktionieren.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_level">
 <span class="sig-name descname"><span class="pre">set_source_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_level" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt das Source-Level (V oder A).</p>
-<p>Die Einheit (V oder A) hängt von der zuvor mit <cite>set_source_voltage</cite>
-oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
+<dd><p>Setzt das Level (Spannung oder Strom, je nach Modus).
+Speichert den Wert im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p></li>
-<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Das zu setzende Level (in Volt oder Ampere).</p></li>
+<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p></li>
+<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Wert in V oder A.</p></li>
 </ul>
 </dd>
 </dl>
@@ -463,48 +458,40 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_limit">
 <span class="sig-name descname"><span class="pre">set_source_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_limit" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt das Source-Limit (A oder V).</p>
-<p>Die Einheit ist <em>entgegengesetzt</em> zur Source-Funktion:
-- Wenn Source = Spannung (V), ist dies das Strom-Limit (A).
-- Wenn Source = Strom (I), ist dies das Spannungs-Limit (V).</p>
+<dd><p>Setzt das Compliance-Limit (Strom bei V-Source, Spannung bei I-Source).
+Speichert den Wert im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p></li>
-<li><p><strong>limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Das zu setzende Limit (in Ampere oder Volt).</p></li>
+<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p></li>
+<li><p><strong>limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Limit in A oder V.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Ein Strom-Limit (100mA) für eine Spannungsquelle setzen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Zuerst Kanal &#39;a&#39; als SPANNUNGSQUELLE definieren</span>
-    <span class="n">manager</span><span class="o">.</span><span class="n">set_source_voltage</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</dd></dl>
 
-<span class="c1"># 2. Jetzt das Limit setzen (0.1 = 100mA STROM-Limit)</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">set_source_limit</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Ein Spannungs-Limit (20V) für eine Stromquelle setzen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Zuerst Kanal &#39;b&#39; als STROMQUELLE definieren</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">set_source_current</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_local">
+<span class="sig-name descname"><span class="pre">set_sense_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_local" title="Link to this definition">¶</a></dt>
+<dd><p>Aktiviert Local Sense (2-Wire). Speichert Einstellung.</p>
+</dd></dl>
 
-<span class="c1"># 2. Jetzt das Limit setzen (20.0 = 20V SPANNUNGS-Limit)</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">set_source_limit</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_remote">
+<span class="sig-name descname"><span class="pre">set_sense_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_remote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_remote" title="Link to this definition">¶</a></dt>
+<dd><p>Aktiviert Remote Sense (4-Wire). Speichert Einstellung.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_output_state">
 <span class="sig-name descname"><span class="pre">set_output_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_output_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_output_state" title="Link to this definition">¶</a></dt>
-<dd><p>Schaltet den Ausgang eines Kanals EIN oder AUS.</p>
+<dd><p>Schaltet den Output AN oder AUS.
+Dieser Zustand wird NICHT im Profil gespeichert (Safety First).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu schaltende Kanal (z.B. ‘a’).</p></li>
-<li><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, um den Ausgang einzuschalten, False, um ihn auszuschalten.</p></li>
+<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p></li>
+<li><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True = ON, False = OFF.</p></li>
 </ul>
 </dd>
 </dl>
@@ -513,37 +500,12 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.measure_iv">
 <span class="sig-name descname"><span class="pre">measure_iv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.measure_iv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.measure_iv" title="Link to this definition">¶</a></dt>
-<dd><p>Führt eine einzelne I/V-Messung auf dem Kanal durch.
-… (andere Sektionen) …</p>
+<dd><p>Führt eine Messung durch. Deaktiviert Kanal bei ‘Invalid Response’.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu messende Kanal (z.B. ‘a’).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Ein Tupel aus (Strom, Spannung) bei Erfolg.</dt><dd><p>None bei einem Messfehler.</p>
-</dd>
-</dl>
-</p>
-</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[float, float] | None</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Das Auslesen der Messung und Speichern in Variablen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Annahme: &#39;manager&#39; ist eine Instanz von SmuManager</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">measure_iv</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
-    <span class="n">current</span><span class="p">,</span> <span class="n">voltage</span> <span class="o">=</span> <span class="n">result</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Messung OK: </span><span class="si">{</span><span class="n">current</span><span class="si">}</span><span class="s2"> A, </span><span class="si">{</span><span class="n">voltage</span><span class="si">}</span><span class="s2"> V&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Messung fehlgeschlagen oder keine Verbindung.&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 </dd></dl>
@@ -657,7 +619,7 @@ wird 0.0 zurückgegeben.</p></li>
 <dd class="field-even"><p>Eine neue Instanz der Device-Klasse.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -859,7 +821,7 @@ für Dimensionen.</p></li>
 <dd class="field-even"><p>Das <cite>Device</cite>-Objekt oder <cite>None</cite>, wenn nicht gefunden.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+<dd class="field-odd"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -917,7 +879,7 @@ selbst aufrufen.</p>
 <dd class="field-odd"><p>Das aktuell aktive <cite>Device</cite>-Objekt oder <cite>None</cite>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+<dd class="field-even"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1019,6 +981,12 @@ selbst aufrufen.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.run_custom_function">
+<span class="sig-name descname"><span class="pre">run_custom_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.run_custom_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.run_custom_function" title="Link to this definition">¶</a></dt>
+<dd><p>Führt eine Python-Funktion als Experiment aus.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">
 <span class="sig-name descname"><span class="pre">on_worker_finished</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.on_worker_finished"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished" title="Link to this definition">¶</a></dt>
 <dd><p>Aufrämen nach Beendigung des Experiments</p>
@@ -1043,6 +1011,11 @@ selbst aufrufen.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.stop_experiment">
 <span class="sig-name descname"><span class="pre">stop_experiment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.stop_experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.stop_experiment" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.experiment.ExperimentManager.ExperimentManager.is_experiment_running">
+<span class="sig-name descname"><span class="pre">is_experiment_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/experiment/ExperimentManager.html#ExperimentManager.is_experiment_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.experiment.ExperimentManager.ExperimentManager.is_experiment_running" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1696,7 +1669,7 @@ Gibt (IstVerbunden, Gerätename) zurück.</p>
 <dt>device_list_updated (list):</dt><dd><p>Wird gefeuert, wenn nach Geräten gesucht wurde.
 Gibt eine Liste mit Namen zurück (z.B. [“FLAME (SN123)”, …]).</p>
 </dd>
-<dt>new_spectrum_acquired (numpy.ndarray, numpy.ndarray):</dt><dd><p>Wird gefeuert, wenn eine <em>rohe</em> Messung abgeschlossen ist.
+<dt>new_spectrum_acquired (numpy.ndarray, numpy.ndarray):</dt><dd><p>Wird gefeuert, wenn eine Messung (roh oder korrigiert) abgeschlossen ist.
 Gibt (Wellenlängen, Intensitäten) zurück.</p>
 </dd>
 <dt>dark_measurement_progress (object, object, int):</dt><dd><p>Wird während der Dunkel-Messung laufend gefeuert.
@@ -1728,9 +1701,15 @@ Gibt (Wellenlängen, Aktueller Durchschnitt, Fortschritt in %) zurück.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Startet den Manager.</p>
+<dd><p>Initialisiert den SpectrometerManager.</p>
 <p>Hier werden Speicherplätze für Daten angelegt, Einstellungen geladen
 und versucht, das letzte Gerät wieder zu verbinden.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Wird aufgerufen, sobald ein Profil erfolgreich geladen wurde.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1978,12 +1957,6 @@ Dunkelspektrum ungültig.</p>
 <dd class="field-odd"><p><strong>temperature_degC</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Zieltemperatur in °C (z.B. -15.0).</p>
 </dd>
 </dl>
-<div class="admonition-example admonition">
-<p class="admonition-title">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">set_temperature</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2047,51 +2020,33 @@ Nützlich für statistische Auswertungen (Standardabweichung etc.).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum">
 <span class="sig-name descname"><span class="pre">acquire_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum" title="Link to this definition">¶</a></dt>
-<dd><p>Führt eine Messung durch und zieht AUTOMATISCH das Dunkelspektrum ab.</p>
-<p>Das ist die Standard-Funktion für normale Messungen.
-Falls kein Dunkelspektrum existiert, wird nichts zurückgegeben (None).</p>
+<dd><p>Nimmt ein Spektrum auf und zieht automatisch das Dark Spectrum ab.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>(Wellenlängen, Korrigierte Intensitäten).</dt><dd><p>Gibt (None, None) zurück bei Fehler oder fehlendem Dunkelspektrum.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>(Wellenlängen, Korrigierte Intensitäten).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple</p>
 </dd>
 </dl>
-<div class="admonition-example admonition">
-<p class="admonition-title">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span><span class="p">,</span> <span class="n">inten</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">acquire_spectrum</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">wl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">plot</span><span class="p">(</span><span class="n">wl</span><span class="p">,</span> <span class="n">inten</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw">
-<span class="sig-name descname"><span class="pre">acquire_spectrum_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">acquire_spectrum_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emit_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw" title="Link to this definition">¶</a></dt>
 <dd><p>Führt eine rohe Messung durch, OHNE etwas abzuziehen.</p>
-<p>Dies liefert genau das, was der Sensor sieht (Licht + Dunkelstrom).
-Sollte genutzt werden, um Referenzen aufzunehmen oder wenn man selbst rechnen will.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(Wellenlängen, Rohe Intensitäten).</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>emit_signal</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Wenn True, wird das ‘new_spectrum_acquired’ Signal gesendet.
+Wenn False, geschieht das nicht (wichtig für interne Aufrufe).</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(Wellenlängen, Rohe Intensitäten).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
-<div class="admonition-example admonition">
-<p class="admonition-title">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span><span class="p">,</span> <span class="n">raw_data</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">acquire_spectrum_raw</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2126,7 +2081,7 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;SpectrometerManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=connection_status_changed(bool,QString),</span> <span class="pre">parameters=bool,</span> <span class="pre">QString</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=device_list_updated(QVariantList),</span> <span class="pre">parameters=QVariantList</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_acquired(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=dark_measurement_progress(PyObject,PyObject,int),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject,</span> <span class="pre">int</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;SpectrometerManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=connection_status_changed(bool,QString),</span> <span class="pre">parameters=bool,</span> <span class="pre">QString</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=device_list_updated(QVariantList),</span> <span class="pre">parameters=QVariantList</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_acquired(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=dark_measurement_progress(PyObject,PyObject,int),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject,</span> <span class="pre">int</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_profile_loaded(QString),</span> <span class="pre">parameters=QString</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.staticMetaObject" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2135,73 +2090,40 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
 <section id="module-modules.export.ExportManager">
 <span id="id7"></span><span id="export-manager"></span><h2>Export Manager<a class="headerlink" href="#module-modules.export.ExportManager" title="Link to this heading">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">MeasurementSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Hält alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.add_point">
+<span class="sig-name descname"><span class="pre">add_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.add_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.add_point" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.is_empty">
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.is_empty" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.get_spectra_matrix">
+<span class="sig-name descname"><span class="pre">get_spectra_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.get_spectra_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.get_spectra_matrix" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.to_dataframe">
+<span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.to_dataframe" title="Link to this definition">¶</a></dt>
+<dd><p>Konvertiert Session zu Pandas DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">ExportManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Verwaltet den Daten-Export in HDF5-Dateien und fungiert als Datenquelle für Live-Plots.</p>
-<p>Dieser Manager abstrahiert die Komplexität von <cite>h5py</cite>. Er implementiert ein
-Zeilen-basiertes Schreibmodell: Daten werden mit <cite>add()</cite> gesammelt (gestaged)
-und mit <cite>commit()</cite> synchron in die HDF5-Datei geschrieben und gleichzeitig
-an die GUI (z.B. PlotManager) gesendet.</p>
-<dl class="simple">
-<dt>Funktionsweise:</dt><dd><ol class="arabic simple">
-<li><p><strong>Setup:</strong> Zielordner wählen (<cite>select_directory_dialog</cite>).</p></li>
-<li><p><strong>Start:</strong> Neue Datei/Gruppe erstellen (<cite>new</cite>).</p></li>
-<li><p><strong>Metadaten:</strong> Statische Infos speichern (<cite>add_static</cite>).</p></li>
-<li><dl class="simple">
-<dt><strong>Loop:</strong></dt><dd><ul class="simple">
-<li><p>Werte hinzufügen (<cite>add(‘Voltage’, 5.0)</cite>).</p></li>
-<li><p>Werte hinzufügen (<cite>add(‘Current’, 0.001)</cite>).</p></li>
-<li><p>Schreiben &amp; Senden (<cite>commit()</cite>).</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p><strong>Ende:</strong> Datei schließen (<cite>stop</cite>).</p></li>
-</ol>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging.</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Speichern des letzten Pfades.</p></li>
-</ul>
-</dd>
-</dl>
-<dl>
-<dt>Signale:</dt><dd><dl>
-<dt>data_committed (dict):</dt><dd><p>Wird bei jedem <cite>commit()</cite> ausgelöst. Enthält die neuen Datenpunkte für
-Live-Plots.</p>
-<p><strong>Payload-Struktur:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;Voltage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;Current&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">1.2e-3</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;Spectrum&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;cnt&#39;</span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd>
-<dt>export_started (str):</dt><dd><p>Wird ausgelöst, wenn eine neue Datei erstellt wurde.
-Args: (str: Voller Pfad zur Datei).</p>
-</dd>
-<dt>export_finished (str):</dt><dd><p>Wird ausgelöst, wenn der Export beendet wurde.
-Args: (str: Dateiname).</p>
-</dd>
-<dt>export_error (str):</dt><dd><p>Wird bei Schreib-/IO-Fehlern ausgelöst.
-Args: (str: Fehlermeldung).</p>
-</dd>
-</dl>
-</dd>
-</dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.data_committed">
-<span class="sig-name descname"><span class="pre">data_committed</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.data_committed" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.export_started">
-<span class="sig-name descname"><span class="pre">export_started</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.export_started" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.session_updated">
+<span class="sig-name descname"><span class="pre">session_updated</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.session_updated" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2215,203 +2137,25 @@ Args: (str: Fehlermeldung).</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initialisiert den ExportManager.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.start_session">
+<span class="sig-name descname"><span class="pre">start_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.start_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.start_session" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.select_directory_dialog">
-<span class="sig-name descname"><span class="pre">select_directory_dialog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.select_directory_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.select_directory_dialog" title="Link to this definition">¶</a></dt>
-<dd><p>Öffnet einen System-Dialog zur Auswahl des Speicherordners.</p>
-<p><strong>Thread-Safety:</strong>
-Diese Funktion erkennt automatisch, ob sie aus einem Worker-Thread (Experiment)
-oder dem Haupt-Thread aufgerufen wird. Wenn sie aus einem Worker-Thread kommt,
-pausiert sie diesen und führt den GUI-Dialog sicher im Haupt-Thread aus.</p>
-<p>Der gewählte Pfad wird automatisch im Profil gespeichert (<cite>Export_LastDir</cite>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Der ausgewählte (oder vorherige) Pfad.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Button-Click Handler in der GUI:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_btn_browse_clicked</span><span class="p">():</span>
-    <span class="n">new_path</span> <span class="o">=</span> <span class="n">export_mgr</span><span class="o">.</span><span class="n">select_directory_dialog</span><span class="p">()</span>
-    <span class="n">ui</span><span class="o">.</span><span class="n">line_edit_path</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_data_point">
+<span class="sig-name descname"><span class="pre">add_data_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_data_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_data_point" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.set_export_directory">
-<span class="sig-name descname"><span class="pre">set_export_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.set_export_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.set_export_directory" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt den Export-Pfad manuell und speichert ihn im Profil.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der absolute Pfad zum Zielordner.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.get_export_directory">
-<span class="sig-name descname"><span class="pre">get_export_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.get_export_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.get_export_directory" title="Link to this definition">¶</a></dt>
-<dd><p>Liest den aktuell konfigurierten Export-Pfad aus dem Profil.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Der Pfad oder das Benutzer-Home-Verzeichnis als Fallback.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.new">
-<span class="sig-name descname"><span class="pre">new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Measurement'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.new" title="Link to this definition">¶</a></dt>
-<dd><p>Erstellt eine neue HDF5-Datei und bereitet die Messung vor.</p>
-<p>Der Dateiname wird automatisch mit einem Zeitstempel versehen
-(<cite>Name_YYYYMMDD_HHMMSS.h5</cite>). Schließt eine evtl. offene Datei zuvor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename_base</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Basisname der Datei (z.B. “Experiment_A”).</p></li>
-<li><p><strong>dataset_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name der HDF5-Gruppe für die Daten
-(Standard: “Measurement”).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei Erfolg, False bei IO-Fehlern.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Eine neue Messdatei starten:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">export_mgr</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;OLED_IV_Curve&quot;</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Datei erstellt, bereit für Daten.&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add" title="Link to this definition">¶</a></dt>
-<dd><p>Fügt dynamische Messdaten zum internen Puffer hinzu.</p>
-<p>Diese Daten werden <strong>noch nicht</strong> auf die Festplatte geschrieben.
-Erst der Aufruf von <cite>commit()</cite> schreibt alle mit <cite>add()</cite> gesammelten
-Werte als eine Zeile in die HDF5-Datasets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des Datasets (Spaltenname), z.B. “Voltage”.</p></li>
-<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span> <span class="pre">|</span> <span class="pre">numpy.ndarray</span></code>) – Der Messwert (Skalar) oder ein Array
-(z.B. ganzes Spektrum).</p></li>
-<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Die physikalische Einheit (z.B. “V”, “nm”),
-wird als HDF5-Attribut gespeichert.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Werte für den nächsten Zeitschritt sammeln:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skalar hinzufügen</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Current&quot;</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
-
-<span class="c1"># Array hinzufügen (z.B. Spektrum)</span>
-<span class="n">spectrum_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Spectrum&quot;</span><span class="p">,</span> <span class="n">spectrum_data</span><span class="p">,</span> <span class="s2">&quot;counts&quot;</span><span class="p">)</span>
-
-<span class="c1"># WICHTIG: Jetzt commit aufrufen!</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_static">
-<span class="sig-name descname"><span class="pre">add_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_static"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_static" title="Link to this definition">¶</a></dt>
-<dd><p>Speichert einmalige, statische Daten (Metadaten/Konstanten).</p>
-<p>Im Gegensatz zu <cite>add()</cite> wird hier <strong>sofort</strong> geschrieben.
-Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name des Datasets.</p></li>
-<li><p><strong>data</strong> – Der Wert (String, Zahl, Array).</p></li>
-<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Einheit.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Geräte-Infos speichern:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">export_mgr</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="s2">&quot;Max Mustermann&quot;</span><span class="p">)</span>
-<span class="n">export_mgr</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;IntegrationTime&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_group_attribute">
-<span class="sig-name descname"><span class="pre">add_group_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_group_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_group_attribute" title="Link to this definition">¶</a></dt>
-<dd><p>Fügt Metadaten als Attribute zur HDF5-Hauptgruppe hinzu.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Attribut-Name.</p></li>
-<li><p><strong>value</strong> – Attribut-Wert.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.commit">
-<span class="sig-name descname"><span class="pre">commit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.commit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.commit" title="Link to this definition">¶</a></dt>
-<dd><p>Schließt den aktuellen Datenpunkt ab (Synchronisation).</p>
-<p>Führt folgende Schritte aus:
-1. Erstellt HDF5-Datasets für neue Spalten (falls nötig).
-2. Erweitert alle Datasets um eine Zeile.
-3. Schreibt die gepufferten Werte aus <cite>add()</cite> in die neue Zeile.
-4. Füllt fehlende Werte (falls <cite>add</cite> für eine Spalte vergessen wurde) mit NaN.
-5. Sendet das <cite>data_committed</cite>-Signal für Live-Plots.
-6. Leert den Puffer für den nächsten Punkt.</p>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Am Ende einer Messschleife aufrufen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">measuring</span><span class="p">:</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">instrument</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">export_mgr</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Reading&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-    <span class="n">export_mgr</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> <span class="c1"># Schreibt auf Disk &amp; updated Plot</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.stop" title="Link to this definition">¶</a></dt>
-<dd><p>Beendet den Export und schließt die HDF5-Datei sauber.</p>
-<p>Sendet das <cite>export_finished</cite>-Signal.</p>
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.save_session_to_disk">
+<span class="sig-name descname"><span class="pre">save_session_to_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.save_session_to_disk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.save_session_to_disk" title="Link to this definition">¶</a></dt>
+<dd><p>Exportiert ENTWEDER als HDF5 ODER als CSV, basierend auf der Dateiendung.
+Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;ExportManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=data_committed(QVariantMap),</span> <span class="pre">parameters=QVariantMap</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_started(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_finished(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_error(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=_show_directory_dialog_slot()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.export.ExportManager.ExportManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;ExportManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=session_updated(QString,QVariantMap),</span> <span class="pre">parameters=QString,</span> <span class="pre">QVariantMap</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_finished(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=export_error(QString),</span> <span class="pre">parameters=QString</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.export.ExportManager.ExportManager.staticMetaObject" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2423,29 +2167,11 @@ Das Dataset hat die Länge 1 und wird nicht erweitert.</p>
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.waterfall.WaterfallManager.</span></span><span class="sig-name descname"><span class="pre">WaterfallManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Manager zu Verwaltung und Pufferung von Spektrendaten für die Waterfall-Darstellung.</p>
-<p>Diese Klasse emfängt Daten vom SpektrometerManager, speichert diese in einen Buffer und stellt Funktionen zum Exportieren der 3D-Daten und zu Steuerung des zugehörigen GUI Widgets bereit.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz des Log-Managers.</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von App-Einstellungen und User-Daten.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Signale:</dt><dd><dl class="simple">
-<dt>waterfall_data_updated (list, object):</dt><dd><p>Wird ausgelöst, wenn ein neues Spektrum hinzugefügt wurde.
-Args: (list: Z-Indices [int], object: Datenmatrix [np.ndarray]).</p>
-</dd>
-<dt>waterfall_cleared ():</dt><dd><p>Wird ausgelöst, nachdem der interne Datenpuffer geleert wurde.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Verwaltet die Daten für den Waterfall.</p>
+<p>Nutzt einen Ring-Puffer (deque), um den Speicherverbrauch zu begrenzen.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated">
-<span class="sig-name descname"><span class="pre">waterfall_data_updated</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available">
+<span class="sig-name descname"><span class="pre">new_spectrum_available</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2454,104 +2180,40 @@ Args: (list: Z-Indices [int], object: Datenmatrix [np.ndarray]).</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data">
-<span class="sig-name descname"><span class="pre">get_waterfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.get_waterfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt die gesamten akkumulierten 3D-Daten (Wellenlänge, Intensitäten, Z-Indices) zurück.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(Wellenlängen, Intensitäts-Datenmatrix (2D), Z-Indices).
-Gibt leere Arrays/Listen zurück, wenn keine Daten vorhanden sind.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, list[int]]</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">
 <span class="sig-name descname"><span class="pre">add_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.add_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum" title="Link to this definition">¶</a></dt>
-<dd><p>Slot: Fügt dem Waterfall-Puffer ein neues Spektrum hinzu.</p>
-<p>Diese Methode ist dazu gedacht, mit dem Signal
-<cite>SpectrometerManager.new_spectrum_acquired</cite> verbunden zu werden.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>wavelengths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Wellenlängen des Spektrums (X-Achse).</p></li>
-<li><p><strong>intensities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Intensitäten des Spektrums (Y-Achse).</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Das Wellenlängen-Array wird nur beim ersten Aufruf gespeichert.
-Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
-überprüft, um Konsistenz sicherzustellen.</p>
-</div>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit">
+<span class="sig-name descname"><span class="pre">set_history_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.set_history_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit" title="Link to this definition">¶</a></dt>
+<dd><p>Ändert die Größe des Ring-Puffers.
+Wird aufgerufen, wenn User die History-Lines massiv erhöht.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.clear_data">
 <span class="sig-name descname"><span class="pre">clear_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.clear_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data" title="Link to this definition">¶</a></dt>
-<dd><p>Löscht alle akkumulierten Spektrendaten und setzt den Zähler zurück.</p>
-<p>Löst das <cite>waterfall_cleared</cite>-Signal aus.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data">
 <span class="sig-name descname"><span class="pre">save_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data" title="Link to this definition">¶</a></dt>
-<dd><p>Exportiert die gesamten 3D-Rohdaten (Wellenlänge, Intensitäten, Z-Index) in eine Datei.</p>
-<p>Unterstützte Formate: ‘csv’, ‘npy’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei.</p></li>
-<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Das gewünschte Exportformat (‘csv’ oder ‘npy’).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei erfolgreichem Export, sonst False.</p>
-</dd>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Daten als CSV speichern:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.csv&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Daten als NumPy Binärdatei (schnell):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.npy&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image">
-<span class="sig-name descname"><span class="pre">save_plot_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_plot_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image" title="Link to this definition">¶</a></dt>
-<dd><p>Speichert die aktuelle Matplotlib-Abbildung des Waterfalls in eine Bilddatei.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>figure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code>) – Die zu speichernde Matplotlib-Figure-Instanz.</p></li>
-<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei (unterstützt: .png, .svg, .pdf).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei Erfolg, sonst False.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;WaterfallManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_data_updated(QVariantList,PyObject),</span> <span class="pre">parameters=QVariantList,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_cleared()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Slot,</span> <span class="pre">signature=add_spectrum(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=clear_data()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;WaterfallManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_available(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_cleared()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_profile_loaded(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=add_spectrum(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=set_history_limit(int),</span> <span class="pre">parameters=int</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Slot,</span> <span class="pre">signature=clear_data()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2570,7 +2232,7 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -2599,6 +2261,10 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 <li><a class="reference internal" href="#">API-Referenz der Manager</a><ul>
 <li><a class="reference internal" href="#module-modules.smu.SmuManager">SMU Manager</a><ul>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager"><code class="docutils literal notranslate"><span class="pre">SmuManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.__init__"><code class="docutils literal notranslate"><span class="pre">SmuManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">SmuManager.on_profile_loaded()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.apply_channel_settings"><code class="docutils literal notranslate"><span class="pre">SmuManager.apply_channel_settings()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.get_channel_state"><code class="docutils literal notranslate"><span class="pre">SmuManager.get_channel_state()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.get_deviceList"><code class="docutils literal notranslate"><span class="pre">SmuManager.get_deviceList()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.connect"><code class="docutils literal notranslate"><span class="pre">SmuManager.connect()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.connect_LastDevice"><code class="docutils literal notranslate"><span class="pre">SmuManager.connect_LastDevice()</span></code></a></li>
@@ -2608,10 +2274,10 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.reset_channel"><code class="docutils literal notranslate"><span class="pre">SmuManager.reset_channel()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_voltage"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_voltage()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_current"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_current()</span></code></a></li>
-<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_local"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_local()</span></code></a></li>
-<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_remote"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_remote()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_level"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_level()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_limit"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_limit()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_local"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_local()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_remote"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_remote()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_output_state"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_output_state()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.measure_iv"><code class="docutils literal notranslate"><span class="pre">SmuManager.measure_iv()</span></code></a></li>
 </ul>
@@ -2656,11 +2322,13 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.progress_updated"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.progress_updated</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.search_experiments"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.search_experiments()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.start_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.start_experiment()</span></code></a></li>
+<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.run_custom_function"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.run_custom_function()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_finished()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_error()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.pause_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.pause_experiment()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.resume_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.resume_experiment()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.stop_experiment"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.stop_experiment()</span></code></a></li>
+<li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.is_experiment_running"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.is_experiment_running()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.on_worker_progress"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.on_worker_progress()</span></code></a></li>
 <li><a class="reference internal" href="#modules.experiment.ExperimentManager.ExperimentManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">ExperimentManager.staticMetaObject</span></code></a></li>
 </ul>
@@ -2725,6 +2393,7 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.new_spectrum_acquired"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.new_spectrum_acquired</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.dark_measurement_progress"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.dark_measurement_progress</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.on_profile_loaded()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_deviceList"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_deviceList()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.connect()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect_LastDevice"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.connect_LastDevice()</span></code></a></li>
@@ -2753,21 +2422,20 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 </ul>
 </li>
 <li><a class="reference internal" href="#module-modules.export.ExportManager">Export Manager</a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession"><code class="docutils literal notranslate"><span class="pre">MeasurementSession</span></code></a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.add_point"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.add_point()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.is_empty"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.is_empty()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.get_spectra_matrix"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.get_spectra_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.to_dataframe"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.to_dataframe()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager"><code class="docutils literal notranslate"><span class="pre">ExportManager</span></code></a><ul>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.data_committed"><code class="docutils literal notranslate"><span class="pre">ExportManager.data_committed</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.export_started"><code class="docutils literal notranslate"><span class="pre">ExportManager.export_started</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.session_updated"><code class="docutils literal notranslate"><span class="pre">ExportManager.session_updated</span></code></a></li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.export_finished"><code class="docutils literal notranslate"><span class="pre">ExportManager.export_finished</span></code></a></li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.export_error"><code class="docutils literal notranslate"><span class="pre">ExportManager.export_error</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.__init__"><code class="docutils literal notranslate"><span class="pre">ExportManager.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.select_directory_dialog"><code class="docutils literal notranslate"><span class="pre">ExportManager.select_directory_dialog()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.set_export_directory"><code class="docutils literal notranslate"><span class="pre">ExportManager.set_export_directory()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.get_export_directory"><code class="docutils literal notranslate"><span class="pre">ExportManager.get_export_directory()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.new"><code class="docutils literal notranslate"><span class="pre">ExportManager.new()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add"><code class="docutils literal notranslate"><span class="pre">ExportManager.add()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_static"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_static()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_group_attribute"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_group_attribute()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.commit"><code class="docutils literal notranslate"><span class="pre">ExportManager.commit()</span></code></a></li>
-<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.stop"><code class="docutils literal notranslate"><span class="pre">ExportManager.stop()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.start_session"><code class="docutils literal notranslate"><span class="pre">ExportManager.start_session()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_data_point"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_data_point()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.save_session_to_disk"><code class="docutils literal notranslate"><span class="pre">ExportManager.save_session_to_disk()</span></code></a></li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">ExportManager.staticMetaObject</span></code></a></li>
 </ul>
 </li>
@@ -2775,13 +2443,13 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
 </li>
 <li><a class="reference internal" href="#module-modules.waterfall.WaterfallManager">Waterfall Manager</a><ul>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager"><code class="docutils literal notranslate"><span class="pre">WaterfallManager</span></code></a><ul>
-<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.waterfall_data_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.new_spectrum_available</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_cleared"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.waterfall_cleared</span></code></a></li>
-<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.get_waterfall_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.on_profile_loaded()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.add_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.set_history_limit()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.clear_data()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_raw_data()</span></code></a></li>
-<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_plot_image()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.staticMetaObject</span></code></a></li>
 </ul>
 </li>
@@ -2798,7 +2466,7 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

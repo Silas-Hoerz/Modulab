@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>modules.export.ExportManager - Modulab 0.1.3 documentation</title>
+        <title>modules.export.ExportManager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Modulab 0.1.3 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.3 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/smu_manager.html">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/waterfall_manager.html">Waterfall Manager</a></li>
 </ul>
 
 </div>
@@ -233,461 +234,288 @@
           <h1>Source code for modules.export.ExportManager</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="c1"># WICHTIG: Imports für Threading und GUI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QThread</span><span class="p">,</span> <span class="n">QMetaObject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QFileDialog</span><span class="p">,</span> <span class="n">QApplication</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Signal</span>
 
-<span class="c1"># Falls du keine core.constants hast, ersetze dies durch Strings</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">APP_TITLE</span><span class="p">,</span> <span class="n">APP_VERSION</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">APP_TITLE</span> <span class="o">=</span> <span class="s2">&quot;Modulab&quot;</span>
-    <span class="n">APP_VERSION</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">APP_TITLE</span><span class="p">,</span> <span class="n">APP_VERSION</span>
+
+
+<div class="viewcode-block" id="MeasurementSession">
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MeasurementSession</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hält alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="k">if</span> <span class="n">metadata</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_v</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_i</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span> <span class="o">=</span> <span class="p">[]</span>       
+        <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="o">=</span> <span class="kc">None</span> 
+
+<div class="viewcode-block" id="MeasurementSession.add_point">
+<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.MeasurementSession.add_point">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">set_val</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wl</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">set_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">spectrum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Kopie speichern, um Referenz-Probleme zu vermeiden</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">wl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wl</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementSession.is_empty">
+<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.MeasurementSession.is_empty">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="MeasurementSession.get_spectra_matrix">
+<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.MeasurementSession.get_spectra_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_spectra_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="MeasurementSession.to_dataframe">
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.to_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Konvertiert Session zu Pandas DataFrame.&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">,</span>
+            <span class="s2">&quot;Set_Value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">,</span>
+            <span class="s2">&quot;Voltage_Meas&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">meas_v</span><span class="p">,</span>
+            <span class="s2">&quot;Current_Meas&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">meas_i</span>
+        <span class="p">}</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        
+        <span class="n">mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spectra_matrix</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Dimension check</span>
+            <span class="k">if</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span><span class="p">):</span>
+                <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Int_</span><span class="si">{</span><span class="n">w</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">nm&quot;</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span><span class="p">]</span>
+                <span class="n">df_spec</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">df_spec</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">df</span></div>
+</div>
+
 
 <div class="viewcode-block" id="ExportManager">
 <a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExportManager</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verwaltet den Daten-Export in HDF5-Dateien und fungiert als Datenquelle für Live-Plots.</span>
-
-<span class="sd">    Dieser Manager abstrahiert die Komplexität von `h5py`. Er implementiert ein</span>
-<span class="sd">    Zeilen-basiertes Schreibmodell: Daten werden mit `add()` gesammelt (gestaged)</span>
-<span class="sd">    und mit `commit()` synchron in die HDF5-Datei geschrieben und gleichzeitig</span>
-<span class="sd">    an die GUI (z.B. PlotManager) gesendet.</span>
-
-<span class="sd">    Funktionsweise:</span>
-<span class="sd">        1. **Setup:** Zielordner wählen (`select_directory_dialog`).</span>
-<span class="sd">        2. **Start:** Neue Datei/Gruppe erstellen (`new`).</span>
-<span class="sd">        3. **Metadaten:** Statische Infos speichern (`add_static`).</span>
-<span class="sd">        4. **Loop:**</span>
-<span class="sd">            - Werte hinzufügen (`add(&#39;Voltage&#39;, 5.0)`).</span>
-<span class="sd">            - Werte hinzufügen (`add(&#39;Current&#39;, 0.001)`).</span>
-<span class="sd">            - Schreiben &amp; Senden (`commit()`).</span>
-<span class="sd">        5. **Ende:** Datei schließen (`stop`).</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        log_manager (LogManager): Instanz für das Logging.</span>
-<span class="sd">        profile_manager (ProfileManager): Instanz zum Speichern des letzten Pfades.</span>
-
-<span class="sd">    Signale:</span>
-<span class="sd">        data_committed (dict):</span>
-<span class="sd">            Wird bei jedem `commit()` ausgelöst. Enthält die neuen Datenpunkte für</span>
-<span class="sd">            Live-Plots.</span>
-<span class="sd">            </span>
-<span class="sd">            **Payload-Struktur:**</span>
-<span class="sd">            </span>
-<span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
-<span class="sd">                {</span>
-<span class="sd">                    &#39;Voltage&#39;: {&#39;value&#39;: 5.0, &#39;unit&#39;: &#39;V&#39;},</span>
-<span class="sd">                    &#39;Current&#39;: {&#39;value&#39;: 1.2e-3, &#39;unit&#39;: &#39;A&#39;},</span>
-<span class="sd">                    &#39;Spectrum&#39;: {&#39;value&#39;: numpy.array([...]), &#39;unit&#39;: &#39;cnt&#39;}</span>
-<span class="sd">                }</span>
-
-<span class="sd">        export_started (str):</span>
-<span class="sd">            Wird ausgelöst, wenn eine neue Datei erstellt wurde.</span>
-<span class="sd">            Args: (str: Voller Pfad zur Datei).</span>
-
-<span class="sd">        export_finished (str):</span>
-<span class="sd">            Wird ausgelöst, wenn der Export beendet wurde.</span>
-<span class="sd">            Args: (str: Dateiname).</span>
-
-<span class="sd">        export_error (str):</span>
-<span class="sd">            Wird bei Schreib-/IO-Fehlern ausgelöst.</span>
-<span class="sd">            Args: (str: Fehlermeldung).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c1"># Signal für GUI / Plotter</span>
-    <span class="n">data_committed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
-    
-    <span class="c1"># Status-Signale</span>
-    <span class="n">export_started</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>   <span class="c1"># Filename</span>
-    <span class="n">export_finished</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>  <span class="c1"># Filename</span>
+    <span class="n">session_updated</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> 
+    <span class="n">export_finished</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">export_error</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExportManager.__init__">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_manager</span><span class="p">,</span> <span class="n">profile_manager</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialisiert den ExportManager.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span> <span class="o">=</span> <span class="n">log_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span> <span class="o">=</span> <span class="n">profile_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span> <span class="o">=</span> <span class="p">{}</span> 
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="ExportManager.start_session">
+<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.ExportManager.start_session">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Session &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; overwritten.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">MeasurementSession</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Session started: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExportManager.add_data_point">
+<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.ExportManager.add_data_point">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_data_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_name</span><span class="p">,</span> <span class="n">set_val</span><span class="p">,</span> <span class="n">meas_v</span><span class="p">,</span> <span class="n">meas_i</span><span class="p">,</span> <span class="n">spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wl</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">session_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">:</span> <span class="k">return</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span>
         
-        <span class="c1"># Interner Buffer für den aktuellen Datenpunkt (Row)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="p">{}</span> 
+        <span class="c1"># Add to RAM</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(),</span> <span class="n">set_val</span><span class="p">,</span> <span class="n">meas_v</span><span class="p">,</span> <span class="n">meas_i</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="n">wl</span><span class="p">)</span>
         
-        <span class="c1"># Tracking</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_row_counter</span> <span class="o">=</span> <span class="mi">0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_known_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        
-        <span class="c1"># Temporärer Speicher für Thread-übergreifende Dialog-Rückgabe</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_temp_selected_path</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="c1"># Notify GUI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session_updated</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">session_name</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">set_val</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="n">meas_v</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="n">meas_i</span><span class="p">,</span>
+            <span class="s1">&#39;spectrum&#39;</span><span class="p">:</span> <span class="n">spectrum</span><span class="p">,</span> <span class="s1">&#39;wl&#39;</span><span class="p">:</span> <span class="n">wl</span>
+        <span class="p">})</span></div>
 
 
-    <span class="c1"># --- Directory Management (Thread-Safe Fix) ---</span>
-
-<div class="viewcode-block" id="ExportManager.select_directory_dialog">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.select_directory_dialog">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">select_directory_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ExportManager.save_session_to_disk">
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.save_session_to_disk">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_session_to_disk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Öffnet einen System-Dialog zur Auswahl des Speicherordners.</span>
-
-<span class="sd">        **Thread-Safety:**</span>
-<span class="sd">        Diese Funktion erkennt automatisch, ob sie aus einem Worker-Thread (Experiment)</span>
-<span class="sd">        oder dem Haupt-Thread aufgerufen wird. Wenn sie aus einem Worker-Thread kommt,</span>
-<span class="sd">        pausiert sie diesen und führt den GUI-Dialog sicher im Haupt-Thread aus.</span>
-
-<span class="sd">        Der gewählte Pfad wird automatisch im Profil gespeichert (`Export_LastDir`).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: Der ausgewählte (oder vorherige) Pfad.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            Button-Click Handler in der GUI:</span>
-<span class="sd">            </span>
-<span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
-<span class="sd">                def on_btn_browse_clicked():</span>
-<span class="sd">                    new_path = export_mgr.select_directory_dialog()</span>
-<span class="sd">                    ui.line_edit_path.setText(new_path)</span>
+<span class="sd">        Exportiert ENTWEDER als HDF5 ODER als CSV, basierend auf der Dateiendung.</span>
+<span class="sd">        Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Prüfen, ob wir im Main-Thread sind</span>
-        <span class="k">if</span> <span class="n">QThread</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span> <span class="o">==</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">thread</span><span class="p">():</span>
-            <span class="c1"># Wir sind im GUI Thread -&gt; Direkt ausführen</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_show_directory_dialog_slot</span><span class="p">()</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temp_selected_path</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Wir sind im Worker Thread -&gt; Anfrage an Main Thread senden und WARTEN (Blocking)</span>
-            <span class="c1"># Dies verhindert den Freeze/Crash.</span>
-            <span class="n">QMetaObject</span><span class="o">.</span><span class="n">invokeMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_show_directory_dialog_slot&quot;</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">BlockingQueuedConnection</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temp_selected_path</span></div>
+        <span class="k">if</span> <span class="n">session_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot save unknown session: </span><span class="si">{</span><span class="n">session_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Session is empty. Export skipped.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
-    <span class="nd">@Slot</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_show_directory_dialog_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Interne Slot-Methode, die den Dialog tatsächlich anzeigt.</span>
-<span class="sd">        Muss zwingend im Main-Thread laufen.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">current_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_export_directory</span><span class="p">()</span>
-        
-        <span class="c1"># Parent holen (damit der Dialog modal über dem Fenster erscheint)</span>
-        <span class="n">parent</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">activeWindow</span><span class="p">()</span>
-        
-        <span class="n">new_dir</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span>
-            <span class="n">parent</span><span class="p">,</span> 
-            <span class="s2">&quot;Choose storage location for dataset&quot;</span><span class="p">,</span>
-            <span class="n">current_dir</span>
-        <span class="p">)</span>
-        
-        <span class="k">if</span> <span class="n">new_dir</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_export_directory</span><span class="p">(</span><span class="n">new_dir</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_temp_selected_path</span> <span class="o">=</span> <span class="n">new_dir</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_temp_selected_path</span> <span class="o">=</span> <span class="n">current_dir</span>
+        <span class="c1"># Verzeichnis speichern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Export_LastDir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
 
-<div class="viewcode-block" id="ExportManager.set_export_directory">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.set_export_directory">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_export_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Setzt den Export-Pfad manuell und speichert ihn im Profil.</span>
+        <span class="c1"># Dateityp erkennen</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            path (str): Der absolute Pfad zum Zielordner.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Export_LastDir&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Export directory set to: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid directory path ignored: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ExportManager.get_export_directory">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.get_export_directory">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_export_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Liest den aktuell konfigurierten Export-Pfad aus dem Profil.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: Der Pfad oder das Benutzer-Home-Verzeichnis als Fallback.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_mgr</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Export_LastDir&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">path</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="c1"># Fallback: User Home</span></div>
-
-
-    <span class="c1"># --- Dataset Control ---</span>
-
-<div class="viewcode-block" id="ExportManager.new">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.new">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Measurement&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Erstellt eine neue HDF5-Datei und bereitet die Messung vor.</span>
-
-<span class="sd">        Der Dateiname wird automatisch mit einem Zeitstempel versehen </span>
-<span class="sd">        (`Name_YYYYMMDD_HHMMSS.h5`). Schließt eine evtl. offene Datei zuvor.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            filename_base (str): Der Basisname der Datei (z.B. &quot;Experiment_A&quot;).</span>
-<span class="sd">            dataset_name (str): Der Name der HDF5-Gruppe für die Daten </span>
-<span class="sd">                                (Standard: &quot;Measurement&quot;).</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: True bei Erfolg, False bei IO-Fehlern.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            Eine neue Messdatei starten:</span>
-<span class="sd">            </span>
-<span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
-<span class="sd">                if export_mgr.new(&quot;OLED_IV_Curve&quot;):</span>
-<span class="sd">                    print(&quot;Datei erstellt, bereit für Daten.&quot;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">save_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_export_directory</span><span class="p">()</span>
-        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
-        
-        <span class="n">full_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename_base</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">.h5&quot;</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">full_name</span><span class="p">)</span>
-        
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Software&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">APP_TITLE</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">APP_VERSION</span><span class="si">}</span><span class="s2">&quot;</span>
-            
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Start_Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">timestamp</span>
-            
-            <span class="c1"># Reset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_row_counter</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_known_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Export started: </span><span class="si">{</span><span class="n">full_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export_started</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span>
-            
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create HDF5 file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
-
-<div class="viewcode-block" id="ExportManager.add">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.add">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fügt dynamische Messdaten zum internen Puffer hinzu.</span>
-
-<span class="sd">        Diese Daten werden **noch nicht** auf die Festplatte geschrieben.</span>
-<span class="sd">        Erst der Aufruf von `commit()` schreibt alle mit `add()` gesammelten</span>
-<span class="sd">        Werte als eine Zeile in die HDF5-Datasets.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): Der Name des Datasets (Spaltenname), z.B. &quot;Voltage&quot;.</span>
-<span class="sd">            data (float | numpy.ndarray): Der Messwert (Skalar) oder ein Array </span>
-<span class="sd">                                          (z.B. ganzes Spektrum).</span>
-<span class="sd">            unit (str, optional): Die physikalische Einheit (z.B. &quot;V&quot;, &quot;nm&quot;), </span>
-<span class="sd">                                  wird als HDF5-Attribut gespeichert.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            Werte für den nächsten Zeitschritt sammeln:</span>
-<span class="sd">            </span>
-<span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
-<span class="sd">                # Skalar hinzufügen</span>
-<span class="sd">                export_mgr.add(&quot;Time&quot;, 1.5, &quot;s&quot;)</span>
-<span class="sd">                export_mgr.add(&quot;Current&quot;, 1e-6, &quot;A&quot;)</span>
-<span class="sd">                </span>
-<span class="sd">                # Array hinzufügen (z.B. Spektrum)</span>
-<span class="sd">                spectrum_data = np.array([1, 2, 3, ...])</span>
-<span class="sd">                export_mgr.add(&quot;Spectrum&quot;, spectrum_data, &quot;counts&quot;)</span>
-<span class="sd">                </span>
-<span class="sd">                # WICHTIG: Jetzt commit aufrufen!</span>
-<span class="sd">                export_mgr.commit()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
-            <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="n">unit</span>
-        <span class="p">}</span></div>
-
-
-<div class="viewcode-block" id="ExportManager.add_static">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.add_static">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_static</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Speichert einmalige, statische Daten (Metadaten/Konstanten).</span>
-
-<span class="sd">        Im Gegensatz zu `add()` wird hier **sofort** geschrieben.</span>
-<span class="sd">        Das Dataset hat die Länge 1 und wird nicht erweitert.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): Name des Datasets.</span>
-<span class="sd">            data: Der Wert (String, Zahl, Array).</span>
-<span class="sd">            unit (str, optional): Einheit.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            Geräte-Infos speichern:</span>
-<span class="sd">            </span>
-<span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
-<span class="sd">                export_mgr.add_static(&quot;User&quot;, &quot;Max Mustermann&quot;)</span>
-<span class="sd">                export_mgr.add_static(&quot;IntegrationTime&quot;, 100, &quot;ms&quot;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">dset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
-            <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
-            <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;static&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving static &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ExportManager.add_group_attribute">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.add_group_attribute">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_group_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fügt Metadaten als Attribute zur HDF5-Hauptgruppe hinzu.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            key (str): Attribut-Name.</span>
-<span class="sd">            value: Attribut-Wert.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
-
-
-<div class="viewcode-block" id="ExportManager.commit">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.commit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Schließt den aktuellen Datenpunkt ab (Synchronisation).</span>
-
-<span class="sd">        Führt folgende Schritte aus:</span>
-<span class="sd">        1. Erstellt HDF5-Datasets für neue Spalten (falls nötig).</span>
-<span class="sd">        2. Erweitert alle Datasets um eine Zeile.</span>
-<span class="sd">        3. Schreibt die gepufferten Werte aus `add()` in die neue Zeile.</span>
-<span class="sd">        4. Füllt fehlende Werte (falls `add` für eine Spalte vergessen wurde) mit NaN.</span>
-<span class="sd">        5. Sendet das `data_committed`-Signal für Live-Plots.</span>
-<span class="sd">        6. Leert den Puffer für den nächsten Punkt.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            Am Ende einer Messschleife aufrufen:</span>
-<span class="sd">            </span>
-<span class="sd">            .. code-block:: python</span>
-<span class="sd">            </span>
-<span class="sd">                while measuring:</span>
-<span class="sd">                    val = instrument.read()</span>
-<span class="sd">                    export_mgr.add(&quot;Reading&quot;, val)</span>
-<span class="sd">                    export_mgr.commit() # Schreibt auf Disk &amp; updated Plot</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># 1. Datasets anlegen falls neu</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_columns</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_create_dataset_for</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">content</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_known_columns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-
-            <span class="c1"># 2. Schreiben &amp; Datenpaket für Plotter schnüren</span>
-            <span class="n">plot_payload</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># Das Paket für den PlotManager</span>
-
-            <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_columns</span><span class="p">:</span>
-                <span class="n">dset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span>
-                
-                <span class="c1"># Wert holen oder NaN</span>
-                <span class="k">if</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">col_name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-                    <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">col_name</span><span class="p">][</span><span class="s1">&#39;unit&#39;</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nan_value_for_dataset</span><span class="p">(</span><span class="n">dset</span><span class="p">)</span>
-                    <span class="n">unit</span> <span class="o">=</span> <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-                
-                <span class="c1"># HDF5 Resize &amp; Write</span>
-                <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="n">dset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-                
-                <span class="c1"># Daten für Signal vorbereiten</span>
-                <span class="c1"># Wir schicken value UND unit, damit der Plotter Achsen beschriften kann</span>
-                <span class="n">plot_payload</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span>
-                    <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="n">unit</span>
-                <span class="p">}</span>
-
-            <span class="c1"># 3. Flush und Signal</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_row_counter</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            
-            <span class="bp">self</span><span class="o">.</span><span class="n">data_committed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">plot_payload</span><span class="p">)</span>
-
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error during commit: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="ExportManager.stop">
-<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.stop">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Beendet den Export und schließt die HDF5-Datei sauber.</span>
-<span class="sd">        </span>
-<span class="sd">        Sendet das `export_finished`-Signal.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
-            <span class="n">fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span>
+        <span class="c1"># --- FIX: Datei vorher löschen ---</span>
+        <span class="c1"># Das verhindert den &quot;Signature not found&quot; Fehler, wenn h5py versucht, </span>
+        <span class="c1"># in eine korrupte/gelockte Datei zu schreiben.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Existing file removed: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot overwrite file (locked?): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File locked by another process: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.h5&quot;</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.hdf5&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_export_hdf5</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.txt&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_export_csv</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown file extension: </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Unknown file type selected.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># def _export_hdf5(self, session, filepath):</span>
+    <span class="c1">#     &quot;&quot;&quot;Interner HDF5 Writer.&quot;&quot;&quot;</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         # Data Prep</span>
+    <span class="c1">#         np_timestamps = np.array(session.timestamps)</span>
+    <span class="c1">#         np_set_values = np.array(session.set_values)</span>
+    <span class="c1">#         np_meas_v = np.array(session.meas_v)</span>
+    <span class="c1">#         np_meas_i = np.array(session.meas_i)</span>
+    <span class="c1">#         spectra_matrix = session.get_spectra_matrix()</span>
+    <span class="c1">#         wavelengths = session.wavelengths</span>
+
+    <span class="c1">#         with h5py.File(filepath, &#39;w&#39;) as f:</span>
+    <span class="c1">#             # Metadaten</span>
+    <span class="c1">#             f.attrs[&#39;Export_Date&#39;] = str(datetime.now().isoformat())</span>
+    <span class="c1">#             f.attrs[&#39;Software&#39;] = str(f&quot;{APP_TITLE} {APP_VERSION}&quot;)</span>
+    <span class="c1">#             for k, v in session.metadata.items():</span>
+    <span class="c1">#                 f.attrs[str(k)] = str(v) if v is not None else &quot;&quot;</span>
+                
+    <span class="c1">#             # Datasets</span>
+    <span class="c1">#             grp = f.create_group(&quot;Data&quot;)</span>
+    <span class="c1">#             grp.create_dataset(&quot;Timestamps&quot;, data=np_timestamps)</span>
+    <span class="c1">#             grp.create_dataset(&quot;Set_Values&quot;, data=np_set_values)</span>
+    <span class="c1">#             grp.create_dataset(&quot;Voltage_Meas&quot;, data=np_meas_v)</span>
+    <span class="c1">#             grp.create_dataset(&quot;Current_Meas&quot;, data=np_meas_i)</span>
+                
+    <span class="c1">#             if spectra_matrix is not None:</span>
+    <span class="c1">#                 grp.create_dataset(&quot;Spectra_Matrix&quot;, data=spectra_matrix)</span>
+    <span class="c1">#             if wavelengths is not None:</span>
+    <span class="c1">#                 grp.create_dataset(&quot;Wavelengths&quot;, data=wavelengths)</span>
+                
+    <span class="c1">#             f.flush() # Buffer auf Platte zwingen</span>
             
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Export stopped.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export_finished</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span></div>
+    <span class="c1">#         self.log_mgr.info(f&quot;HDF5 Export successful: {filepath}&quot;)</span>
+    <span class="c1">#         self.export_finished.emit(filepath)</span>
 
+    <span class="c1">#     except Exception as e:</span>
+    <span class="c1">#         self.log_mgr.error(f&quot;HDF5 Export failed: {e}&quot;)</span>
+    <span class="c1">#         self.export_error.emit(str(e))</span>
 
-    <span class="c1"># --- Helpers ---</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_dataset_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Interne Hilfsfunktion: Erstellt ein erweiterbares (chunked) Dataset.</span>
-<span class="sd">        Erkennt automatisch, ob es sich um Skalare oder Arrays handelt.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># Skalar</span>
-            <span class="n">shape</span><span class="p">,</span> <span class="n">maxshape</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span> <span class="c1"># Array</span>
-            <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
-            <span class="n">maxshape</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
-            <span class="n">chunks</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
-        
-        <span class="n">dset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">maxshape</span><span class="o">=</span><span class="n">maxshape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
-        <span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_export_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interner HDF5 Writer.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Data Prep (Bestehender Code)</span>
+            <span class="n">np_timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span>
+            <span class="n">np_set_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
+            <span class="n">np_meas_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">meas_v</span><span class="p">)</span>
+            <span class="n">np_meas_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">meas_i</span><span class="p">)</span>
+            <span class="n">spectra_matrix</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_spectra_matrix</span><span class="p">()</span> <span class="c1"># Shape: (Zeit, Wellenlänge)</span>
+            <span class="n">wavelengths</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">wavelengths</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_nan_value_for_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dset</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Interne Hilfsfunktion: Generiert einen NaN-Wert passend zum Datentyp</span>
-<span class="sd">        (für fehlende Werte beim Commit).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dset</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="c1"># Metadaten (Bestehender Code)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Export_Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Software&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">APP_TITLE</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">APP_VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                
+                <span class="c1"># Datasets Gruppe erstellen</span>
+                <span class="n">grp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;Data&quot;</span><span class="p">)</span>
+                
+                <span class="c1"># Standard Rohdaten speichern (wie bisher)</span>
+                <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Timestamps&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np_timestamps</span><span class="p">)</span>
+                <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Set_Values&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np_set_values</span><span class="p">)</span>
+                <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Voltage_Meas&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np_meas_v</span><span class="p">)</span>
+                <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Current_Meas&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np_meas_i</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">wavelengths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Wavelengths&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">wavelengths</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">spectra_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># 1. Die klassische Matrix (Zeit x Wellenlänge) speichern</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Spectra_Matrix_Raw&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">spectra_matrix</span><span class="p">)</span>
+
+                    <span class="c1"># --- NEU: Origin-optimiertes Dataset ---</span>
+                    <span class="k">if</span> <span class="n">wavelengths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">wavelengths</span><span class="p">)</span> <span class="o">==</span> <span class="n">spectra_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="c1"># Wir transponieren die Matrix: (Wellenlänge x Zeit)</span>
+                        <span class="c1"># Damit entspricht jede SPALTE einem Spektrum</span>
+                        <span class="n">spectra_T</span> <span class="o">=</span> <span class="n">spectra_matrix</span><span class="o">.</span><span class="n">T</span>
+                        
+                        <span class="c1"># [Wellenlänge, Spektrum_t0, Spektrum_t1, ...]</span>
+                        <span class="n">plot_ready_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">wavelengths</span><span class="p">,</span> <span class="n">spectra_T</span><span class="p">))</span>
+                        
+                        <span class="n">dset_plot</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;Spectra_For_Plotting&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">plot_ready_data</span><span class="p">)</span>
+                        
+                        <span class="c1"># Optional: Attribute setzen, damit man weiß, was was ist</span>
+                        <span class="n">dset_plot</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Col 0: Wavelength (X), Col 1..N: Spectra (Y)&quot;</span>
+                        <span class="c1"># Versuchen, Spaltennamen als Attribut zu hinterlegen (Origin liest das manchmal)</span>
+                        <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Wavelength_nm&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Spec_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">spectra_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+                        <span class="c1"># HDF5 unterstützt keine echten Header, aber wir speichern es als String</span>
+                        <span class="n">dset_plot</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Column_Names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span>
+
+                <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span> 
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HDF5 Export successful: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_finished</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HDF5 Export failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_export_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interner CSV Writer (Origin optimiert).&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Origin Import Info</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Date: </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">created_at</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># Pandas write</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CSV Export successful: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_finished</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CSV Export failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
 
 </pre></div>
         </article>
@@ -701,7 +529,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -721,7 +549,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+</div><script src="../../../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

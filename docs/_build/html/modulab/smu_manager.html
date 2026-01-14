@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Spectrometer Manager" href="spectrometer_manager.html"><link rel="prev" title="Device Manager" href="device_manager.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>SMU Manager - Modulab 0.1.6 documentation</title>
+        <title>SMU Manager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -199,6 +199,7 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="waterfall_manager.html">Waterfall Manager</a></li>
 </ul>
 
 </div>
@@ -244,76 +245,118 @@
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.smu.SmuManager.</span></span><span class="sig-name descname"><span class="pre">SmuManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
 <p>Manager zur Steuerung und Verwaltung von SMU-Geräten (Source Measure Units).</p>
-<p>Diese Klasse kapselt die Gerätetreiber (z.B. Keithley2602), verwaltet die
-serielle Verbindung, aktualisiert die Geräteliste und stellt High-Level-Methoden
-für die Konfiguration (Source, Sense, Limits) und Messung (IV) bereit.
-Sie nutzt PySide6-Signale, um die GUI über Statusänderungen zu informieren.</p>
+<p>Diese Klasse kapselt die Gerätetreiber (z.B. Keithley2602) und verwaltet den
+gesamten Status der Kanäle (Spannung, Strom, Limits). Sie dient als
+“Single Source of Truth”: Das UI holt sich den Status von hier.
+Zudem kümmert sie sich um das Speichern und Laden der Einstellungen im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz eines Log-Managers (erwartet .info, .error, etc.).</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von
-App-Einstellungen (Lesen/Schreiben).</p></li>
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging von Ereignissen.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Speichern von Einstellungen.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple">
 <dt>Signale:</dt><dd><dl class="simple">
-<dt>connection_status_changed (bool, str):</dt><dd><p>Wird ausgelöst, wenn sich der Verbindungsstatus ändert.
-Args: (bool: verbunden, str: Gerätename/IDN).</p>
+<dt>connection_status_changed (bool, str):</dt><dd><p>Wird bei Verbindungsänderung ausgelöst.
+Args: (Ist_Verbunden [bool], Gerätename [str])</p>
 </dd>
-<dt>device_list_updated (list):</dt><dd><p>Wird ausgelöst, nachdem die Liste der seriellen Ports aktualisiert wurde.
-Args: (list: Liste von Port-Namen [str]).</p>
+<dt>device_list_updated (list):</dt><dd><p>Wird nach dem Scannen nach Ports ausgelöst.
+Args: (Liste der Portnamen [list[str]])</p>
 </dd>
-<dt>new_measurement_acquired (str, float, float):</dt><dd><p>Wird ausgelöst, wenn eine neue Messung verfügbar ist.
-Args: (str: Kanal, float: Strom, float: Spannung).</p>
+<dt>new_measurement_acquired (str, float, float):</dt><dd><p>Wird ausgelöst, wenn eine Messung erfolgreich war.
+Args: (Kanal [str], Strom [A], Spannung [V])</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_deviceList">
-<span class="sig-name descname"><span class="pre">get_deviceList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_deviceList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_deviceList" title="Link to this definition">¶</a></dt>
-<dd><p>Scannt nach verfügbaren seriellen Ports und aktualisiert die interne Liste.</p>
-<p>Sucht nach allen COM-Ports und fügt zusätzlich einen “DUMMY”-Port
-für Testzwecke hinzu. Löst das <cite>device_list_updated</cite>-Signal aus.</p>
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialisiert den SmuManager.</p>
+<p>Bereitet die interne Datenstruktur vor, verbindet sich mit dem ProfileManager,
+lädt aber noch keine hardware-spezifischen Einstellungen (das passiert erst
+bei <cite>on_profile_loaded</cite>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Wird aufgerufen, sobald der User ein Profil ausgewählt hat.</p>
+<p>Versucht, die letzte Verbindung wiederherzustellen.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Eine Liste der gefundenen Port-Namen (z.B. [‘COM1’, ‘COM3’, ‘DUMMY’]).</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>profile_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name des geladenen Profils.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.apply_channel_settings">
+<span class="sig-name descname"><span class="pre">apply_channel_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.apply_channel_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.apply_channel_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Wendet die gespeicherten/internen Settings auf das Gerät an.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_channel_state">
+<span class="sig-name descname"><span class="pre">get_channel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_channel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_channel_state" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt den aktuellen internen Status eines Kanals zurück.</p>
+<p>Wird vom Widget genutzt, um die UI zu aktualisieren (<cite>sync_ui_from_manager</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mit Keys ‘source_func’, ‘level’, ‘limit’, ‘sense’, ‘output’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_deviceList">
+<span class="sig-name descname"><span class="pre">get_deviceList</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_deviceList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_deviceList" title="Link to this definition">¶</a></dt>
+<dd><p>Scannt nach verfügbaren seriellen Ports (COM-Ports).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Liste der Port-Namen (z.B. [‘COM3’, ‘DUMMY’]).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ports</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_deviceList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span>
+<span class="go">[&#39;COM1&#39;, &#39;DUMMY&#39;]</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.connect">
 <span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.connect" title="Link to this definition">¶</a></dt>
-<dd><p>Verbindet eine SMU an einem bestimmten COM-Port.
-…</p>
+<dd><p>Verbindet eine SMU an einem bestimmten Port.</p>
+<p>Lädt bei Erfolg automatisch die letzten Einstellungen aus dem Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>port_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Name des Ports (z.B. “COM1” oder “DUMMY”).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei erfolgreicher Verbindung, sonst False.</p>
+<dd class="field-even"><p>True bei Erfolg.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Mit einem echten COM-Port verbinden:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &#39;COM3&#39; ist nur ein Beispiel</span>
-<span class="n">success</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;COM3&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Verbunden!&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Mit dem DUMMY-Gerät für Tests verbinden:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;DUMMY&#39;</span><span class="p">)</span>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;COM3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -322,19 +365,10 @@ für Testzwecke hinzu. Löst das <cite>device_list_updated</cite>-Signal aus.</p
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.connect_LastDevice">
 <span class="sig-name descname"><span class="pre">connect_LastDevice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.connect_LastDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.connect_LastDevice" title="Link to this definition">¶</a></dt>
-<dd><p>Versucht, die Verbindung mit dem zuletzt genutzten Gerät wiederherzustellen.</p>
-<p>Aktualisiert zuerst die Geräteliste und prüft, ob der gespeicherte
-Port (<cite>self.LastDevice</cite>) verfügbar ist.</p>
+<dd><p>Versucht, das zuletzt genutzte Gerät zu verbinden.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>True bei Erfolg, False, wenn kein Gerät gespeichert war</dt><dd><p>oder die Verbindung fehlschlägt.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -342,26 +376,16 @@ Port (<cite>self.LastDevice</cite>) verfügbar ist.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.disconnect">
 <span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.disconnect" title="Link to this definition">¶</a></dt>
-<dd><p>Trennt die aktive Verbindung zum SMU-Gerät.</p>
-<p>Setzt den internen Zustand zurück und löst <cite>connection_status_changed</cite> aus.</p>
+<dd><p>Trennt die Verbindung.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.get_activeDeviceName">
 <span class="sig-name descname"><span class="pre">get_activeDeviceName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.get_activeDeviceName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.get_activeDeviceName" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt einen formatierten Namen des aktuell verbundenen Geräts zurück.</p>
-<p>Parst die IDN-Nachricht, um Modell und Seriennummer zu extrahieren.</p>
+<dd><p>Gibt den Namen des verbundenen Geräts zurück.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>Der formatierte Gerätename</dt><dd><p>(z.B. “MODEL 2602 (SN: 12345) &#64; COM1”)
-oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -369,13 +393,10 @@ oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.is_connected">
 <span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.is_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.is_connected" title="Link to this definition">¶</a></dt>
-<dd><p>Prüft, ob eine aktive und offene Verbindung zur SMU besteht.</p>
+<dd><p>Prüft, ob eine Verbindung besteht.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True, wenn verbunden und der Treiber als ‘offen’ gemeldet ist, sonst False.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -383,10 +404,10 @@ oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.reset_channel">
 <span class="sig-name descname"><span class="pre">reset_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.reset_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.reset_channel" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt einen SMU-Kanal auf Werkseinstellungen zurück.</p>
+<dd><p>Setzt einen Kanal auf Werkseinstellungen zurück.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der Kanal, der zurückgesetzt wird (z.B. ‘a’ or ‘b’).</p>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -394,12 +415,11 @@ oder “DUMMY” oder “” (leer, wenn nicht verbunden).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_voltage">
 <span class="sig-name descname"><span class="pre">set_source_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_voltage" title="Link to this definition">¶</a></dt>
-<dd><p>Konfiguriert den Kanal als SPANNUNGSQUELLE (V-Source).</p>
-<p>Aktualisiert auch den internen Zustand, damit <cite>set_source_limit</cite>
-und <cite>set_source_level</cite> korrekt funktionieren.</p>
+<dd><p>Konfiguriert den Kanal als Spannungsquelle.
+Speichert die Einstellung im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -407,34 +427,11 @@ und <cite>set_source_level</cite> korrekt funktionieren.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_current">
 <span class="sig-name descname"><span class="pre">set_source_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_current" title="Link to this definition">¶</a></dt>
-<dd><p>Konfiguriert den Kanal als STROMQUELLE (I-Source).</p>
-<p>Aktualisiert auch den internen Zustand, damit <cite>set_source_limit</cite>
-und <cite>set_source_level</cite> korrekt funktionieren.</p>
+<dd><p>Konfiguriert den Kanal als Stromquelle.
+Speichert die Einstellung im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_local">
-<span class="sig-name descname"><span class="pre">set_sense_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_local" title="Link to this definition">¶</a></dt>
-<dd><p>Stellt den Sense-Modus auf LOKAL (2-Draht-Messung).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_remote">
-<span class="sig-name descname"><span class="pre">set_sense_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_remote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_remote" title="Link to this definition">¶</a></dt>
-<dd><p>Stellt den Sense-Modus auf REMOTE (4-Draht-Messung).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p>
+<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -442,14 +439,13 @@ und <cite>set_source_level</cite> korrekt funktionieren.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_level">
 <span class="sig-name descname"><span class="pre">set_source_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_level" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt das Source-Level (V oder A).</p>
-<p>Die Einheit (V oder A) hängt von der zuvor mit <cite>set_source_voltage</cite>
-oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
+<dd><p>Setzt das Level (Spannung oder Strom, je nach Modus).
+Speichert den Wert im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p></li>
-<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Das zu setzende Level (in Volt oder Ampere).</p></li>
+<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p></li>
+<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Wert in V oder A.</p></li>
 </ul>
 </dd>
 </dl>
@@ -458,48 +454,40 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_source_limit">
 <span class="sig-name descname"><span class="pre">set_source_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_source_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_source_limit" title="Link to this definition">¶</a></dt>
-<dd><p>Setzt das Source-Limit (A oder V).</p>
-<p>Die Einheit ist <em>entgegengesetzt</em> zur Source-Funktion:
-- Wenn Source = Spannung (V), ist dies das Strom-Limit (A).
-- Wenn Source = Strom (I), ist dies das Spannungs-Limit (V).</p>
+<dd><p>Setzt das Compliance-Limit (Strom bei V-Source, Spannung bei I-Source).
+Speichert den Wert im Profil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu konfigurierende Kanal (z.B. ‘a’).</p></li>
-<li><p><strong>limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Das zu setzende Limit (in Ampere oder Volt).</p></li>
+<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p></li>
+<li><p><strong>limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Limit in A oder V.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Ein Strom-Limit (100mA) für eine Spannungsquelle setzen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Zuerst Kanal &#39;a&#39; als SPANNUNGSQUELLE definieren</span>
-    <span class="n">manager</span><span class="o">.</span><span class="n">set_source_voltage</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</dd></dl>
 
-<span class="c1"># 2. Jetzt das Limit setzen (0.1 = 100mA STROM-Limit)</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">set_source_limit</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Ein Spannungs-Limit (20V) für eine Stromquelle setzen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Zuerst Kanal &#39;b&#39; als STROMQUELLE definieren</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">set_source_current</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_local">
+<span class="sig-name descname"><span class="pre">set_sense_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_local" title="Link to this definition">¶</a></dt>
+<dd><p>Aktiviert Local Sense (2-Wire). Speichert Einstellung.</p>
+</dd></dl>
 
-<span class="c1"># 2. Jetzt das Limit setzen (20.0 = 20V SPANNUNGS-Limit)</span>
-<span class="n">manager</span><span class="o">.</span><span class="n">set_source_limit</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_sense_remote">
+<span class="sig-name descname"><span class="pre">set_sense_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_sense_remote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_sense_remote" title="Link to this definition">¶</a></dt>
+<dd><p>Aktiviert Remote Sense (4-Wire). Speichert Einstellung.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.set_output_state">
 <span class="sig-name descname"><span class="pre">set_output_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.set_output_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.set_output_state" title="Link to this definition">¶</a></dt>
-<dd><p>Schaltet den Ausgang eines Kanals EIN oder AUS.</p>
+<dd><p>Schaltet den Output AN oder AUS.
+Dieser Zustand wird NICHT im Profil gespeichert (Safety First).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu schaltende Kanal (z.B. ‘a’).</p></li>
-<li><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, um den Ausgang einzuschalten, False, um ihn auszuschalten.</p></li>
+<li><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘a’ oder ‘b’.</p></li>
+<li><p><strong>enable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True = ON, False = OFF.</p></li>
 </ul>
 </dd>
 </dl>
@@ -508,37 +496,12 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.smu.SmuManager.SmuManager.measure_iv">
 <span class="sig-name descname"><span class="pre">measure_iv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/smu/SmuManager.html#SmuManager.measure_iv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.smu.SmuManager.SmuManager.measure_iv" title="Link to this definition">¶</a></dt>
-<dd><p>Führt eine einzelne I/V-Messung auf dem Kanal durch.
-… (andere Sektionen) …</p>
+<dd><p>Führt eine Messung durch. Deaktiviert Kanal bei ‘Invalid Response’.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>channel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der zu messende Kanal (z.B. ‘a’).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Ein Tupel aus (Strom, Spannung) bei Erfolg.</dt><dd><p>None bei einem Messfehler.</p>
-</dd>
-</dl>
-</p>
-</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[float, float] | None</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Das Auslesen der Messung und Speichern in Variablen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Annahme: &#39;manager&#39; ist eine Instanz von SmuManager</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">measure_iv</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
-    <span class="n">current</span><span class="p">,</span> <span class="n">voltage</span> <span class="o">=</span> <span class="n">result</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Messung OK: </span><span class="si">{</span><span class="n">current</span><span class="si">}</span><span class="s2"> A, </span><span class="si">{</span><span class="n">voltage</span><span class="si">}</span><span class="s2"> V&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Messung fehlgeschlagen oder keine Verbindung.&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 </dd></dl>
@@ -574,7 +537,7 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -602,6 +565,10 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
             <ul>
 <li><a class="reference internal" href="#">SMU Manager</a><ul>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager"><code class="docutils literal notranslate"><span class="pre">SmuManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.__init__"><code class="docutils literal notranslate"><span class="pre">SmuManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">SmuManager.on_profile_loaded()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.apply_channel_settings"><code class="docutils literal notranslate"><span class="pre">SmuManager.apply_channel_settings()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.get_channel_state"><code class="docutils literal notranslate"><span class="pre">SmuManager.get_channel_state()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.get_deviceList"><code class="docutils literal notranslate"><span class="pre">SmuManager.get_deviceList()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.connect"><code class="docutils literal notranslate"><span class="pre">SmuManager.connect()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.connect_LastDevice"><code class="docutils literal notranslate"><span class="pre">SmuManager.connect_LastDevice()</span></code></a></li>
@@ -611,10 +578,10 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.reset_channel"><code class="docutils literal notranslate"><span class="pre">SmuManager.reset_channel()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_voltage"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_voltage()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_current"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_current()</span></code></a></li>
-<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_local"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_local()</span></code></a></li>
-<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_remote"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_remote()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_level"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_level()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_source_limit"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_source_limit()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_local"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_local()</span></code></a></li>
+<li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_sense_remote"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_sense_remote()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.set_output_state"><code class="docutils literal notranslate"><span class="pre">SmuManager.set_output_state()</span></code></a></li>
 <li><a class="reference internal" href="#modules.smu.SmuManager.SmuManager.measure_iv"><code class="docutils literal notranslate"><span class="pre">SmuManager.measure_iv()</span></code></a></li>
 </ul>
@@ -630,7 +597,7 @@ oder <cite>set_source_current</cite> konfigurierten Source-Funktion ab.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

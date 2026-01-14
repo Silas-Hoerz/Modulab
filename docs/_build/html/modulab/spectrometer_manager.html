@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Export Manager" href="export_manager.html"><link rel="prev" title="SMU Manager" href="smu_manager.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Spectrometer Manager - Modulab 0.1.6 documentation</title>
+        <title>Spectrometer Manager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -264,7 +264,7 @@ Gibt (IstVerbunden, Gerätename) zurück.</p>
 <dt>device_list_updated (list):</dt><dd><p>Wird gefeuert, wenn nach Geräten gesucht wurde.
 Gibt eine Liste mit Namen zurück (z.B. [“FLAME (SN123)”, …]).</p>
 </dd>
-<dt>new_spectrum_acquired (numpy.ndarray, numpy.ndarray):</dt><dd><p>Wird gefeuert, wenn eine <em>rohe</em> Messung abgeschlossen ist.
+<dt>new_spectrum_acquired (numpy.ndarray, numpy.ndarray):</dt><dd><p>Wird gefeuert, wenn eine Messung (roh oder korrigiert) abgeschlossen ist.
 Gibt (Wellenlängen, Intensitäten) zurück.</p>
 </dd>
 <dt>dark_measurement_progress (object, object, int):</dt><dd><p>Wird während der Dunkel-Messung laufend gefeuert.
@@ -276,9 +276,15 @@ Gibt (Wellenlängen, Aktueller Durchschnitt, Fortschritt in %) zurück.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Startet den Manager.</p>
+<dd><p>Initialisiert den SpectrometerManager.</p>
 <p>Hier werden Speicherplätze für Daten angelegt, Einstellungen geladen
 und versucht, das letzte Gerät wieder zu verbinden.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Wird aufgerufen, sobald ein Profil erfolgreich geladen wurde.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -526,12 +532,6 @@ Dunkelspektrum ungültig.</p>
 <dd class="field-odd"><p><strong>temperature_degC</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Zieltemperatur in °C (z.B. -15.0).</p>
 </dd>
 </dl>
-<div class="admonition-example admonition">
-<p class="admonition-title">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">manager</span><span class="o">.</span><span class="n">set_temperature</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -595,51 +595,33 @@ Nützlich für statistische Auswertungen (Standardabweichung etc.).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum">
 <span class="sig-name descname"><span class="pre">acquire_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum" title="Link to this definition">¶</a></dt>
-<dd><p>Führt eine Messung durch und zieht AUTOMATISCH das Dunkelspektrum ab.</p>
-<p>Das ist die Standard-Funktion für normale Messungen.
-Falls kein Dunkelspektrum existiert, wird nichts zurückgegeben (None).</p>
+<dd><p>Nimmt ein Spektrum auf und zieht automatisch das Dark Spectrum ab.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>(Wellenlängen, Korrigierte Intensitäten).</dt><dd><p>Gibt (None, None) zurück bei Fehler oder fehlendem Dunkelspektrum.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-odd"><p>(Wellenlängen, Korrigierte Intensitäten).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple</p>
 </dd>
 </dl>
-<div class="admonition-example admonition">
-<p class="admonition-title">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span><span class="p">,</span> <span class="n">inten</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">acquire_spectrum</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">wl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">plot</span><span class="p">(</span><span class="n">wl</span><span class="p">,</span> <span class="n">inten</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw">
-<span class="sig-name descname"><span class="pre">acquire_spectrum_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">acquire_spectrum_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emit_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/spectrometer/SpectrometerManager.html#SpectrometerManager.acquire_spectrum_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw" title="Link to this definition">¶</a></dt>
 <dd><p>Führt eine rohe Messung durch, OHNE etwas abzuziehen.</p>
-<p>Dies liefert genau das, was der Sensor sieht (Licht + Dunkelstrom).
-Sollte genutzt werden, um Referenzen aufzunehmen oder wenn man selbst rechnen will.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(Wellenlängen, Rohe Intensitäten).</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>emit_signal</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Wenn True, wird das ‘new_spectrum_acquired’ Signal gesendet.
+Wenn False, geschieht das nicht (wichtig für interne Aufrufe).</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(Wellenlängen, Rohe Intensitäten).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
-<div class="admonition-example admonition">
-<p class="admonition-title">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span><span class="p">,</span> <span class="n">raw_data</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">acquire_spectrum_raw</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -705,7 +687,7 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -734,6 +716,7 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
 <li><a class="reference internal" href="#">Spectrometer Manager</a><ul>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager</span></code></a><ul>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.__init__"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.on_profile_loaded()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_deviceList"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.get_deviceList()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.connect()</span></code></a></li>
 <li><a class="reference internal" href="#modules.spectrometer.SpectrometerManager.SpectrometerManager.connect_LastDevice"><code class="docutils literal notranslate"><span class="pre">SpectrometerManager.connect_LastDevice()</span></code></a></li>
@@ -769,7 +752,7 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

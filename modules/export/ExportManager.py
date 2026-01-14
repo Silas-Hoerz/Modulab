@@ -138,37 +138,98 @@ class ExportManager(QObject):
             self.log_mgr.error(f"Unknown file extension: {ext}")
             self.export_error.emit("Unknown file type selected.")
 
+    # def _export_hdf5(self, session, filepath):
+    #     """Interner HDF5 Writer."""
+    #     try:
+    #         # Data Prep
+    #         np_timestamps = np.array(session.timestamps)
+    #         np_set_values = np.array(session.set_values)
+    #         np_meas_v = np.array(session.meas_v)
+    #         np_meas_i = np.array(session.meas_i)
+    #         spectra_matrix = session.get_spectra_matrix()
+    #         wavelengths = session.wavelengths
+
+    #         with h5py.File(filepath, 'w') as f:
+    #             # Metadaten
+    #             f.attrs['Export_Date'] = str(datetime.now().isoformat())
+    #             f.attrs['Software'] = str(f"{APP_TITLE} {APP_VERSION}")
+    #             for k, v in session.metadata.items():
+    #                 f.attrs[str(k)] = str(v) if v is not None else ""
+                
+    #             # Datasets
+    #             grp = f.create_group("Data")
+    #             grp.create_dataset("Timestamps", data=np_timestamps)
+    #             grp.create_dataset("Set_Values", data=np_set_values)
+    #             grp.create_dataset("Voltage_Meas", data=np_meas_v)
+    #             grp.create_dataset("Current_Meas", data=np_meas_i)
+                
+    #             if spectra_matrix is not None:
+    #                 grp.create_dataset("Spectra_Matrix", data=spectra_matrix)
+    #             if wavelengths is not None:
+    #                 grp.create_dataset("Wavelengths", data=wavelengths)
+                
+    #             f.flush() # Buffer auf Platte zwingen
+            
+    #         self.log_mgr.info(f"HDF5 Export successful: {filepath}")
+    #         self.export_finished.emit(filepath)
+
+    #     except Exception as e:
+    #         self.log_mgr.error(f"HDF5 Export failed: {e}")
+    #         self.export_error.emit(str(e))
+
     def _export_hdf5(self, session, filepath):
         """Interner HDF5 Writer."""
         try:
-            # Data Prep
+            # Data Prep (Bestehender Code)
             np_timestamps = np.array(session.timestamps)
             np_set_values = np.array(session.set_values)
             np_meas_v = np.array(session.meas_v)
             np_meas_i = np.array(session.meas_i)
-            spectra_matrix = session.get_spectra_matrix()
+            spectra_matrix = session.get_spectra_matrix() # Shape: (Zeit, Wellenlänge)
             wavelengths = session.wavelengths
 
             with h5py.File(filepath, 'w') as f:
-                # Metadaten
+                # Metadaten (Bestehender Code)
                 f.attrs['Export_Date'] = str(datetime.now().isoformat())
                 f.attrs['Software'] = str(f"{APP_TITLE} {APP_VERSION}")
                 for k, v in session.metadata.items():
                     f.attrs[str(k)] = str(v) if v is not None else ""
                 
-                # Datasets
+                # Datasets Gruppe erstellen
                 grp = f.create_group("Data")
+                
+                # Standard Rohdaten speichern (wie bisher)
                 grp.create_dataset("Timestamps", data=np_timestamps)
                 grp.create_dataset("Set_Values", data=np_set_values)
                 grp.create_dataset("Voltage_Meas", data=np_meas_v)
                 grp.create_dataset("Current_Meas", data=np_meas_i)
                 
-                if spectra_matrix is not None:
-                    grp.create_dataset("Spectra_Matrix", data=spectra_matrix)
                 if wavelengths is not None:
                     grp.create_dataset("Wavelengths", data=wavelengths)
-                
-                f.flush() # Buffer auf Platte zwingen
+
+                if spectra_matrix is not None:
+                    # 1. Die klassische Matrix (Zeit x Wellenlänge) speichern
+                    grp.create_dataset("Spectra_Matrix_Raw", data=spectra_matrix)
+
+                    # --- NEU: Origin-optimiertes Dataset ---
+                    if wavelengths is not None and len(wavelengths) == spectra_matrix.shape[1]:
+                        # Wir transponieren die Matrix: (Wellenlänge x Zeit)
+                        # Damit entspricht jede SPALTE einem Spektrum
+                        spectra_T = spectra_matrix.T
+                        
+                        # [Wellenlänge, Spektrum_t0, Spektrum_t1, ...]
+                        plot_ready_data = np.column_stack((wavelengths, spectra_T))
+                        
+                        dset_plot = grp.create_dataset("Spectra_For_Plotting", data=plot_ready_data)
+                        
+                        # Optional: Attribute setzen, damit man weiß, was was ist
+                        dset_plot.attrs['Info'] = "Col 0: Wavelength (X), Col 1..N: Spectra (Y)"
+                        # Versuchen, Spaltennamen als Attribut zu hinterlegen (Origin liest das manchmal)
+                        col_names = ["Wavelength_nm"] + [f"Spec_{i}" for i in range(spectra_T.shape[1])]
+                        # HDF5 unterstützt keine echten Header, aber wir speichern es als String
+                        dset_plot.attrs['Column_Names'] = str(col_names)
+
+                f.flush() 
             
             self.log_mgr.info(f"HDF5 Export successful: {filepath}")
             self.export_finished.emit(filepath)

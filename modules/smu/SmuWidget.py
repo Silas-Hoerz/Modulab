@@ -290,9 +290,15 @@ class SmuWidget(QWidget, Ui_Form):
             self.monitor_timer.stop()
 
     def _on_monitor_tick(self):
-        if self.smu_mgr.is_connected():
-            self.smu_mgr.measure_iv('a')
-            self.smu_mgr.measure_iv('b')
+        """Fragt Messwerte ab - ABER nur von aktiven Kanälen."""
+        if not self.smu_mgr.is_connected():
+            self.monitor_timer.stop()
+            return
+
+        # --- ÄNDERUNG: Nur aktive Kanäle abfragen! ---
+        # Verhindert, dass 'b' abgefragt wird, nachdem es deaktiviert wurde
+        for ch in self.smu_mgr.active_channels:
+            self.smu_mgr.measure_iv(ch)
 
     # --- Single Shot & Measurement Signals ---
 

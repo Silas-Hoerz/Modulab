@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="prev" title="Export Manager" href="export_manager.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Waterfall Manager - Modulab 0.1.6 documentation</title>
+        <title>Waterfall Manager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 0.1.6 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.6 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -244,29 +244,11 @@
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.waterfall.WaterfallManager.</span></span><span class="sig-name descname"><span class="pre">WaterfallManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Manager zu Verwaltung und Pufferung von Spektrendaten für die Waterfall-Darstellung.</p>
-<p>Diese Klasse emfängt Daten vom SpektrometerManager, speichert diese in einen Buffer und stellt Funktionen zum Exportieren der 3D-Daten und zu Steuerung des zugehörigen GUI Widgets bereit.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Eine Instanz des Log-Managers.</p></li>
-<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Eine Instanz zur Verwaltung von App-Einstellungen und User-Daten.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Signale:</dt><dd><dl class="simple">
-<dt>waterfall_data_updated (list, object):</dt><dd><p>Wird ausgelöst, wenn ein neues Spektrum hinzugefügt wurde.
-Args: (list: Z-Indices [int], object: Datenmatrix [np.ndarray]).</p>
-</dd>
-<dt>waterfall_cleared ():</dt><dd><p>Wird ausgelöst, nachdem der interne Datenpuffer geleert wurde.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Verwaltet die Daten für den Waterfall.</p>
+<p>Nutzt einen Ring-Puffer (deque), um den Speicherverbrauch zu begrenzen.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated">
-<span class="sig-name descname"><span class="pre">waterfall_data_updated</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available">
+<span class="sig-name descname"><span class="pre">new_spectrum_available</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -275,104 +257,40 @@ Args: (list: Z-Indices [int], object: Datenmatrix [np.ndarray]).</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data">
-<span class="sig-name descname"><span class="pre">get_waterfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.get_waterfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data" title="Link to this definition">¶</a></dt>
-<dd><p>Gibt die gesamten akkumulierten 3D-Daten (Wellenlänge, Intensitäten, Z-Indices) zurück.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(Wellenlängen, Intensitäts-Datenmatrix (2D), Z-Indices).
-Gibt leere Arrays/Listen zurück, wenn keine Daten vorhanden sind.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, list[int]]</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">
 <span class="sig-name descname"><span class="pre">add_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.add_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum" title="Link to this definition">¶</a></dt>
-<dd><p>Slot: Fügt dem Waterfall-Puffer ein neues Spektrum hinzu.</p>
-<p>Diese Methode ist dazu gedacht, mit dem Signal
-<cite>SpectrometerManager.new_spectrum_acquired</cite> verbunden zu werden.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>wavelengths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Wellenlängen des Spektrums (X-Achse).</p></li>
-<li><p><strong>intensities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – Intensitäten des Spektrums (Y-Achse).</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Das Wellenlängen-Array wird nur beim ersten Aufruf gespeichert.
-Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
-überprüft, um Konsistenz sicherzustellen.</p>
-</div>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit">
+<span class="sig-name descname"><span class="pre">set_history_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.set_history_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit" title="Link to this definition">¶</a></dt>
+<dd><p>Ändert die Größe des Ring-Puffers.
+Wird aufgerufen, wenn User die History-Lines massiv erhöht.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.clear_data">
 <span class="sig-name descname"><span class="pre">clear_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.clear_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data" title="Link to this definition">¶</a></dt>
-<dd><p>Löscht alle akkumulierten Spektrendaten und setzt den Zähler zurück.</p>
-<p>Löst das <cite>waterfall_cleared</cite>-Signal aus.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data">
 <span class="sig-name descname"><span class="pre">save_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data" title="Link to this definition">¶</a></dt>
-<dd><p>Exportiert die gesamten 3D-Rohdaten (Wellenlänge, Intensitäten, Z-Index) in eine Datei.</p>
-<p>Unterstützte Formate: ‘csv’, ‘npy’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei.</p></li>
-<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Das gewünschte Exportformat (‘csv’ oder ‘npy’).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei erfolgreichem Export, sonst False.</p>
-</dd>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<p>Daten als CSV speichern:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.csv&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Daten als NumPy Binärdatei (schnell):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">save_raw_data</span><span class="p">(</span><span class="s2">&quot;/pfad/zu/daten.npy&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npy&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image">
-<span class="sig-name descname"><span class="pre">save_plot_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_plot_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image" title="Link to this definition">¶</a></dt>
-<dd><p>Speichert die aktuelle Matplotlib-Abbildung des Waterfalls in eine Bilddatei.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>figure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code>) – Die zu speichernde Matplotlib-Figure-Instanz.</p></li>
-<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Der vollständige Pfad zur Zieldatei (unterstützt: .png, .svg, .pdf).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True bei Erfolg, sonst False.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;WaterfallManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_data_updated(QVariantList,PyObject),</span> <span class="pre">parameters=QVariantList,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_cleared()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Slot,</span> <span class="pre">signature=add_spectrum(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=clear_data()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;WaterfallManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_available(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_cleared()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_profile_loaded(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=add_spectrum(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=set_history_limit(int),</span> <span class="pre">parameters=int</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Slot,</span> <span class="pre">signature=clear_data()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -400,7 +318,7 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -428,13 +346,13 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
             <ul>
 <li><a class="reference internal" href="#">Waterfall Manager</a><ul>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager"><code class="docutils literal notranslate"><span class="pre">WaterfallManager</span></code></a><ul>
-<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_data_updated"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.waterfall_data_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.new_spectrum_available</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.waterfall_cleared"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.waterfall_cleared</span></code></a></li>
-<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.get_waterfall_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.get_waterfall_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.on_profile_loaded()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.add_spectrum()</span></code></a></li>
+<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.set_history_limit()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.clear_data()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_raw_data()</span></code></a></li>
-<li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_plot_image"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_plot_image()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.staticMetaObject</span></code></a></li>
 </ul>
 </li>
@@ -449,7 +367,7 @@ Bei späteren Aufrufen wird nur die Länge des Intensitäts-Arrays
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6e0256f3"></script>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

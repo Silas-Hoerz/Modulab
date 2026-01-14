@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>modules.experiment.ExperimentManager - Modulab 0.1.5 documentation</title>
+        <title>modules.experiment.ExperimentManager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Modulab 0.1.5 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">Modulab 0.1.5 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/smu_manager.html">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/waterfall_manager.html">Waterfall Manager</a></li>
 </ul>
 
 </div>
@@ -378,8 +379,40 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="o">.</span><span class="n">started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_started</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_started</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment started: </span><span class="si">{</span><span class="n">experiment_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExperimentManager.run_custom_function">
+<a class="viewcode-back" href="../../../modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.run_custom_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_custom_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Führt eine Python-Funktion als Experiment aus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Experiment läuft bereits.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Api Wrapper (neue Instanz für diesen Run)</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="n">ExperimentAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span> <span class="o">=</span> <span class="n">QThread</span><span class="p">()</span>
+        <span class="c1"># FIX: Parameter (api, path=None). Custom func wird injiziert.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">ExperimentWorker</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        
+        <span class="c1"># Injection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">custom_func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">custom_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="p">)</span>
+        
+        <span class="c1"># Connects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_worker_finished</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_worker_error</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="o">.</span><span class="n">started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_started</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Custom Function&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ExperimentManager.on_worker_finished">
@@ -402,9 +435,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Fehlerbehandlung &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment error: </span><span class="si">{</span><span class="n">error_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_worker_finished</span><span class="p">()</span> <span class="c1"># Aufrämen </span></div>
-
-
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_worker_finished</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ExperimentManager.pause_experiment">
@@ -431,6 +462,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="ExperimentManager.is_experiment_running">
+<a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.is_experiment_running">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_experiment_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_thread</span><span class="o">.</span><span class="n">isRunning</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="ExperimentManager.on_worker_progress">
 <a class="viewcode-back" href="../../../modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_progress">[docs]</a>
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -438,6 +475,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">progress_updated</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">percent</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 </div>
 
+
+    
 
 
 
@@ -470,18 +509,22 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Lädt und führt das Experiment-Skript aus. &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading experiment script: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;custom_func&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_func</span><span class="p">:</span>
+                <span class="c1"># Direct Function Call</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">custom_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading experiment script: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="s2">&quot;user_experiment&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_path</span><span class="p">)</span>
-            <span class="n">user_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
-            <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">user_module</span><span class="p">)</span>
+                <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="s2">&quot;user_experiment&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_path</span><span class="p">)</span>
+                <span class="n">user_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+                <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">user_module</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">user_module</span><span class="p">,</span> <span class="s2">&quot;run_experiment&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Experiment script must define a &#39;run_experiment(api)&#39; function.&quot;</span><span class="p">)</span>
-            
-            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting experiment...&quot;</span><span class="p">)</span>                         
-            <span class="n">user_module</span><span class="o">.</span><span class="n">run_experiment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">)</span>               
-            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Experiment completed successfully.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">user_module</span><span class="p">,</span> <span class="s2">&quot;run_experiment&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Experiment script must define a &#39;run_experiment(api)&#39; function.&quot;</span><span class="p">)</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting experiment...&quot;</span><span class="p">)</span>                         
+                <span class="n">user_module</span><span class="o">.</span><span class="n">run_experiment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">)</span>               
+                <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Experiment completed successfully.&quot;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">ExperimentStoppedException</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Experiment was stopped by user.&quot;</span><span class="p">)</span>
@@ -539,6 +582,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">spectrometer_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">spectrometer_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">smu_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">smu_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">export_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">liveplot_mgr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">liveplot_manager</span>
         
         <span class="c1"># self.next_mgr = next_manager                                      # &lt;- Hier </span>
 
@@ -576,7 +620,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -596,7 +640,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=59fadc99"></script>
+</div><script src="../../../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
