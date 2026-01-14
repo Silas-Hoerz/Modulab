@@ -244,8 +244,33 @@
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.waterfall.WaterfallManager.</span></span><span class="sig-name descname"><span class="pre">WaterfallManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Verwaltet die Daten für den Waterfall.</p>
-<p>Nutzt einen Ring-Puffer (deque), um den Speicherverbrauch zu begrenzen.</p>
+<p>Verwaltet den historischen Datenbestand für Waterfall- (Spektrogramm-) Diagramme.</p>
+<p>Diese Klasse dient als Zwischenspeicher (Buffer) zwischen der schnellen Datenerfassung
+und der oft langsameren GUI-Darstellung. Sie speichert eine definierte Anzahl
+vergangener Spektren (History), um einen zeitlichen Verlauf der Intensität
+darstellen zu können.</p>
+<p><strong>Speicher-Management:</strong>
+Da Spektraldaten sehr groß werden können, nutzt diese Klasse eine <cite>collections.deque</cite>
+mit definierter Maximallänge (<cite>maxlen</cite>). Wenn der Puffer voll ist, wird beim Hinzufügen
+eines neuen Spektrums das älteste automatisch verworfen (FIFO - First In, First Out).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Laden/Speichern der Buffer-Größe.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signals:</dt><dd><dl class="simple">
+<dt>new_spectrum_available (np.ndarray, np.ndarray):</dt><dd><p>Wird emittiert, sobald ein Spektrum dem Buffer hinzugefügt wurde.
+Args: (Wellenlängen, Intensitäten)</p>
+</dd>
+<dt>waterfall_cleared ():</dt><dd><p>Wird emittiert, wenn der Buffer geleert wurde.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available">
 <span class="sig-name descname"><span class="pre">new_spectrum_available</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available" title="Link to this definition">¶</a></dt>
@@ -259,31 +284,68 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded">
 <span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Lädt die gespeicherte Buffer-Größe (History Depth) aus dem Profil.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">
 <span class="sig-name descname"><span class="pre">add_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.add_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Fügt ein neues Spektrum zum Verlauf hinzu.</p>
+<p>Schiebt die Intensitäten in den Ring-Puffer. Die Wellenlängen werden
+beim ersten Aufruf gecached (da sie sich meist nicht ändern).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wavelengths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – 1D-Array der Wellenlängen (X-Achse).</p></li>
+<li><p><strong>intensities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – 1D-Array der Intensitäten (Z-Achse / Farbe).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># In der Acquisition-Schleife:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">add_spectrum</span><span class="p">(</span><span class="n">wl_array</span><span class="p">,</span> <span class="n">inten_array</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit">
 <span class="sig-name descname"><span class="pre">set_history_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.set_history_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit" title="Link to this definition">¶</a></dt>
-<dd><p>Ändert die Größe des Ring-Puffers.
-Wird aufgerufen, wenn User die History-Lines massiv erhöht.</p>
+<dd><p>Ändert die maximale Anzahl der gespeicherten Zeilen (Lines).</p>
+<p>Achtung: Dies ist eine “teure” Operation, da die interne <cite>deque</cite>
+komplett neu erstellt und kopiert werden muss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Neue maximale Anzahl an Spektren (z.B. 2000).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.clear_data">
 <span class="sig-name descname"><span class="pre">clear_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.clear_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Löscht alle Daten aus dem Buffer und setzt den Zähler zurück.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data">
 <span class="sig-name descname"><span class="pre">save_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Exportiert den aktuellen Inhalt des Waterfall-Buffers.</p>
+<p>Stapelt die gesammelten Spektren zu einer 2D-Matrix und speichert sie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Zielpfad der Datei.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – ‘csv’ oder ‘npy’. Defaults to ‘csv’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False bei Fehler.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>

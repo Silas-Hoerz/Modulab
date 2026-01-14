@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modulab/spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modulab/export_manager.html">Export Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modulab/waterfall_manager.html">Waterfall Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modulab/live_plot_manager.html">Live Plot Manager</a></li>
 </ul>
 
 </div>
@@ -271,13 +272,15 @@
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw">acquire_spectrum_raw() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.acquire_spectrum_raw">[1]</a>
 </li>
+        <li><a href="modulab/api.html#modules.export.ExportManager.ExportManager.add_data_point">add_data_point() (modules.export.ExportManager.ExportManager method)</a>, <a href="modulab/export_manager.html#modules.export.ExportManager.ExportManager.add_data_point">[1]</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="modulab/api.html#modules.export.ExportManager.ExportManager.add_data_point">add_data_point() (modules.export.ExportManager.ExportManager method)</a>
-</li>
-        <li><a href="modulab/api.html#modules.export.ExportManager.MeasurementSession.add_point">add_point() (modules.export.ExportManager.MeasurementSession method)</a>
+        <li><a href="modulab/api.html#modules.export.ExportManager.MeasurementSession.add_point">add_point() (modules.export.ExportManager.MeasurementSession method)</a>, <a href="modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.add_point">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">add_spectrum() (modules.waterfall.WaterfallManager.WaterfallManager method)</a>, <a href="modulab/waterfall_manager.html#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">[1]</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.append_data">append_data() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.append_data">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.smu.SmuManager.SmuManager.apply_channel_settings">apply_channel_settings() (modules.smu.SmuManager.SmuManager method)</a>, <a href="modulab/smu_manager.html#modules.smu.SmuManager.SmuManager.apply_channel_settings">[1]</a>
 </li>
@@ -325,16 +328,22 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.dark_measurement_progress">dark_measurement_progress (modules.spectrometer.SpectrometerManager.SpectrometerManager attribute)</a>
 </li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.data_appended">data_appended (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.data_appended">[1]</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.data_set">data_set (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.data_set">[1]</a>
+</li>
         <li><a href="modulab/api.html#modules.log.LogManager.LogManager.DEBUG">DEBUG (modules.log.LogManager.LogManager attribute)</a>, <a href="modulab/log_manager.html#modules.log.LogManager.LogManager.DEBUG">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.log.LogManager.LogManager.debug">debug() (modules.log.LogManager.LogManager method)</a>, <a href="modulab/log_manager.html#modules.log.LogManager.LogManager.debug">[1]</a>
 </li>
-        <li><a href="modulab/api.html#modules.device.DeviceManager.DeviceManager.delete_device">delete_device() (modules.device.DeviceManager.DeviceManager method)</a>, <a href="modulab/device_manager.html#modules.device.DeviceManager.DeviceManager.delete_device">[1]</a>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.define_plot">define_plot() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.define_plot">[1]</a>
 </li>
-        <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager.delete_profile">delete_profile() (modules.profile.ProfileManager.ProfileManager method)</a>, <a href="modulab/profile_manager.html#modules.profile.ProfileManager.ProfileManager.delete_profile">[1]</a>
+        <li><a href="modulab/api.html#modules.device.DeviceManager.DeviceManager.delete_device">delete_device() (modules.device.DeviceManager.DeviceManager method)</a>, <a href="modulab/device_manager.html#modules.device.DeviceManager.DeviceManager.delete_device">[1]</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager.delete_profile">delete_profile() (modules.profile.ProfileManager.ProfileManager method)</a>, <a href="modulab/profile_manager.html#modules.profile.ProfileManager.ProfileManager.delete_profile">[1]</a>
+</li>
         <li><a href="modulab/api.html#modules.device.DeviceManager.Device">Device (class in modules.device.DeviceManager)</a>, <a href="modulab/device_manager.html#modules.device.DeviceManager.Device">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.device_list_updated">device_list_updated (modules.spectrometer.SpectrometerManager.SpectrometerManager attribute)</a>
@@ -459,7 +468,7 @@
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_max_intensity">get_max_intensity() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_max_intensity">[1]</a>
 </li>
-        <li><a href="modulab/api.html#modules.export.ExportManager.MeasurementSession.get_spectra_matrix">get_spectra_matrix() (modules.export.ExportManager.MeasurementSession method)</a>
+        <li><a href="modulab/api.html#modules.export.ExportManager.MeasurementSession.get_spectra_matrix">get_spectra_matrix() (modules.export.ExportManager.MeasurementSession method)</a>, <a href="modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.get_spectra_matrix">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_temperature">get_temperature() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.get_temperature">[1]</a>
 </li>
@@ -483,7 +492,7 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="modulab/api.html#modules.export.ExportManager.MeasurementSession.is_empty">is_empty() (modules.export.ExportManager.MeasurementSession method)</a>
+        <li><a href="modulab/api.html#modules.export.ExportManager.MeasurementSession.is_empty">is_empty() (modules.export.ExportManager.MeasurementSession method)</a>, <a href="modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.is_empty">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.is_experiment_running">is_experiment_running() (modules.experiment.ExperimentManager.ExperimentManager method)</a>
 </li>
@@ -514,6 +523,8 @@
         <li><a href="modulab/api.html#modules.device.DeviceManager.DeviceManager.list_device_names">list_device_names() (modules.device.DeviceManager.DeviceManager method)</a>, <a href="modulab/device_manager.html#modules.device.DeviceManager.DeviceManager.list_device_names">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager.list_profiles">list_profiles() (modules.profile.ProfileManager.ProfileManager method)</a>, <a href="modulab/profile_manager.html#modules.profile.ProfileManager.ProfileManager.list_profiles">[1]</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager">LivePlotManager (class in modules.liveplot.LivePlotManager)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager">[1]</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -547,6 +558,8 @@
 </li>
           <li><a href="modulab/api.html#module-modules.export.ExportManager">modules.export.ExportManager</a>, <a href="modulab/export_manager.html#module-modules.export.ExportManager">[1]</a>
 </li>
+          <li><a href="modulab/api.html#module-modules.liveplot.LivePlotManager">modules.liveplot.LivePlotManager</a>, <a href="modulab/live_plot_manager.html#module-modules.liveplot.LivePlotManager">[1]</a>
+</li>
           <li><a href="modulab/api.html#module-modules.log.LogManager">modules.log.LogManager</a>, <a href="modulab/log_manager.html#module-modules.log.LogManager">[1]</a>
 </li>
           <li><a href="modulab/api.html#module-modules.profile.ProfileManager">modules.profile.ProfileManager</a>, <a href="modulab/profile_manager.html#module-modules.profile.ProfileManager">[1]</a>
@@ -565,8 +578,6 @@
           <li><a href="modulab/api.html#module-modules.device.DeviceManager">module</a>, <a href="modulab/device_manager.html#module-modules.device.DeviceManager">[1]</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     modules.experiment.ExperimentManager
 
@@ -574,11 +585,20 @@
           <li><a href="modulab/api.html#module-modules.experiment.ExperimentManager">module</a>, <a href="modulab/experiment_manager.html#module-modules.experiment.ExperimentManager">[1]</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     modules.export.ExportManager
 
         <ul>
           <li><a href="modulab/api.html#module-modules.export.ExportManager">module</a>, <a href="modulab/export_manager.html#module-modules.export.ExportManager">[1]</a>
+</li>
+        </ul></li>
+        <li>
+    modules.liveplot.LivePlotManager
+
+        <ul>
+          <li><a href="modulab/api.html#module-modules.liveplot.LivePlotManager">module</a>, <a href="modulab/live_plot_manager.html#module-modules.liveplot.LivePlotManager">[1]</a>
 </li>
         </ul></li>
         <li>
@@ -616,6 +636,8 @@
           <li><a href="modulab/api.html#module-modules.waterfall.WaterfallManager">module</a>, <a href="modulab/waterfall_manager.html#module-modules.waterfall.WaterfallManager">[1]</a>
 </li>
         </ul></li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated">monitor_updated (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated">[1]</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -638,9 +660,11 @@
   <h2>O</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="modulab/api.html#modules.smu.SmuManager.SmuManager.on_profile_loaded">on_profile_loaded() (modules.smu.SmuManager.SmuManager method)</a>, <a href="modulab/smu_manager.html#modules.smu.SmuManager.SmuManager.on_profile_loaded">[1]</a>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded">on_profile_loaded() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded">[1]</a>
 
         <ul>
+          <li><a href="modulab/api.html#modules.smu.SmuManager.SmuManager.on_profile_loaded">(modules.smu.SmuManager.SmuManager method)</a>, <a href="modulab/smu_manager.html#modules.smu.SmuManager.SmuManager.on_profile_loaded">[1]</a>
+</li>
           <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded">(modules.spectrometer.SpectrometerManager.SpectrometerManager method)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.on_profile_loaded">[1]</a>
 </li>
           <li><a href="modulab/api.html#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded">(modules.waterfall.WaterfallManager.WaterfallManager method)</a>, <a href="modulab/waterfall_manager.html#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded">[1]</a>
@@ -648,6 +672,10 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement">on_smu_measurement() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement">[1]</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired">on_spectrum_acquired() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired">[1]</a>
+</li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error">on_worker_error() (modules.experiment.ExperimentManager.ExperimentManager method)</a>, <a href="modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_error">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">on_worker_finished() (modules.experiment.ExperimentManager.ExperimentManager method)</a>, <a href="modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.on_worker_finished">[1]</a>
@@ -666,10 +694,12 @@
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.pause_experiment">pause_experiment() (modules.experiment.ExperimentManager.ExperimentManager method)</a>
 </li>
-        <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager.profile_loaded">profile_loaded (modules.profile.ProfileManager.ProfileManager attribute)</a>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.plot_defined">plot_defined (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.plot_defined">[1]</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager.profile_loaded">profile_loaded (modules.profile.ProfileManager.ProfileManager attribute)</a>
+</li>
         <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager">ProfileManager (class in modules.profile.ProfileManager)</a>, <a href="modulab/profile_manager.html#modules.profile.ProfileManager.ProfileManager">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.progress_updated">progress_updated (modules.experiment.ExperimentManager.ExperimentManager attribute)</a>
@@ -688,12 +718,14 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="modulab/api.html#modules.profile.ProfileManager.ProfileManager.read">read() (modules.profile.ProfileManager.ProfileManager method)</a>, <a href="modulab/profile_manager.html#modules.profile.ProfileManager.ProfileManager.read">[1]</a>
 </li>
-        <li><a href="modulab/api.html#modules.smu.SmuManager.SmuManager.reset_channel">reset_channel() (modules.smu.SmuManager.SmuManager method)</a>, <a href="modulab/smu_manager.html#modules.smu.SmuManager.SmuManager.reset_channel">[1]</a>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.remove_session">remove_session() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.remove_session">[1]</a>
 </li>
-        <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker.resume">resume() (modules.experiment.ExperimentManager.ExperimentWorker method)</a>
+        <li><a href="modulab/api.html#modules.smu.SmuManager.SmuManager.reset_channel">reset_channel() (modules.smu.SmuManager.SmuManager method)</a>, <a href="modulab/smu_manager.html#modules.smu.SmuManager.SmuManager.reset_channel">[1]</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker.resume">resume() (modules.experiment.ExperimentManager.ExperimentWorker method)</a>
+</li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.resume_experiment">resume_experiment() (modules.experiment.ExperimentManager.ExperimentManager method)</a>
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker.run">run() (modules.experiment.ExperimentManager.ExperimentWorker method)</a>, <a href="modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentWorker.run">[1]</a>
@@ -714,6 +746,10 @@
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.search_experiments">search_experiments() (modules.experiment.ExperimentManager.ExperimentManager method)</a>, <a href="modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.search_experiments">[1]</a>
 </li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.session_finished">session_finished (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.session_finished">[1]</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.session_started">session_started (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.session_started">[1]</a>
+</li>
         <li><a href="modulab/api.html#modules.export.ExportManager.ExportManager.session_updated">session_updated (modules.export.ExportManager.ExportManager attribute)</a>
 </li>
         <li><a href="modulab/api.html#modules.device.DeviceManager.DeviceManager.set_active_device">set_active_device() (modules.device.DeviceManager.DeviceManager method)</a>, <a href="modulab/device_manager.html#modules.device.DeviceManager.DeviceManager.set_active_device">[1]</a>
@@ -722,9 +758,13 @@
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_correction_non_linearity">set_correction_non_linearity() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_correction_non_linearity">[1]</a>
 </li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.set_data">set_data() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.set_data">[1]</a>
+</li>
         <li><a href="modulab/api.html#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit">set_history_limit() (modules.waterfall.WaterfallManager.WaterfallManager method)</a>, <a href="modulab/waterfall_manager.html#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_integrationtime">set_integrationtime() (modules.spectrometer.SpectrometerManager.SpectrometerManager method)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager.set_integrationtime">[1]</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size">set_monitor_buffer_size() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size">[1]</a>
 </li>
         <li><a href="modulab/api.html#modules.smu.SmuManager.SmuManager.set_output_state">set_output_state() (modules.smu.SmuManager.SmuManager method)</a>, <a href="modulab/smu_manager.html#modules.smu.SmuManager.SmuManager.set_output_state">[1]</a>
 </li>
@@ -748,10 +788,16 @@
 </li>
         <li><a href="modulab/api.html#modules.spectrometer.SpectrometerManager.SpectrometerManager">SpectrometerManager (class in modules.spectrometer.SpectrometerManager)</a>, <a href="modulab/spectrometer_manager.html#modules.spectrometer.SpectrometerManager.SpectrometerManager">[1]</a>
 </li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated">spectrum_updated (modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated">[1]</a>
+</li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.start_experiment">start_experiment() (modules.experiment.ExperimentManager.ExperimentManager method)</a>, <a href="modulab/experiment_manager.html#modules.experiment.ExperimentManager.ExperimentManager.start_experiment">[1]</a>
 </li>
-        <li><a href="modulab/api.html#modules.export.ExportManager.ExportManager.start_session">start_session() (modules.export.ExportManager.ExportManager method)</a>
+        <li><a href="modulab/api.html#modules.export.ExportManager.ExportManager.start_session">start_session() (modules.export.ExportManager.ExportManager method)</a>, <a href="modulab/export_manager.html#modules.export.ExportManager.ExportManager.start_session">[1]</a>
+
+        <ul>
+          <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.start_session">(modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.start_session">[1]</a>
 </li>
+        </ul></li>
         <li><a href="modulab/api.html#modules.device.DeviceManager.DeviceManager.staticMetaObject">staticMetaObject (modules.device.DeviceManager.DeviceManager attribute)</a>
 
         <ul>
@@ -760,6 +806,8 @@
           <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker.staticMetaObject">(modules.experiment.ExperimentManager.ExperimentWorker attribute)</a>
 </li>
           <li><a href="modulab/api.html#modules.export.ExportManager.ExportManager.staticMetaObject">(modules.export.ExportManager.ExportManager attribute)</a>
+</li>
+          <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject">(modules.liveplot.LivePlotManager.LivePlotManager attribute)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject">[1]</a>
 </li>
           <li><a href="modulab/api.html#modules.log.LogManager.LogManager.staticMetaObject">(modules.log.LogManager.LogManager attribute)</a>
 </li>
@@ -773,6 +821,8 @@
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentWorker.stop">stop() (modules.experiment.ExperimentManager.ExperimentWorker method)</a>
 </li>
         <li><a href="modulab/api.html#modules.experiment.ExperimentManager.ExperimentManager.stop_experiment">stop_experiment() (modules.experiment.ExperimentManager.ExperimentManager method)</a>
+</li>
+        <li><a href="modulab/api.html#modules.liveplot.LivePlotManager.LivePlotManager.stop_session">stop_session() (modules.liveplot.LivePlotManager.LivePlotManager method)</a>, <a href="modulab/live_plot_manager.html#modules.liveplot.LivePlotManager.LivePlotManager.stop_session">[1]</a>
 </li>
     </ul></td>
   </tr></table>

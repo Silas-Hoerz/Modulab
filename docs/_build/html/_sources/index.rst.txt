@@ -17,6 +17,7 @@ MODULAB documentation
    modulab/spectrometer_manager
    modulab/export_manager
    modulab/waterfall_manager
+   modulab/live_plot_manager
    
 .. modulab/experiment_manager
    

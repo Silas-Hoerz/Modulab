@@ -200,6 +200,7 @@
 <li class="toctree-l1"><a class="reference internal" href="spectrometer_manager.html">Spectrometer Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="export_manager.html">Export Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="waterfall_manager.html">Waterfall Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_plot_manager.html">Live Plot Manager</a></li>
 </ul>
 
 </div>
@@ -240,8 +241,6 @@
         <article role="main" id="furo-main-content">
           <section id="api-referenz-der-manager">
 <h1>API-Referenz der Manager<a class="headerlink" href="#api-referenz-der-manager" title="Link to this heading">¶</a></h1>
-<p>Hier ist die automatisch generierte Dokumentation für alle Kern-Manager
-des Modulab-Projekts.</p>
 <section id="module-modules.smu.SmuManager">
 <span id="id1"></span><span id="smu-manager"></span><h2>SMU Manager<a class="headerlink" href="#module-modules.smu.SmuManager" title="Link to this heading">¶</a></h2>
 <dl class="py class">
@@ -619,7 +618,7 @@ wird 0.0 zurückgegeben.</p></li>
 <dd class="field-even"><p>Eine neue Instanz der Device-Klasse.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -821,7 +820,7 @@ für Dimensionen.</p></li>
 <dd class="field-even"><p>Das <cite>Device</cite>-Objekt oder <cite>None</cite>, wenn nicht gefunden.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -879,7 +878,7 @@ selbst aufrufen.</p>
 <dd class="field-odd"><p>Das aktuell aktive <cite>Device</cite>-Objekt oder <cite>None</cite>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+<dd class="field-even"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -2093,26 +2092,77 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">MeasurementSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Hält alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM.</p>
+<p>Datencontainer, der alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM hält.</p>
+<p>Diese Klasse wird vom ExportManager verwaltet. Sie akkumuliert Messpunkte
+und Spektren, bis sie gespeichert werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Ein eindeutiger Name für diese Session (z.B. “Sweep_001”).</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Zusätzliche Metadaten (User, Settings), die im Header gespeichert werden.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.add_point">
 <span class="sig-name descname"><span class="pre">add_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.add_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.add_point" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Fügt einen einzelnen Messpunkt zur Session hinzu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Unix-Timestamp der Messung.</p></li>
+<li><p><strong>set_val</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Der gesetzte Wert (z.B. Spannung in V).</p></li>
+<li><p><strong>v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessene Spannung in V.</p></li>
+<li><p><strong>i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessener Strom in A.</p></li>
+<li><p><strong>spectrum</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.array</span></code>, <em>optional</em>) – Intensitäts-Array eines Spektrometers. Defaults to None.</p></li>
+<li><p><strong>wl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.array</span></code>, <em>optional</em>) – Wellenlängen-Array (nur beim ersten Punkt nötig). Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.is_empty">
 <span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.is_empty" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Prüft, ob Daten vorhanden sind.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True, wenn keine Messpunkte existieren, sonst False.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.get_spectra_matrix">
 <span class="sig-name descname"><span class="pre">get_spectra_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.get_spectra_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.get_spectra_matrix" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Konvertiert die Liste der Spektren in eine 2D NumPy-Matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix mit Shape (Anzahl_Messpunkte, Anzahl_Pixel) oder None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.to_dataframe">
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.to_dataframe" title="Link to this definition">¶</a></dt>
-<dd><p>Konvertiert Session zu Pandas DataFrame.</p>
+<dd><p>Konvertiert die gesamte Session in einen Pandas DataFrame (für CSV-Export).</p>
+<p>Falls Spektraldaten vorhanden sind, werden diese als zusätzliche Spalten
+(Int_XXX.XXnm) angehängt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Der fertige DataFrame mit allen Daten.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -2121,6 +2171,31 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">ExportManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Verwaltet Datensessions und steuert den Datei-Export (HDF5 / CSV).</p>
+<p>Dieser Manager dient als zentrale Schnittstelle zum Sammeln von Daten während
+einer Messung. Skripte sollten diesen Manager nutzen, um Messpunkte zu protokollieren,
+anstatt Daten manuell zu sammeln.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Logger-Instanz für Statusmeldungen.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Manager zum Speichern des letzten Export-Pfades.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signals:</dt><dd><dl class="simple">
+<dt>session_updated (str, dict):</dt><dd><p>Wird gefeuert, wenn ein neuer Punkt hinzugefügt wurde.
+Nützlich für Live-Plots.
+Args: (SessionName, DataDict)</p>
+</dd>
+<dt>export_finished (str):</dt><dd><p>Signalisiert erfolgreichen Export. Args: (Dateipfad)</p>
+</dd>
+<dt>export_error (str):</dt><dd><p>Signalisiert Fehler beim Export. Args: (Fehlermeldung)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.session_updated">
 <span class="sig-name descname"><span class="pre">session_updated</span></span><a class="headerlink" href="#modules.export.ExportManager.ExportManager.session_updated" title="Link to this definition">¶</a></dt>
@@ -2139,18 +2214,74 @@ Mehr Scans = Weniger Rauschen im Dunkelbild.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.start_session">
 <span class="sig-name descname"><span class="pre">start_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.start_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.start_session" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Erstellt eine neue Mess-Session im Arbeitsspeicher.</p>
+<p>Überschreibt eine existierende Session mit demselben Namen, falls vorhanden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Eindeutiger Name der Messung (z.B. “IV_Curve_01”).</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Metadaten wie User, Probe, Parameter.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">export_mgr</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="s2">&quot;Test_Run&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Probe&quot;</span><span class="p">:</span> <span class="s2">&quot;A12&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_data_point">
 <span class="sig-name descname"><span class="pre">add_data_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_data_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_data_point" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Fügt einen Messpunkt zu einer laufenden Session hinzu und aktualisiert die GUI.</p>
+<p>Diese Methode sollte innerhalb der Messschleife aufgerufen werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name der Session, zu der die Daten gehören.</p></li>
+<li><p><strong>set_val</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Der gesetzte Sollwert (X-Achse).</p></li>
+<li><p><strong>meas_v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessene Spannung.</p></li>
+<li><p><strong>meas_i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessener Strom.</p></li>
+<li><p><strong>spectrum</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list/array</span></code>, <em>optional</em>) – Spektrum-Daten (Intensitäten).</p></li>
+<li><p><strong>wl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list/array</span></code>, <em>optional</em>) – Wellenlängen (nur nötig, wenn sich Achse ändert oder Init).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># In einer Schleife:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v_meas</span><span class="p">,</span> <span class="n">i_meas</span> <span class="o">=</span> <span class="n">smu</span><span class="o">.</span><span class="n">measure_iv</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">export_mgr</span><span class="o">.</span><span class="n">add_data_point</span><span class="p">(</span><span class="s2">&quot;Test_Run&quot;</span><span class="p">,</span> <span class="n">set_val</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">meas_v</span><span class="o">=</span><span class="n">v_meas</span><span class="p">,</span> <span class="n">meas_i</span><span class="o">=</span><span class="n">i_meas</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.save_session_to_disk">
 <span class="sig-name descname"><span class="pre">save_session_to_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.save_session_to_disk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.save_session_to_disk" title="Link to this definition">¶</a></dt>
-<dd><p>Exportiert ENTWEDER als HDF5 ODER als CSV, basierend auf der Dateiendung.
-Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
+<dd><p>Speichert eine Session auf die Festplatte.</p>
+<p>Das Format wird automatisch anhand der Dateiendung erkannt:
+- <strong>.h5 / .hdf5</strong>: HDF5 Format (empfohlen für große Daten/Spektren).
+- <strong>.csv / .txt</strong>: CSV Format (Textbasiert, gut für Origin/Excel).</p>
+<p>Löscht existierende Dateien aggressiv vor dem Schreiben, um ‘File Lock’
+Probleme von h5py zu umgehen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name der Session im RAM.</p></li>
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Voller Zielpfad (z.B. “C:/Data/messung.h5”).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">export_mgr</span><span class="o">.</span><span class="n">save_session_to_disk</span><span class="p">(</span><span class="s2">&quot;Test_Run&quot;</span><span class="p">,</span> <span class="s2">&quot;C:/Users/Lab/Data/my_data.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2167,8 +2298,33 @@ Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.waterfall.WaterfallManager.</span></span><span class="sig-name descname"><span class="pre">WaterfallManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
-<p>Verwaltet die Daten für den Waterfall.</p>
-<p>Nutzt einen Ring-Puffer (deque), um den Speicherverbrauch zu begrenzen.</p>
+<p>Verwaltet den historischen Datenbestand für Waterfall- (Spektrogramm-) Diagramme.</p>
+<p>Diese Klasse dient als Zwischenspeicher (Buffer) zwischen der schnellen Datenerfassung
+und der oft langsameren GUI-Darstellung. Sie speichert eine definierte Anzahl
+vergangener Spektren (History), um einen zeitlichen Verlauf der Intensität
+darstellen zu können.</p>
+<p><strong>Speicher-Management:</strong>
+Da Spektraldaten sehr groß werden können, nutzt diese Klasse eine <cite>collections.deque</cite>
+mit definierter Maximallänge (<cite>maxlen</cite>). Wenn der Puffer voll ist, wird beim Hinzufügen
+eines neuen Spektrums das älteste automatisch verworfen (FIFO - First In, First Out).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Instanz für das Logging.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Instanz zum Laden/Speichern der Buffer-Größe.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signals:</dt><dd><dl class="simple">
+<dt>new_spectrum_available (np.ndarray, np.ndarray):</dt><dd><p>Wird emittiert, sobald ein Spektrum dem Buffer hinzugefügt wurde.
+Args: (Wellenlängen, Intensitäten)</p>
+</dd>
+<dt>waterfall_cleared ():</dt><dd><p>Wird emittiert, wenn der Buffer geleert wurde.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available">
 <span class="sig-name descname"><span class="pre">new_spectrum_available</span></span><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.new_spectrum_available" title="Link to this definition">¶</a></dt>
@@ -2182,31 +2338,68 @@ Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded">
 <span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Lädt die gespeicherte Buffer-Größe (History Depth) aus dem Profil.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum">
 <span class="sig-name descname"><span class="pre">add_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.add_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.add_spectrum" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Fügt ein neues Spektrum zum Verlauf hinzu.</p>
+<p>Schiebt die Intensitäten in den Ring-Puffer. Die Wellenlängen werden
+beim ersten Aufruf gecached (da sie sich meist nicht ändern).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wavelengths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – 1D-Array der Wellenlängen (X-Achse).</p></li>
+<li><p><strong>intensities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – 1D-Array der Intensitäten (Z-Achse / Farbe).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># In der Acquisition-Schleife:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">waterfall_mgr</span><span class="o">.</span><span class="n">add_spectrum</span><span class="p">(</span><span class="n">wl_array</span><span class="p">,</span> <span class="n">inten_array</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit">
 <span class="sig-name descname"><span class="pre">set_history_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.set_history_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.set_history_limit" title="Link to this definition">¶</a></dt>
-<dd><p>Ändert die Größe des Ring-Puffers.
-Wird aufgerufen, wenn User die History-Lines massiv erhöht.</p>
+<dd><p>Ändert die maximale Anzahl der gespeicherten Zeilen (Lines).</p>
+<p>Achtung: Dies ist eine “teure” Operation, da die interne <cite>deque</cite>
+komplett neu erstellt und kopiert werden muss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>limit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Neue maximale Anzahl an Spektren (z.B. 2000).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.clear_data">
 <span class="sig-name descname"><span class="pre">clear_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.clear_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Löscht alle Daten aus dem Buffer und setzt den Zähler zurück.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data">
 <span class="sig-name descname"><span class="pre">save_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/waterfall/WaterfallManager.html#WaterfallManager.save_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Exportiert den aktuellen Inhalt des Waterfall-Buffers.</p>
+<p>Stapelt die gesammelten Spektren zu einer 2D-Matrix und speichert sie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Zielpfad der Datei.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – ‘csv’ oder ‘npy’. Defaults to ‘csv’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True bei Erfolg, False bei Fehler.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2215,6 +2408,250 @@ Wird aufgerufen, wenn User die History-Lines massiv erhöht.</p>
 <dt class="sig sig-object py" id="modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject">
 <span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;WaterfallManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=new_spectrum_available(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=waterfall_cleared()</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_profile_loaded(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Slot,</span> <span class="pre">signature=add_spectrum(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Slot,</span> <span class="pre">signature=set_history_limit(int),</span> <span class="pre">parameters=int</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Slot,</span> <span class="pre">signature=clear_data()</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.liveplot.LivePlotManager">
+<span id="id9"></span><span id="live-plot-manager"></span><h2>Live Plot Manager<a class="headerlink" href="#module-modules.liveplot.LivePlotManager" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.liveplot.LivePlotManager.</span></span><span class="sig-name descname"><span class="pre">LivePlotManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Backend-Manager für Echtzeit-Visualisierungen.</p>
+<p>Dieser Manager unterscheidet strikt zwischen zwei Modi:</p>
+<ol class="arabic simple">
+<li><p><strong>Monitor (Oszilloskop-Modus):</strong>
+Ein rollender Ringpuffer (Deque), der ständig die letzten N Werte der SMU speichert.
+Dient zur schnellen Überprüfung (“Ist Spannung da?”), wird aber nicht dauerhaft gespeichert.</p></li>
+<li><p><strong>Session (Experiment-Modus):</strong>
+Strukturierte Datencontainer für spezifische Messungen (z.B. Sweeps).
+Hier definiert der User, welche Plots (I-V, Zeit-I, Spektrum) angelegt werden sollen.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Logging-Instanz.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Profil-Instanz zum Laden der Buffer-Größe.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated">
+<span class="sig-name descname"><span class="pre">monitor_updated</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated" title="Link to this definition">¶</a></dt>
+<dd><p>Neuer Datenpunkt im Monitor-Buffer. Args: (monitor_data_dict)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated">
+<span class="sig-name descname"><span class="pre">spectrum_updated</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated" title="Link to this definition">¶</a></dt>
+<dd><p>Neues Spektrum vom Detektor. Args: (wavelengths, intensities)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.session_started">
+<span class="sig-name descname"><span class="pre">session_started</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_started" title="Link to this definition">¶</a></dt>
+<dd><p>Neue Session gestartet. Args: (SessionName)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.plot_defined">
+<span class="sig-name descname"><span class="pre">plot_defined</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.plot_defined" title="Link to this definition">¶</a></dt>
+<dd><p>Neuer Plot-Tab soll erstellt werden.
+Args: (session, plot_key, title, x_label, y_label, log_x, log_y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.data_appended">
+<span class="sig-name descname"><span class="pre">data_appended</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_appended" title="Link to this definition">¶</a></dt>
+<dd><p>Einzelner Punkt zu Plot hinzugefügt. Args: (session, plot_key, x, y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.data_set">
+<span class="sig-name descname"><span class="pre">data_set</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_set" title="Link to this definition">¶</a></dt>
+<dd><p>Kompletter Datensatz ersetzt (für Arrays). Args: (session, plot_key, x_arr, y_arr)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.session_finished">
+<span class="sig-name descname"><span class="pre">session_finished</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_finished" title="Link to this definition">¶</a></dt>
+<dd><p>Session beendet. Args: (SessionName)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Lädt die Monitor-Buffer-Größe aus dem Profil.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size">
+<span class="sig-name descname"><span class="pre">set_monitor_buffer_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.set_monitor_buffer_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size" title="Link to this definition">¶</a></dt>
+<dd><p>Ändert die Länge des rollenden Monitors (Oszilloskop).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_len</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Anzahl der zu speichernden Punkte (z.B. 2000).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement">
+<span class="sig-name descname"><span class="pre">on_smu_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.on_smu_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Wird automatisch vom SmuManager aufgerufen, wenn gemessen wurde.
+Schiebt Daten in den Ringpuffer für die Live-Ansicht.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired">
+<span class="sig-name descname"><span class="pre">on_spectrum_acquired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.on_spectrum_acquired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Wird vom Spektrometer aufgerufen.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;LivePlotManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=monitor_updated(QVariantMap),</span> <span class="pre">parameters=QVariantMap</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=spectrum_updated(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=session_started(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=plot_defined(QString,QString,QString,QString,QString,bool,bool),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString,</span> <span class="pre">QString,</span> <span class="pre">QString,</span> <span class="pre">QString,</span> <span class="pre">bool,</span> <span class="pre">bool</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Signal,</span> <span class="pre">signature=data_appended(QString,QString,double,double),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString,</span> <span class="pre">double,</span> <span class="pre">double</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Signal,</span> <span class="pre">signature=data_set(QString,QString,PyObject,PyObject),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString,</span> <span class="pre">PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#10</span> <span class="pre">type=Signal,</span> <span class="pre">signature=session_finished(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#11</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_profile_loaded(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#12</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_smu_measurement(QString,double,double),</span> <span class="pre">parameters=QString,</span> <span class="pre">double,</span> <span class="pre">double</span>&#160;&#160; <span class="pre">#13</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_spectrum_acquired(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.start_session">
+<span class="sig-name descname"><span class="pre">start_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.start_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.start_session" title="Link to this definition">¶</a></dt>
+<dd><p>Erstellt einen neuen Container für Plot-Daten einer Messung.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Eindeutiger Name (z.B. “IV_Sweep_A”).</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Infos für den Header. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.define_plot">
+<span class="sig-name descname"><span class="pre">define_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.define_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.define_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Definiert ein neues Diagramm-Fenster (oder Tab) in der GUI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name der gestarteten Session.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Interne ID für den Plot (z.B. “iv_log”).</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Sichtbarer Titel des Plots.</p></li>
+<li><p><strong>xl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Beschriftung X-Achse.</p></li>
+<li><p><strong>yl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Beschriftung Y-Achse.</p></li>
+<li><p><strong>log_x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Logarithmische X-Achse.</p></li>
+<li><p><strong>log_y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Logarithmische Y-Achse.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">define_plot</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">,</span> <span class="s2">&quot;iv_curve&quot;</span><span class="p">,</span> <span class="s2">&quot;I-V Curve&quot;</span><span class="p">,</span> <span class="s2">&quot;Voltage (V)&quot;</span><span class="p">,</span> <span class="s2">&quot;Current (A)&quot;</span><span class="p">,</span> <span class="n">log_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.append_data">
+<span class="sig-name descname"><span class="pre">append_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.append_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.append_data" title="Link to this definition">¶</a></dt>
+<dd><p>Fügt einen einzelnen Punkt (X, Y) zu einem Plot hinzu.
+Ideal für Sweeps, wo Daten Punkt für Punkt kommen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Session Name.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Plot ID (muss vorher mit <cite>define_plot</cite> erstellt sein).</p></li>
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – X-Koordinate.</p></li>
+<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Y-Koordinate.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">,</span> <span class="s2">&quot;iv_curve&quot;</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_data" title="Link to this definition">¶</a></dt>
+<dd><p>Ersetzt die Daten eines Plots komplett.
+Ideal für Spektren oder schnelle Updates, wo ganze Arrays übertragen werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Session Name.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Plot ID.</p></li>
+<li><p><strong>x_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array der X-Werte.</p></li>
+<li><p><strong>y_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array der Y-Werte.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">,</span> <span class="s2">&quot;spec_live&quot;</span><span class="p">,</span> <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.stop_session">
+<span class="sig-name descname"><span class="pre">stop_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.stop_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.stop_session" title="Link to this definition">¶</a></dt>
+<dd><p>Markiert eine Session als beendet.
+Kann von der GUI genutzt werden, um den “Live”-Status zu entfernen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.remove_session">
+<span class="sig-name descname"><span class="pre">remove_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.remove_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.remove_session" title="Link to this definition">¶</a></dt>
+<dd><p>Löscht die Session-Daten aus dem RAM, um Speicher freizugeben.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -2451,6 +2888,30 @@ Wird aufgerufen, wenn User die History-Lines massiv erhöht.</p>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.clear_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.clear_data()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.save_raw_data"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.save_raw_data()</span></code></a></li>
 <li><a class="reference internal" href="#modules.waterfall.WaterfallManager.WaterfallManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">WaterfallManager.staticMetaObject</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-modules.liveplot.LivePlotManager">Live Plot Manager</a><ul>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager"><code class="docutils literal notranslate"><span class="pre">LivePlotManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.monitor_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.spectrum_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_started"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.session_started</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.plot_defined"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.plot_defined</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_appended"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.data_appended</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_set"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.data_set</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_finished"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.session_finished</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.on_profile_loaded()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.set_monitor_buffer_size()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.on_smu_measurement()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.on_spectrum_acquired()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.staticMetaObject</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.start_session"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.start_session()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.define_plot"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.define_plot()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.append_data"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.append_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_data"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.set_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.stop_session"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.stop_session()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.remove_session"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.remove_session()</span></code></a></li>
 </ul>
 </li>
 </ul>

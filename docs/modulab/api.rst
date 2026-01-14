@@ -1,9 +1,6 @@
 API-Referenz der Manager
 ========================
 
-Hier ist die automatisch generierte Dokumentation für alle Kern-Manager
-des Modulab-Projekts.
-
 .. _smu-manager:
 
 SMU Manager
@@ -66,11 +63,22 @@ Export Manager
    :undoc-members:
    :show-inheritance:
 
+
 .. _waterfall-manager:
 
 Waterfall Manager
 ------------------
 .. automodule:: modules.waterfall.WaterfallManager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. _live-plot-manager:
+
+Live Plot Manager
+------------------
+.. automodule:: modules.liveplot.LivePlotManager
    :members:
    :undoc-members:
    :show-inheritance:

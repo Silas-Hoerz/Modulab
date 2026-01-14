@@ -248,7 +248,14 @@
 <a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeasurementSession</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Hält alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM.</span>
+<span class="sd">    Datencontainer, der alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM hält.</span>
+
+<span class="sd">    Diese Klasse wird vom ExportManager verwaltet. Sie akkumuliert Messpunkte </span>
+<span class="sd">    und Spektren, bis sie gespeichert werden.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Ein eindeutiger Name für diese Session (z.B. &quot;Sweep_001&quot;).</span>
+<span class="sd">        metadata (dict, optional): Zusätzliche Metadaten (User, Settings), die im Header gespeichert werden.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -264,8 +271,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wavelengths</span> <span class="o">=</span> <span class="kc">None</span> 
 
 <div class="viewcode-block" id="MeasurementSession.add_point">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.MeasurementSession.add_point">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.add_point">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">set_val</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wl</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fügt einen einzelnen Messpunkt zur Session hinzu.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            t (float): Unix-Timestamp der Messung.</span>
+<span class="sd">            set_val (float): Der gesetzte Wert (z.B. Spannung in V).</span>
+<span class="sd">            v (float): Gemessene Spannung in V.</span>
+<span class="sd">            i (float): Gemessener Strom in A.</span>
+<span class="sd">            spectrum (np.array, optional): Intensitäts-Array eines Spektrometers. Defaults to None.</span>
+<span class="sd">            wl (np.array, optional): Wellenlängen-Array (nur beim ersten Punkt nötig). Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">set_val</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meas_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
@@ -279,14 +297,26 @@
 
 
 <div class="viewcode-block" id="MeasurementSession.is_empty">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.MeasurementSession.is_empty">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.is_empty">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prüft, ob Daten vorhanden sind.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True, wenn keine Messpunkte existieren, sonst False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
 
 
 <div class="viewcode-block" id="MeasurementSession.get_spectra_matrix">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.MeasurementSession.get_spectra_matrix">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.get_spectra_matrix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_spectra_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Konvertiert die Liste der Spektren in eine 2D NumPy-Matrix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray | None: Matrix mit Shape (Anzahl_Messpunkte, Anzahl_Pixel) oder None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spectra</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span></div>
@@ -295,7 +325,15 @@
 <div class="viewcode-block" id="MeasurementSession.to_dataframe">
 <a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.MeasurementSession.to_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Konvertiert Session zu Pandas DataFrame.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Konvertiert die gesamte Session in einen Pandas DataFrame (für CSV-Export).</span>
+<span class="sd">        </span>
+<span class="sd">        Falls Spektraldaten vorhanden sind, werden diese als zusätzliche Spalten </span>
+<span class="sd">        (Int_XXX.XXnm) angehängt.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: Der fertige DataFrame mit allen Daten.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;Timestamp&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">,</span>
             <span class="s2">&quot;Set_Value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">,</span>
@@ -316,9 +354,31 @@
 </div>
 
 
+
 <div class="viewcode-block" id="ExportManager">
 <a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExportManager</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verwaltet Datensessions und steuert den Datei-Export (HDF5 / CSV).</span>
+
+<span class="sd">    Dieser Manager dient als zentrale Schnittstelle zum Sammeln von Daten während</span>
+<span class="sd">    einer Messung. Skripte sollten diesen Manager nutzen, um Messpunkte zu protokollieren,</span>
+<span class="sd">    anstatt Daten manuell zu sammeln.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log_manager (LogManager): Logger-Instanz für Statusmeldungen.</span>
+<span class="sd">        profile_manager (ProfileManager): Manager zum Speichern des letzten Export-Pfades.</span>
+
+<span class="sd">    Signals:</span>
+<span class="sd">        session_updated (str, dict): </span>
+<span class="sd">            Wird gefeuert, wenn ein neuer Punkt hinzugefügt wurde. </span>
+<span class="sd">            Nützlich für Live-Plots.</span>
+<span class="sd">            Args: (SessionName, DataDict)</span>
+<span class="sd">        export_finished (str): </span>
+<span class="sd">            Signalisiert erfolgreichen Export. Args: (Dateipfad)</span>
+<span class="sd">        export_error (str): </span>
+<span class="sd">            Signalisiert Fehler beim Export. Args: (Fehlermeldung)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">session_updated</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> 
     <span class="n">export_finished</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">export_error</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
@@ -330,8 +390,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span> <span class="o">=</span> <span class="p">{}</span> 
 
 <div class="viewcode-block" id="ExportManager.start_session">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.ExportManager.start_session">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.start_session">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Erstellt eine neue Mess-Session im Arbeitsspeicher.</span>
+<span class="sd">        </span>
+<span class="sd">        Überschreibt eine existierende Session mit demselben Namen, falls vorhanden.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): Eindeutiger Name der Messung (z.B. &quot;IV_Curve_01&quot;).</span>
+<span class="sd">            metadata (dict, optional): Metadaten wie User, Probe, Parameter.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; api.export_mgr.start_session(&quot;Test_Run&quot;, metadata={&quot;Probe&quot;: &quot;A12&quot;})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Session &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; overwritten.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">MeasurementSession</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
@@ -339,8 +411,26 @@
 
 
 <div class="viewcode-block" id="ExportManager.add_data_point">
-<a class="viewcode-back" href="../../../modulab/api.html#modules.export.ExportManager.ExportManager.add_data_point">[docs]</a>
+<a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.add_data_point">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_data_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_name</span><span class="p">,</span> <span class="n">set_val</span><span class="p">,</span> <span class="n">meas_v</span><span class="p">,</span> <span class="n">meas_i</span><span class="p">,</span> <span class="n">spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wl</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fügt einen Messpunkt zu einer laufenden Session hinzu und aktualisiert die GUI.</span>
+
+<span class="sd">        Diese Methode sollte innerhalb der Messschleife aufgerufen werden.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_name (str): Name der Session, zu der die Daten gehören.</span>
+<span class="sd">            set_val (float): Der gesetzte Sollwert (X-Achse).</span>
+<span class="sd">            meas_v (float): Gemessene Spannung.</span>
+<span class="sd">            meas_i (float): Gemessener Strom.</span>
+<span class="sd">            spectrum (list/array, optional): Spektrum-Daten (Intensitäten).</span>
+<span class="sd">            wl (list/array, optional): Wellenlängen (nur nötig, wenn sich Achse ändert oder Init).</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; # In einer Schleife:</span>
+<span class="sd">            &gt;&gt;&gt; v_meas, i_meas = smu.measure_iv(&#39;a&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; api.export_mgr.add_data_point(&quot;Test_Run&quot;, set_val=1.0, meas_v=v_meas, meas_i=i_meas)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">session_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">:</span> <span class="k">return</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span>
         
@@ -358,8 +448,21 @@
 <a class="viewcode-back" href="../../../modulab/export_manager.html#modules.export.ExportManager.ExportManager.save_session_to_disk">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_session_to_disk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Exportiert ENTWEDER als HDF5 ODER als CSV, basierend auf der Dateiendung.</span>
-<span class="sd">        Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</span>
+<span class="sd">        Speichert eine Session auf die Festplatte.</span>
+<span class="sd">        </span>
+<span class="sd">        Das Format wird automatisch anhand der Dateiendung erkannt:</span>
+<span class="sd">        - **.h5 / .hdf5**: HDF5 Format (empfohlen für große Daten/Spektren).</span>
+<span class="sd">        - **.csv / .txt**: CSV Format (Textbasiert, gut für Origin/Excel).</span>
+
+<span class="sd">        Löscht existierende Dateien aggressiv vor dem Schreiben, um &#39;File Lock&#39;</span>
+<span class="sd">        Probleme von h5py zu umgehen.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_name (str): Name der Session im RAM.</span>
+<span class="sd">            filepath (str): Voller Zielpfad (z.B. &quot;C:/Data/messung.h5&quot;).</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; export_mgr.save_session_to_disk(&quot;Test_Run&quot;, &quot;C:/Users/Lab/Data/my_data.h5&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">session_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_sessions</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_mgr</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot save unknown session: </span><span class="si">{</span><span class="n">session_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -398,47 +501,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">export_error</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Unknown file type selected.&quot;</span><span class="p">)</span></div>
 
 
-    <span class="c1"># def _export_hdf5(self, session, filepath):</span>
-    <span class="c1">#     &quot;&quot;&quot;Interner HDF5 Writer.&quot;&quot;&quot;</span>
-    <span class="c1">#     try:</span>
-    <span class="c1">#         # Data Prep</span>
-    <span class="c1">#         np_timestamps = np.array(session.timestamps)</span>
-    <span class="c1">#         np_set_values = np.array(session.set_values)</span>
-    <span class="c1">#         np_meas_v = np.array(session.meas_v)</span>
-    <span class="c1">#         np_meas_i = np.array(session.meas_i)</span>
-    <span class="c1">#         spectra_matrix = session.get_spectra_matrix()</span>
-    <span class="c1">#         wavelengths = session.wavelengths</span>
-
-    <span class="c1">#         with h5py.File(filepath, &#39;w&#39;) as f:</span>
-    <span class="c1">#             # Metadaten</span>
-    <span class="c1">#             f.attrs[&#39;Export_Date&#39;] = str(datetime.now().isoformat())</span>
-    <span class="c1">#             f.attrs[&#39;Software&#39;] = str(f&quot;{APP_TITLE} {APP_VERSION}&quot;)</span>
-    <span class="c1">#             for k, v in session.metadata.items():</span>
-    <span class="c1">#                 f.attrs[str(k)] = str(v) if v is not None else &quot;&quot;</span>
-                
-    <span class="c1">#             # Datasets</span>
-    <span class="c1">#             grp = f.create_group(&quot;Data&quot;)</span>
-    <span class="c1">#             grp.create_dataset(&quot;Timestamps&quot;, data=np_timestamps)</span>
-    <span class="c1">#             grp.create_dataset(&quot;Set_Values&quot;, data=np_set_values)</span>
-    <span class="c1">#             grp.create_dataset(&quot;Voltage_Meas&quot;, data=np_meas_v)</span>
-    <span class="c1">#             grp.create_dataset(&quot;Current_Meas&quot;, data=np_meas_i)</span>
-                
-    <span class="c1">#             if spectra_matrix is not None:</span>
-    <span class="c1">#                 grp.create_dataset(&quot;Spectra_Matrix&quot;, data=spectra_matrix)</span>
-    <span class="c1">#             if wavelengths is not None:</span>
-    <span class="c1">#                 grp.create_dataset(&quot;Wavelengths&quot;, data=wavelengths)</span>
-                
-    <span class="c1">#             f.flush() # Buffer auf Platte zwingen</span>
-            
-    <span class="c1">#         self.log_mgr.info(f&quot;HDF5 Export successful: {filepath}&quot;)</span>
-    <span class="c1">#         self.export_finished.emit(filepath)</span>
-
-    <span class="c1">#     except Exception as e:</span>
-    <span class="c1">#         self.log_mgr.error(f&quot;HDF5 Export failed: {e}&quot;)</span>
-    <span class="c1">#         self.export_error.emit(str(e))</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_export_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interner HDF5 Writer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interner HDF5 Writer. Speichert Rohdaten und Plot-optimierte Matrizen.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Data Prep (Bestehender Code)</span>
             <span class="n">np_timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span>

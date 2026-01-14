@@ -1,0 +1,563 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>Live Plot Manager - Modulab 1.1.13 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="log_manager.html">Log Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profile_manager.html">Profile Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_manager.html">Device Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smu_manager.html">SMU Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectrometer_manager.html">Spectrometer Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="waterfall_manager.html">Waterfall Manager</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/modulab/live_plot_manager.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-modules.liveplot.LivePlotManager">
+<span id="id1"></span><span id="live-plot-manager"></span><h1>Live Plot Manager<a class="headerlink" href="#module-modules.liveplot.LivePlotManager" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.liveplot.LivePlotManager.</span></span><span class="sig-name descname"><span class="pre">LivePlotManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Backend-Manager für Echtzeit-Visualisierungen.</p>
+<p>Dieser Manager unterscheidet strikt zwischen zwei Modi:</p>
+<ol class="arabic simple">
+<li><p><strong>Monitor (Oszilloskop-Modus):</strong>
+Ein rollender Ringpuffer (Deque), der ständig die letzten N Werte der SMU speichert.
+Dient zur schnellen Überprüfung (“Ist Spannung da?”), wird aber nicht dauerhaft gespeichert.</p></li>
+<li><p><strong>Session (Experiment-Modus):</strong>
+Strukturierte Datencontainer für spezifische Messungen (z.B. Sweeps).
+Hier definiert der User, welche Plots (I-V, Zeit-I, Spektrum) angelegt werden sollen.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Logging-Instanz.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Profil-Instanz zum Laden der Buffer-Größe.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated">
+<span class="sig-name descname"><span class="pre">monitor_updated</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated" title="Link to this definition">¶</a></dt>
+<dd><p>Neuer Datenpunkt im Monitor-Buffer. Args: (monitor_data_dict)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated">
+<span class="sig-name descname"><span class="pre">spectrum_updated</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated" title="Link to this definition">¶</a></dt>
+<dd><p>Neues Spektrum vom Detektor. Args: (wavelengths, intensities)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.session_started">
+<span class="sig-name descname"><span class="pre">session_started</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_started" title="Link to this definition">¶</a></dt>
+<dd><p>Neue Session gestartet. Args: (SessionName)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.plot_defined">
+<span class="sig-name descname"><span class="pre">plot_defined</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.plot_defined" title="Link to this definition">¶</a></dt>
+<dd><p>Neuer Plot-Tab soll erstellt werden.
+Args: (session, plot_key, title, x_label, y_label, log_x, log_y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.data_appended">
+<span class="sig-name descname"><span class="pre">data_appended</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_appended" title="Link to this definition">¶</a></dt>
+<dd><p>Einzelner Punkt zu Plot hinzugefügt. Args: (session, plot_key, x, y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.data_set">
+<span class="sig-name descname"><span class="pre">data_set</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_set" title="Link to this definition">¶</a></dt>
+<dd><p>Kompletter Datensatz ersetzt (für Arrays). Args: (session, plot_key, x_arr, y_arr)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.session_finished">
+<span class="sig-name descname"><span class="pre">session_finished</span></span><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_finished" title="Link to this definition">¶</a></dt>
+<dd><p>Session beendet. Args: (SessionName)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded">
+<span class="sig-name descname"><span class="pre">on_profile_loaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.on_profile_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded" title="Link to this definition">¶</a></dt>
+<dd><p>Lädt die Monitor-Buffer-Größe aus dem Profil.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size">
+<span class="sig-name descname"><span class="pre">set_monitor_buffer_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.set_monitor_buffer_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size" title="Link to this definition">¶</a></dt>
+<dd><p>Ändert die Länge des rollenden Monitors (Oszilloskop).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_len</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Anzahl der zu speichernden Punkte (z.B. 2000).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement">
+<span class="sig-name descname"><span class="pre">on_smu_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.on_smu_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Wird automatisch vom SmuManager aufgerufen, wenn gemessen wurde.
+Schiebt Daten in den Ringpuffer für die Live-Ansicht.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired">
+<span class="sig-name descname"><span class="pre">on_spectrum_acquired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.on_spectrum_acquired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired" title="Link to this definition">¶</a></dt>
+<dd><p>Slot: Wird vom Spektrometer aufgerufen.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;LivePlotManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=monitor_updated(QVariantMap),</span> <span class="pre">parameters=QVariantMap</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=spectrum_updated(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=session_started(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=plot_defined(QString,QString,QString,QString,QString,bool,bool),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString,</span> <span class="pre">QString,</span> <span class="pre">QString,</span> <span class="pre">QString,</span> <span class="pre">bool,</span> <span class="pre">bool</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Signal,</span> <span class="pre">signature=data_appended(QString,QString,double,double),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString,</span> <span class="pre">double,</span> <span class="pre">double</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Signal,</span> <span class="pre">signature=data_set(QString,QString,PyObject,PyObject),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString,</span> <span class="pre">PyObject,</span> <span class="pre">PyObject</span>&#160;&#160; <span class="pre">#10</span> <span class="pre">type=Signal,</span> <span class="pre">signature=session_finished(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#11</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_profile_loaded(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#12</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_smu_measurement(QString,double,double),</span> <span class="pre">parameters=QString,</span> <span class="pre">double,</span> <span class="pre">double</span>&#160;&#160; <span class="pre">#13</span> <span class="pre">type=Slot,</span> <span class="pre">signature=on_spectrum_acquired(PyObject,PyObject),</span> <span class="pre">parameters=PyObject,</span> <span class="pre">PyObject</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.start_session">
+<span class="sig-name descname"><span class="pre">start_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.start_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.start_session" title="Link to this definition">¶</a></dt>
+<dd><p>Erstellt einen neuen Container für Plot-Daten einer Messung.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Eindeutiger Name (z.B. “IV_Sweep_A”).</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Infos für den Header. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.define_plot">
+<span class="sig-name descname"><span class="pre">define_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.define_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.define_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Definiert ein neues Diagramm-Fenster (oder Tab) in der GUI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name der gestarteten Session.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Interne ID für den Plot (z.B. “iv_log”).</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Sichtbarer Titel des Plots.</p></li>
+<li><p><strong>xl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Beschriftung X-Achse.</p></li>
+<li><p><strong>yl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Beschriftung Y-Achse.</p></li>
+<li><p><strong>log_x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Logarithmische X-Achse.</p></li>
+<li><p><strong>log_y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Logarithmische Y-Achse.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">define_plot</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">,</span> <span class="s2">&quot;iv_curve&quot;</span><span class="p">,</span> <span class="s2">&quot;I-V Curve&quot;</span><span class="p">,</span> <span class="s2">&quot;Voltage (V)&quot;</span><span class="p">,</span> <span class="s2">&quot;Current (A)&quot;</span><span class="p">,</span> <span class="n">log_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.append_data">
+<span class="sig-name descname"><span class="pre">append_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.append_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.append_data" title="Link to this definition">¶</a></dt>
+<dd><p>Fügt einen einzelnen Punkt (X, Y) zu einem Plot hinzu.
+Ideal für Sweeps, wo Daten Punkt für Punkt kommen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Session Name.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Plot ID (muss vorher mit <cite>define_plot</cite> erstellt sein).</p></li>
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – X-Koordinate.</p></li>
+<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Y-Koordinate.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">,</span> <span class="s2">&quot;iv_curve&quot;</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_data" title="Link to this definition">¶</a></dt>
+<dd><p>Ersetzt die Daten eines Plots komplett.
+Ideal für Spektren oder schnelle Updates, wo ganze Arrays übertragen werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Session Name.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Plot ID.</p></li>
+<li><p><strong>x_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array der X-Werte.</p></li>
+<li><p><strong>y_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array der Y-Werte.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">plot_mgr</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="s2">&quot;MySweep&quot;</span><span class="p">,</span> <span class="s2">&quot;spec_live&quot;</span><span class="p">,</span> <span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.stop_session">
+<span class="sig-name descname"><span class="pre">stop_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.stop_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.stop_session" title="Link to this definition">¶</a></dt>
+<dd><p>Markiert eine Session als beendet.
+Kann von der GUI genutzt werden, um den “Live”-Status zu entfernen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.liveplot.LivePlotManager.LivePlotManager.remove_session">
+<span class="sig-name descname"><span class="pre">remove_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/liveplot/LivePlotManager.html#LivePlotManager.remove_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.liveplot.LivePlotManager.LivePlotManager.remove_session" title="Link to this definition">¶</a></dt>
+<dd><p>Löscht die Session-Daten aus dem RAM, um Speicher freizugeben.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Silas Hörz
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Live Plot Manager</a><ul>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager"><code class="docutils literal notranslate"><span class="pre">LivePlotManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.monitor_updated"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.monitor_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.spectrum_updated"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.spectrum_updated</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_started"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.session_started</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.plot_defined"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.plot_defined</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_appended"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.data_appended</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.data_set"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.data_set</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.session_finished"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.session_finished</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_profile_loaded"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.on_profile_loaded()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_monitor_buffer_size"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.set_monitor_buffer_size()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_smu_measurement"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.on_smu_measurement()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.on_spectrum_acquired"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.on_spectrum_acquired()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.staticMetaObject</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.start_session"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.start_session()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.define_plot"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.define_plot()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.append_data"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.append_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.set_data"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.set_data()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.stop_session"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.stop_session()</span></code></a></li>
+<li><a class="reference internal" href="#modules.liveplot.LivePlotManager.LivePlotManager.remove_session"><code class="docutils literal notranslate"><span class="pre">LivePlotManager.remove_session()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>

@@ -244,11 +244,77 @@
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">MeasurementSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Hält alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM.</p>
+<p>Datencontainer, der alle Daten einer einzigen Messung (z.B. eines Sweeps) im RAM hält.</p>
+<p>Diese Klasse wird vom ExportManager verwaltet. Sie akkumuliert Messpunkte
+und Spektren, bis sie gespeichert werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Ein eindeutiger Name für diese Session (z.B. “Sweep_001”).</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Zusätzliche Metadaten (User, Settings), die im Header gespeichert werden.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.add_point">
+<span class="sig-name descname"><span class="pre">add_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.add_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.add_point" title="Link to this definition">¶</a></dt>
+<dd><p>Fügt einen einzelnen Messpunkt zur Session hinzu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Unix-Timestamp der Messung.</p></li>
+<li><p><strong>set_val</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Der gesetzte Wert (z.B. Spannung in V).</p></li>
+<li><p><strong>v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessene Spannung in V.</p></li>
+<li><p><strong>i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessener Strom in A.</p></li>
+<li><p><strong>spectrum</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.array</span></code>, <em>optional</em>) – Intensitäts-Array eines Spektrometers. Defaults to None.</p></li>
+<li><p><strong>wl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.array</span></code>, <em>optional</em>) – Wellenlängen-Array (nur beim ersten Punkt nötig). Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.is_empty">
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.is_empty" title="Link to this definition">¶</a></dt>
+<dd><p>Prüft, ob Daten vorhanden sind.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True, wenn keine Messpunkte existieren, sonst False.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.get_spectra_matrix">
+<span class="sig-name descname"><span class="pre">get_spectra_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.get_spectra_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.get_spectra_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Konvertiert die Liste der Spektren in eine 2D NumPy-Matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix mit Shape (Anzahl_Messpunkte, Anzahl_Pixel) oder None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.MeasurementSession.to_dataframe">
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#MeasurementSession.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.MeasurementSession.to_dataframe" title="Link to this definition">¶</a></dt>
-<dd><p>Konvertiert Session zu Pandas DataFrame.</p>
+<dd><p>Konvertiert die gesamte Session in einen Pandas DataFrame (für CSV-Export).</p>
+<p>Falls Spektraldaten vorhanden sind, werden diese als zusätzliche Spalten
+(Int_XXX.XXnm) angehängt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Der fertige DataFrame mit allen Daten.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -257,11 +323,102 @@
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.export.ExportManager.</span></span><span class="sig-name descname"><span class="pre">ExportManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Verwaltet Datensessions und steuert den Datei-Export (HDF5 / CSV).</p>
+<p>Dieser Manager dient als zentrale Schnittstelle zum Sammeln von Daten während
+einer Messung. Skripte sollten diesen Manager nutzen, um Messpunkte zu protokollieren,
+anstatt Daten manuell zu sammeln.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LogManager</span></code>) – Logger-Instanz für Statusmeldungen.</p></li>
+<li><p><strong>profile_manager</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileManager</span></code>) – Manager zum Speichern des letzten Export-Pfades.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Signals:</dt><dd><dl class="simple">
+<dt>session_updated (str, dict):</dt><dd><p>Wird gefeuert, wenn ein neuer Punkt hinzugefügt wurde.
+Nützlich für Live-Plots.
+Args: (SessionName, DataDict)</p>
+</dd>
+<dt>export_finished (str):</dt><dd><p>Signalisiert erfolgreichen Export. Args: (Dateipfad)</p>
+</dd>
+<dt>export_error (str):</dt><dd><p>Signalisiert Fehler beim Export. Args: (Fehlermeldung)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.start_session">
+<span class="sig-name descname"><span class="pre">start_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.start_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.start_session" title="Link to this definition">¶</a></dt>
+<dd><p>Erstellt eine neue Mess-Session im Arbeitsspeicher.</p>
+<p>Überschreibt eine existierende Session mit demselben Namen, falls vorhanden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Eindeutiger Name der Messung (z.B. “IV_Curve_01”).</p></li>
+<li><p><strong>metadata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Metadaten wie User, Probe, Parameter.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">export_mgr</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="s2">&quot;Test_Run&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Probe&quot;</span><span class="p">:</span> <span class="s2">&quot;A12&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.add_data_point">
+<span class="sig-name descname"><span class="pre">add_data_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.add_data_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.add_data_point" title="Link to this definition">¶</a></dt>
+<dd><p>Fügt einen Messpunkt zu einer laufenden Session hinzu und aktualisiert die GUI.</p>
+<p>Diese Methode sollte innerhalb der Messschleife aufgerufen werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name der Session, zu der die Daten gehören.</p></li>
+<li><p><strong>set_val</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Der gesetzte Sollwert (X-Achse).</p></li>
+<li><p><strong>meas_v</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessene Spannung.</p></li>
+<li><p><strong>meas_i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Gemessener Strom.</p></li>
+<li><p><strong>spectrum</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list/array</span></code>, <em>optional</em>) – Spektrum-Daten (Intensitäten).</p></li>
+<li><p><strong>wl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list/array</span></code>, <em>optional</em>) – Wellenlängen (nur nötig, wenn sich Achse ändert oder Init).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># In einer Schleife:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v_meas</span><span class="p">,</span> <span class="n">i_meas</span> <span class="o">=</span> <span class="n">smu</span><span class="o">.</span><span class="n">measure_iv</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">export_mgr</span><span class="o">.</span><span class="n">add_data_point</span><span class="p">(</span><span class="s2">&quot;Test_Run&quot;</span><span class="p">,</span> <span class="n">set_val</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">meas_v</span><span class="o">=</span><span class="n">v_meas</span><span class="p">,</span> <span class="n">meas_i</span><span class="o">=</span><span class="n">i_meas</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.export.ExportManager.ExportManager.save_session_to_disk">
 <span class="sig-name descname"><span class="pre">save_session_to_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/export/ExportManager.html#ExportManager.save_session_to_disk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.export.ExportManager.ExportManager.save_session_to_disk" title="Link to this definition">¶</a></dt>
-<dd><p>Exportiert ENTWEDER als HDF5 ODER als CSV, basierend auf der Dateiendung.
-Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
+<dd><p>Speichert eine Session auf die Festplatte.</p>
+<p>Das Format wird automatisch anhand der Dateiendung erkannt:
+- <strong>.h5 / .hdf5</strong>: HDF5 Format (empfohlen für große Daten/Spektren).
+- <strong>.csv / .txt</strong>: CSV Format (Textbasiert, gut für Origin/Excel).</p>
+<p>Löscht existierende Dateien aggressiv vor dem Schreiben, um ‘File Lock’
+Probleme von h5py zu umgehen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name der Session im RAM.</p></li>
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Voller Zielpfad (z.B. “C:/Data/messung.h5”).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">export_mgr</span><span class="o">.</span><span class="n">save_session_to_disk</span><span class="p">(</span><span class="s2">&quot;Test_Run&quot;</span><span class="p">,</span> <span class="s2">&quot;C:/Users/Lab/Data/my_data.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -325,10 +482,15 @@ Löscht existierende Dateien aggressiv, um Lock-Probleme zu vermeiden.</p>
             <ul>
 <li><a class="reference internal" href="#">Export Manager</a><ul>
 <li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession"><code class="docutils literal notranslate"><span class="pre">MeasurementSession</span></code></a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.add_point"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.add_point()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.is_empty"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.is_empty()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.get_spectra_matrix"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.get_spectra_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#modules.export.ExportManager.MeasurementSession.to_dataframe"><code class="docutils literal notranslate"><span class="pre">MeasurementSession.to_dataframe()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager"><code class="docutils literal notranslate"><span class="pre">ExportManager</span></code></a><ul>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.start_session"><code class="docutils literal notranslate"><span class="pre">ExportManager.start_session()</span></code></a></li>
+<li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.add_data_point"><code class="docutils literal notranslate"><span class="pre">ExportManager.add_data_point()</span></code></a></li>
 <li><a class="reference internal" href="#modules.export.ExportManager.ExportManager.save_session_to_disk"><code class="docutils literal notranslate"><span class="pre">ExportManager.save_session_to_disk()</span></code></a></li>
 </ul>
 </li>
