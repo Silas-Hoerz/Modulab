@@ -2,7 +2,7 @@
 # This Python file uses the following encoding: utf-8
 import sys
 import os
-from PySide6.QtGui import QIcon, QDesktopServices
+from PySide6.QtGui import QIcon, QDesktopServices, QCloseEvent
 from PySide6.QtWidgets import QApplication, QMainWindow, QDockWidget, QDialog, QToolButton, QWidget, QHBoxLayout
 from PySide6.QtCore import Qt, Slot, QUrl
 
@@ -223,3 +223,29 @@ class MainWindow(QMainWindow):
         self.hdf5viewer_dock.setVisible(True)
         self.hdf5viewer_dock.raise_()
         self.hdf5viewer_dock.activateWindow()
+
+    def closeEvent(self, event):
+        """
+        Wird aufgerufen, wenn das Fenster geschlossen wird.
+        Räumt alle Hardware-Verbindungen und Threads auf.
+        """
+        self.context.log_manager.info("Application closing. Cleaning up...")
+
+        # 1. Laufende Experimente stoppen
+        if self.context.experiment_manager.is_experiment_running():
+            self.context.experiment_manager.stop_experiment()
+            # Dem Thread kurz Zeit geben
+            import time
+            time.sleep(0.05) 
+
+        # 2. Hardware trennen (Verhindert blockierte Ports beim Neustart)
+        if self.context.smu_manager.is_connected():
+            self.context.smu_manager.disconnect()
+        
+        if self.context.spectrometer_manager.is_connected():
+            self.context.spectrometer_manager.disconnect()
+
+        # 3. HDF5 Viewer schließen (wichtig für File-Locks)
+        self.hdf5viewer_widget.close_file()
+
+        event.accept()

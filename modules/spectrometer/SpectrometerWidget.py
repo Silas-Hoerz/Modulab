@@ -30,7 +30,7 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
     def __init__(self, context, parent=None):
         super().__init__(parent)
-        
+        self.context = context
         # 1. UI aus deiner Datei laden
         # Hier wird self.widget_plot erstellt!
         self.setupUi(self)
@@ -60,6 +60,10 @@ class SpectrometerWidget(QWidget, Ui_Form):
 
         # Initiale Suche nach Geräten
         self.spec_mgr.get_deviceList()
+
+        self.context.experiment_manager.experiment_started.connect(self.on_experiment_started)
+        self.context.experiment_manager.experiment_finished.connect(self.on_experiment_finished)
+        self.context.experiment_manager.experiment_error.connect(self.on_experiment_finished) # Fehler = Ende
 
     def __setup_pyqtgraph(self):
         """Ersetzt den leeren Widget-Platzhalter mit dem PyQtGraph Plot."""
@@ -137,6 +141,36 @@ class SpectrometerWidget(QWidget, Ui_Form):
         if self.profile_mgr:
              self.profile_mgr.profile_loaded.connect(self.on_profile_loaded)
 
+    @Slot()
+    def on_experiment_started(self):
+        """
+        Wird aufgerufen, wenn ein Experiment startet.
+        Sperrt die UI und stoppt den Live-Timer, um Hardware-Konflikte zu vermeiden.
+        """
+        self.log_mgr.info("SpectrometerWidget: Locking UI due to active experiment.")
+        
+        # 1. Timer stoppen (Verhindert Race Conditions auf USB!)
+        if self.continuous_timer.isActive():
+            self.continuous_timer.stop()
+            self.pushButton_acquireContinuous.setChecked(False)
+            self.pushButton_acquireContinuous.setText("Start")
+        
+        # 2. UI sperren (Verhindert ungültiges Dark Spectrum durch User-Eingabe)
+        self.frame.setEnabled(False) # Sperrt den gesamten linken Bereich (Settings + Connect)
+        
+        # Optional: Plot aktiv lassen, damit man Updates sieht
+        # self.widget_plot.setEnabled(True) 
+
+    @Slot()
+    def on_experiment_finished(self): # Nimmt optional error_msg an, falls nötig, hier via Signal ohne Args
+        """
+        Wird aufgerufen, wenn das Experiment endet. Gibt die UI wieder frei.
+        """
+        self.log_mgr.info("SpectrometerWidget: Unlocking UI.")
+        self.frame.setEnabled(True)
+        
+        # Wir starten den Timer NICHT automatisch neu, das muss der User machen.
+        
     # --- Interne Logik ---
 
     def _acquire_single_wrapper(self):

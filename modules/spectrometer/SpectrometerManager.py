@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtCore import QObject, Signal, Slot,QMutex
 
 # https://python-seabreeze.readthedocs.io/en/latest/api.html#seabreeze.spectrometers.Spectrometer
 import seabreeze
@@ -56,6 +56,9 @@ class SpectrometerManager(QObject):
         super().__init__()
         self.log_mgr = log_manager 
         self.profile_mgr = profile_manager
+
+        # Mutex für Thread-Sicherheit
+        self._lock = QMutex()
 
         self.log_mgr.debug("Initializing SpectrometerManager...")
 
@@ -213,14 +216,18 @@ class SpectrometerManager(QObject):
         Wichtig: Das gespeicherte Dunkelspektrum wird hierbei gelöscht, da es
         für ein neues Gerät (oder nach Neustart) nicht mehr gültig wäre.
         """
-        if self.spectrometer:
-            try:
-                self.spectrometer.close()
-            except Exception as e:
-                self.log_mgr.error(f"Error closing spectrometer: {e}")
-            self.spectrometer = None
-            self._invalidate_dark_spectrum()
-            self.connection_status_changed.emit(False, "")
+        self._lock.lock()
+        try:
+            if self.spectrometer:
+                try:
+                    self.spectrometer.close()
+                except Exception as e:
+                    self.log_mgr.error(f"Error closing spectrometer: {e}")
+                self.spectrometer = None
+                self._invalidate_dark_spectrum()
+                self.connection_status_changed.emit(False, "")
+        finally:
+            self._lock.unlock()
 
     def get_activeDeviceName(self) -> str:
         """
@@ -552,16 +559,16 @@ class SpectrometerManager(QObject):
             tuple: (Wellenlängen, Rohe Intensitäten).
         """
         if not self.is_connected():
-            self.log_mgr.warning("Cannot acquire spectrum: No spectrometer connected.")
+            self.log_mgr.debug("Cannot acquire spectrum: No spectrometer connected.")
             return None, None
         
+        self._lock.lock() 
         try:
             wavelengths, intensities = self.spectrometer.spectrum(
                 correct_dark_counts=self.correct_dark_counts,
                 correct_nonlinearity=self.correct_non_linearity
             )
             
-            # Nur senden, wenn gewünscht (Standardverhalten bei direktem Aufruf)
             if emit_signal:
                 self.new_spectrum_acquired.emit(wavelengths, intensities)
 
@@ -570,6 +577,8 @@ class SpectrometerManager(QObject):
         except Exception as e:
             self.log_mgr.error(f"Error during spectrum acquisition: {e}")
             return None, None
+        finally:
+            self._lock.unlock() 
         
 
     def acquire_dark_spectrum(self, n_scans: int) -> bool:

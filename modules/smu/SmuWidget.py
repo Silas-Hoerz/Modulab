@@ -24,6 +24,7 @@ class SmuWidget(QWidget, Ui_Form):
 
     def __init__(self, context, parent=None):
         super().__init__(parent)
+        self.context = context
         self.setupUi(self)
 
         self.smu_mgr = context.smu_manager
@@ -60,6 +61,38 @@ class SmuWidget(QWidget, Ui_Form):
 
         self.comboBox_port.installEventFilter(self)
         self.smu_mgr.get_deviceList()
+
+        self.context.experiment_manager.experiment_started.connect(self.on_experiment_started)
+        self.context.experiment_manager.experiment_finished.connect(self.on_experiment_finished)
+        self.context.experiment_manager.experiment_error.connect(self.on_experiment_finished)
+        
+    @Slot()
+    def on_experiment_started(self):
+        """UI sperren und Polling stoppen, wenn Experiment läuft."""
+        self.log_mgr.info("SmuWidget: Stopping monitor timer due to experiment.")
+        
+        # 1. Timer KILLEN (Wichtigster Fix!)
+        self.monitor_timer.stop()
+        
+        # 2. UI disablen, damit User nicht dazwischenfunkt
+        # Wir disablen nur die Controls, nicht das ganze Widget (damit man Werte noch lesen kann)
+        self.groupBox_channelA.setEnabled(False) # Falls du GroupBoxen hast, sonst frame
+        self.groupBox_channelB.setEnabled(False)
+        self.comboBox_port.setEnabled(False)
+        self.pushButton_connect.setEnabled(False)
+        
+        # Alternativ, wenn du keine GroupBoxen im UI File hast:
+        self.setEnabled(False) 
+
+    @Slot()
+    def on_experiment_finished(self):
+        """UI wieder freigeben."""
+        self.log_mgr.info("SmuWidget: Resuming monitor timer.")
+        
+        self.setEnabled(True)
+        # Timer nur neustarten, wenn wir auch connected sind!
+        if self.smu_mgr.is_connected():
+            self.monitor_timer.start()
 
     def __setup_ui(self):
         # 1. ButtonGroups

@@ -4,7 +4,7 @@ import time
 import serial
 from serial.tools import list_ports
 
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtCore import QObject, Signal, Slot, QRecursiveMutex
 
 # Importiere Treiber
 from .Keithley2602 import Keithley2602, DummyKeithley2602
@@ -52,6 +52,8 @@ class SmuManager(QObject):
         super().__init__()
         self.log_mgr = log_manager
         self.profile_mgr = profile_manager
+
+        self._lock = QRecursiveMutex()
 
         self.smu_device = None
         self.available_devices = {}
@@ -127,11 +129,11 @@ class SmuManager(QObject):
         """Wendet die gespeicherten/internen Settings auf das Gerät an."""
         if not self.is_connected(): return
         
-        self.log_mgr.info("Applying channel settings...")
+        self.log_mgr.debug("Applying channel settings...")
         
         # --- ÄNDERUNG: Reset active list bei neuem Connect ---
-        self.active_channels = ['a', 'b']
-
+        # self.active_channels = ['a', 'b']
+        if not self.active_channels: self.active_channels = ['a', 'b']
         # Über Kopie der Liste iterieren, falls einer währenddessen rausfliegt
         for ch in list(self.active_channels):
             try:
@@ -143,7 +145,7 @@ class SmuManager(QObject):
                 self.set_source_level(ch, state['level'])
                 self.set_source_limit(ch, state['limit'])
                 self.set_sense_mode(ch, state['sense'])
-                self.set_output_state(ch, False)
+                # self.set_output_state(ch, False)
                 
             except Exception as e:
                 # Falls schon beim Setup ein Fehler kommt (z.B. Timeout auf Ch B)
@@ -266,53 +268,68 @@ class SmuManager(QObject):
         Example:
             >>> manager.connect("COM3")
         """
-        self.disconnect()
-
-        driver_to_use = None
-        if port_name.upper() == "DUMMY":
-            self.log_mgr.info("Connecting to DUMMY driver...")
-            driver_to_use = DummyKeithley2602(self.log_mgr)
-        elif port_name in self.available_devices:
-            self.log_mgr.info(f"Connecting to real Keithley driver on {port_name}...")
-            driver_to_use = Keithley2602(self.log_mgr)
-        else:
-            self.log_mgr.error(f"Cannot connect: Port '{port_name}' not found.")
-            return False
-
+        self._lock.lock()
         try:
-            is_connected, idn_msg = driver_to_use.connect(port=port_name) 
+            self.disconnect()
 
-            if is_connected:
-                if "KEITHLEY" not in idn_msg.upper() and "DUMMY" not in idn_msg.upper():
-                    self.log_mgr.error(f"Device is not a Keithley SMU. IDN: {idn_msg}")
-                    driver_to_use.disconnect()
-                    self.connection_status_changed.emit(False, "")
-                    return False
-
-                self.smu_device = driver_to_use
-                self.connected_port = port_name
-                self.idn_message = idn_msg
-                
-                # Port merken
-                self.LastDevice = port_name
-                if self.profile_mgr.get_current_profile_name():
-                    self.profile_mgr.write("Smu_LastDevice", self.LastDevice)
-
-                # Settings wiederherstellen
-                self._load_channel_settings_from_profile()
-
-                active_name = self.get_activeDeviceName()
-                self.log_mgr.info(f"Successfully connected to {active_name}")
-                self.connection_status_changed.emit(True, active_name)
-                return True
+            driver_to_use = None
+            if port_name.upper() == "DUMMY":
+                self.log_mgr.info("Connecting to DUMMY driver...")
+                driver_to_use = DummyKeithley2602(self.log_mgr)
+            elif port_name in self.available_devices:
+                self.log_mgr.info(f"Connecting to real Keithley driver on {port_name}...")
+                driver_to_use = Keithley2602(self.log_mgr)
             else:
-                raise ConnectionError(idn_msg)
-        
-        except Exception as e:
-            self.log_mgr.error(f"Connection to {port_name} failed: {e}")
-            self.smu_device = None
-            self.connection_status_changed.emit(False, "")
-            return False
+                self.log_mgr.error(f"Cannot connect: Port '{port_name}' not found.")
+                return False
+
+            try:
+                is_connected, idn_msg = driver_to_use.connect(port=port_name) 
+
+                if is_connected:
+                    if "KEITHLEY" not in idn_msg.upper() and "DUMMY" not in idn_msg.upper():
+                        self.log_mgr.error(f"Device is not a Keithley SMU. IDN: {idn_msg}")
+                        driver_to_use.disconnect()
+                        self.connection_status_changed.emit(False, "")
+                        return False
+
+                    self.smu_device = driver_to_use
+                    self.connected_port = port_name
+                    self.idn_message = idn_msg
+                    
+                    self.active_channels = ['a', 'b']
+                    model_check = idn_msg.upper()
+                    if "MODEL 26" in model_check:
+                        # Einfache Heuristik: Prüfe auf bekannte Single-Channel Modelle
+                        if any(x in model_check for x in ["2601", "2611", "2635"]):
+                            self.log_mgr.info(f"Single-Channel SMU erkannt ({idn_msg}). Deaktiviere Kanal B.")
+                            self.active_channels = ['a']
+
+                    # Port merken
+                    self.LastDevice = port_name
+                    if self.profile_mgr.get_current_profile_name():
+                        self.profile_mgr.write("Smu_LastDevice", self.LastDevice)
+
+                    # Settings wiederherstellen
+                    self._load_channel_settings_from_profile()
+
+                    active_name = self.get_activeDeviceName()
+                    self.log_mgr.info(f"Successfully connected to {active_name}")
+                    self.connection_status_changed.emit(True, active_name)
+                    return True
+                else:
+                    raise ConnectionError(idn_msg)
+            
+            except Exception as e:
+                self.log_mgr.error(f"Connection to {port_name} failed: {e}")
+                self.smu_device = None
+                self.connection_status_changed.emit(False, "")
+                return False
+            
+            return super_result
+
+        finally:
+            self._lock.unlock()
         
     def connect_LastDevice(self) -> bool:
         """Versucht, das zuletzt genutzte Gerät zu verbinden."""
@@ -323,15 +340,19 @@ class SmuManager(QObject):
 
     def disconnect(self):
         """Trennt die Verbindung."""
-        if self.smu_device:
-            try:
-                self.smu_device.disconnect()
-            except Exception as e:
-                self.log_mgr.error(f"Error during SMU disconnect: {e}")
-            self.smu_device = None
-            self.connected_port = ""
-            self.idn_message = ""
-            self.connection_status_changed.emit(False, "")
+        self._lock.lock()
+        try:
+            if self.smu_device:
+                try:
+                    self.smu_device.disconnect()
+                except Exception as e:
+                    self.log_mgr.error(f"Error during SMU disconnect: {e}")
+                self.smu_device = None
+                self.connected_port = ""
+                self.idn_message = ""
+                self.connection_status_changed.emit(False, "")
+        finally:
+            self._lock.unlock()
 
     def get_activeDeviceName(self) -> str:
         """Gibt den Namen des verbundenen Geräts zurück."""
@@ -363,8 +384,9 @@ class SmuManager(QObject):
         Args:
             channel (str): 'a' oder 'b'.
         """
-        if not self._check_connection(f"reset channel {channel}"):
-            return
+        if not self._check_connection(f"reset channel {channel}"): return
+        
+        self._lock.lock()
         try:
             self.smu_device.reset_channel(channel)
             # Internen State Reset
@@ -373,6 +395,8 @@ class SmuManager(QObject):
             self.log_mgr.info(f"SMU Channel {channel} reset.")
         except Exception as e:
             self.log_mgr.error(f"Failed to reset channel {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_source_voltage(self, channel: str):
         """
@@ -383,6 +407,8 @@ class SmuManager(QObject):
             channel (str): 'a' oder 'b'.
         """
         if not self._check_connection(f"set source voltage for {channel}"): return
+        
+        self._lock.lock()
         try:
             self.smu_device.set_source_voltage(channel)
             self.channel_source_func[channel] = 'V'
@@ -391,6 +417,8 @@ class SmuManager(QObject):
             self.log_mgr.info(f"SMU Channel {channel} source set to VOLTAGE.")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source voltage for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_source_current(self, channel: str):
         """
@@ -401,6 +429,8 @@ class SmuManager(QObject):
             channel (str): 'a' oder 'b'.
         """
         if not self._check_connection(f"set source current for {channel}"): return
+        
+        self._lock.lock()
         try:
             self.smu_device.set_source_current(channel)
             self.channel_source_func[channel] = 'I'
@@ -409,6 +439,8 @@ class SmuManager(QObject):
             self.log_mgr.info(f"SMU Channel {channel} source set to CURRENT.")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source current for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_source_level(self, channel: str, level: float):
         """
@@ -421,8 +453,9 @@ class SmuManager(QObject):
         """
         if not self._check_connection(f"set source level for {channel}"): return
         
-        func = self.channel_source_func.get(channel, 'V') 
+        self._lock.lock() # <--- WICHTIG FÜR SWEEPS
         try:
+            func = self.channel_source_func.get(channel, 'V') 
             if func == 'V':
                 self.smu_device.set_source_voltage_level(channel, level)
             else:
@@ -436,6 +469,8 @@ class SmuManager(QObject):
             self.log_mgr.debug(f"SMU Channel {channel} level set to {level} (using {func}).")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source level for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_source_limit(self, channel: str, limit: float):
         """
@@ -448,8 +483,9 @@ class SmuManager(QObject):
         """
         if not self._check_connection(f"set source limit for {channel}"): return
         
-        func = self.channel_source_func.get(channel, 'V')
+        self._lock.lock()
         try:
+            func = self.channel_source_func.get(channel, 'V')
             if func == 'V':
                 self.smu_device.set_source_current_limit(channel, limit)
             else:
@@ -463,10 +499,14 @@ class SmuManager(QObject):
             self.log_mgr.debug(f"SMU Channel {channel} limit set to {limit} (using {func}).")
         except Exception as e:
             self.log_mgr.error(f"Failed to set source limit for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_sense_local(self, channel: str):
         """Aktiviert Local Sense (2-Wire). Speichert Einstellung."""
         if not self._check_connection(f"set sense local for {channel}"): return
+        
+        self._lock.lock()
         try:
             self.smu_device.set_sense_mode_local(channel)
             self.channel_state[channel]['sense'] = 'local'
@@ -475,10 +515,14 @@ class SmuManager(QObject):
             self.log_mgr.info(f"SMU Channel {channel} sense mode set to LOCAL.")
         except Exception as e:
             self.log_mgr.error(f"Failed to set sense local for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_sense_remote(self, channel: str):
         """Aktiviert Remote Sense (4-Wire). Speichert Einstellung."""
         if not self._check_connection(f"set sense remote for {channel}"): return
+        
+        self._lock.lock()
         try:
             self.smu_device.set_sense_mode_remote(channel)
             self.channel_state[channel]['sense'] = 'remote'
@@ -487,6 +531,8 @@ class SmuManager(QObject):
             self.log_mgr.info(f"SMU Channel {channel} sense mode set to REMOTE.")
         except Exception as e:
             self.log_mgr.error(f"Failed to set sense remote for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def set_output_state(self, channel: str, enable: bool):
         """
@@ -498,6 +544,8 @@ class SmuManager(QObject):
             enable (bool): True = ON, False = OFF.
         """
         if not self._check_connection(f"set output state for {channel}"): return
+        
+        self._lock.lock()
         try:
             if enable:
                 self.smu_device.set_output_on(channel)
@@ -510,6 +558,8 @@ class SmuManager(QObject):
             self.channel_state[channel]['output'] = enable
         except Exception as e:
             self.log_mgr.error(f"Failed to set output state for {channel}: {e}")
+        finally:
+            self._lock.unlock()
 
     def measure_iv(self, channel: str) -> tuple[float, float] | None:
         """
@@ -517,6 +567,7 @@ class SmuManager(QObject):
         """
         if not self._check_connection(f"measure IV", channel): return None
         
+        self._lock.lock()
         try:
             current, voltage = self.smu_device.measure_iv(channel)
             self.new_measurement_acquired.emit(channel, current, voltage)
@@ -537,3 +588,5 @@ class SmuManager(QObject):
             else:
                 self.log_mgr.error(f"Error on {channel}: {e}")
                 return None
+        finally:
+            self._lock.unlock()
