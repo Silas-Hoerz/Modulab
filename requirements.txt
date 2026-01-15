@@ -1,26 +1,35 @@
+# --- GUI Framework ---
 PySide6
-QScintilla
+pyqtgraph
+qscintilla
+qt-material
+pyqtdarktheme
+tkinter
+
+# --- Hardware Drivers ---
 seabreeze
-openpyxl
-xlsxwriter
-pillow
-h5py
-requests
-pyyaml
 pyserial
 pyvisa
-qt-material
+
+# --- Data & Math (CRITICAL) ---
+numpy
+pandas
+h5py
+silx
 matplotlib
-pyqtgraph
-pyinstaller
+
+# --- Utilities ---
+requests
+pyyaml
+pillow
+openpyxl
+xlsxwriter
+packaging
+
+# --- Documentation & Build ---
 sphinx
 furo
 sphinx-autodoc-typehints
 sphinx-copybutton
 myst-parser
 pyinstaller
-tkinter
-
-pyqtdarktheme
-requests
-packaging

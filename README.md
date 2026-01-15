@@ -14,6 +14,7 @@ Entwickelt am **Institut für Halbleitertechnik (IHT)** der Universität Stuttga
     * [Installation](#installation)
     * [Screenshots](#screenshots)
     * [Speicherorte und Logs](#speicherorte-und-logs)
+    * [Experimente automatisieren (Skripting)](#experimente-automatisieren-skripting)
 3. [Entwickler-Guide](#entwickler-guide)
     * [Voraussetzungen](#voraussetzungen)
     * [Installation der Entwicklungsumgebung](#installation-der-entwicklungsumgebung)
@@ -54,8 +55,8 @@ Entwickelt am **Institut für Halbleitertechnik (IHT)** der Universität Stuttga
 
 Für Anwender, die die Software nur nutzen möchten (keine Programmierung):
 
-1.  Laden Sie die aktuelle Version (`.zip` oder `.exe`) von der GitHub Releases-Seite herunter.
-2.  Entpacken Sie den Ordner (falls ZIP) und starten Sie `Modulab.exe`.
+1.  Laden Sie die aktuelle Version (`.exe`) von der GitHub Releases-Seite herunter.
+2.  Starten Sie `Modulab.exe`.
 3.  Es ist keine weitere Installation von Python notwendig, da die EXE alle Abhängigkeiten enthält.
 
 ### Screenshots
@@ -76,6 +77,51 @@ Modulab legt alle benutzerdefinierten Daten im Home-Verzeichnis des Nutzers ab, 
 * **Experimente:** `...\Modulab\Experiments\`
     * Hier legen Sie Ihre Python-Skripte ab, die im "Experiment"-Tab angezeigt und ausgeführt werden sollen.
 
+
+## Experimente automatisieren (Skripting)
+
+Eine der Stärken von Modulab ist die Möglichkeit, komplexe Messabläufe als Python-Skripte zu definieren. Skripte werden im Ordner `Experiments/` abgelegt und erscheinen automatisch in der GUI.
+
+### API-Referenz (Handbuch)
+
+Um zu wissen, welche Befehle verfügbar sind (z.B. `api.smu_mgr.set_voltage()` oder `api.spectrometer_mgr.acquire_spectrum()`), steht eine vollständige HTML-Dokumentation zur Verfügung.
+
+Diese Dokumentation wird aus dem Quellcode generiert und enthält alle Details zu den Managern und Klassen.
+
+**So öffnen Sie die Dokumentation:**
+1.  Navigieren Sie in Ihren Projektordner.
+2.  Öffnen Sie die Datei: `docs\_build\html\index.html` in Ihrem Browser.
+
+*(Hinweis: Falls dieser Ordner leer ist, lesen Sie im Abschnitt "Entwickler-Guide" unter "Dokumentation generieren", wie Sie diese erstellen).*
+
+### Beispiel-Skript
+
+Ein minimales Beispiel für einen Sweep sieht so aus:
+
+```python
+import time
+
+def run_experiment(api):
+    """Mein erstes Experiment"""
+    smu = api.smu_mgr
+    log = api.log_mgr
+    
+    log.info("Starte Messung...")
+    
+    # Zugriff auf Hardware über die Manager
+    smu.connect("COM3")
+    smu.set_source_voltage('a')
+    smu.set_output_state('a', True)
+    
+    # Messung
+    smu.set_source_level('a', 5.0)
+    time.sleep(0.1)
+    curr, volt = smu.measure_iv('a')
+    
+    log.info(f"Gemessen: {curr} A bei {volt} V")
+    
+    smu.set_output_state('a', False)
+```
 ---
 
 ## Entwickler-Guide
