@@ -286,7 +286,7 @@ Die Widgets sperren nun automatisch Eingabefelder, sobald ein Experiment gestart
 
 Anleitung zum Hinzufügen eines neuen Messgeräts:
 
-1. **Treiber erstellen:** Schreiben Sie eine Klasse in `modules/<neues_gerät>/Treiber.py`, die die Low-Level-Kommunikation kapselt. Implementieren Sie idealerweise auch eine Dummy-Klasse.
+1. **Treiber erstellen:** Schreiben Sie eine Klasse in `modules/<neues_gerät>/Treiber.py`, die die Low-Level-Kommunikation kapselt.
 2. **Manager implementieren:** Erstellen Sie einen `Manager.py` (erbt von `QObject`). Implementieren Sie Signale für neue Daten und nutzen Sie `QMutex` für Thread-Sicherheit.
 3. **Registrierung:** Fügen Sie den neuen Manager in `core/context.py` hinzu (`self.new_manager = ...`).
 4. **UI erstellen:** Bauen Sie ein Widget, das auf den Manager zugreift, und binden Sie es in `core/mainwindow.py` in das Docking-System ein.
