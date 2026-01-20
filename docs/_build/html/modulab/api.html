@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>API-Referenz der Manager - Modulab 1.1.13 documentation</title>
+        <title>API-Referenz der Manager - Modulab 1.1.14 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
+      <a href="../index.html"><div class="brand">Modulab 1.1.14 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.14 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -618,7 +618,7 @@ wird 0.0 zurückgegeben.</p></li>
 <dd class="field-even"><p>Eine neue Instanz der Device-Klasse.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -820,7 +820,7 @@ für Dimensionen.</p></li>
 <dd class="field-even"><p>Das <cite>Device</cite>-Objekt oder <cite>None</cite>, wenn nicht gefunden.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+<dd class="field-odd"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -878,7 +878,7 @@ selbst aufrufen.</p>
 <dd class="field-odd"><p>Das aktuell aktive <cite>Device</cite>-Objekt oder <cite>None</cite>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
+<dd class="field-even"><p><a class="reference internal" href="device_manager.html#modules.device.DeviceManager.Device" title="modules.device.DeviceManager.Device">Device</a> | None</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1304,11 +1304,6 @@ Fehlersuche gedacht.</p>
 </div>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="modules.log.LogManager.LogManager.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;LogManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=message_logged(QVariantMap),</span> <span class="pre">parameters=QVariantMap</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.log.LogManager.LogManager.staticMetaObject" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="modules.log.LogManager.LogManager.get_latest_message">
 <span class="sig-name descname"><span class="pre">get_latest_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/log/LogManager.html#LogManager.get_latest_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.log.LogManager.LogManager.get_latest_message" title="Link to this definition">¶</a></dt>
@@ -1336,6 +1331,39 @@ oder <cite>None</cite>, wenn noch keine Logs vorhanden sind.</p>
 </div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.log.LogManager.LogManager.get_working_dir">
+<span class="sig-name descname"><span class="pre">get_working_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/log/LogManager.html#LogManager.get_working_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.log.LogManager.LogManager.get_working_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt das Verzeichnis zurück, in dem Log-Dateien gespeichert werden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Absoluter Pfad zum Log-Verzeichnis.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.log.LogManager.LogManager.get_log_file_path">
+<span class="sig-name descname"><span class="pre">get_log_file_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/modules/log/LogManager.html#LogManager.get_log_file_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.log.LogManager.LogManager.get_log_file_path" title="Link to this definition">¶</a></dt>
+<dd><p>Gibt den Pfad zur aktuellen Log-Datei zurück.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Absoluter Pfad zur aktuellen Log-Datei.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.log.LogManager.LogManager.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;LogManager&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=message_logged(QVariantMap),</span> <span class="pre">parameters=QVariantMap</span> <span class="pre">)</span></em><a class="headerlink" href="#modules.log.LogManager.LogManager.staticMetaObject" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -2798,8 +2826,10 @@ Kann von der GUI genutzt werden, um den “Live”-Status zu entfernen.</p>
 <li><a class="reference internal" href="#modules.log.LogManager.LogManager.error"><code class="docutils literal notranslate"><span class="pre">LogManager.error()</span></code></a></li>
 <li><a class="reference internal" href="#modules.log.LogManager.LogManager.debug"><code class="docutils literal notranslate"><span class="pre">LogManager.debug()</span></code></a></li>
 <li><a class="reference internal" href="#modules.log.LogManager.LogManager.get_all_messages"><code class="docutils literal notranslate"><span class="pre">LogManager.get_all_messages()</span></code></a></li>
-<li><a class="reference internal" href="#modules.log.LogManager.LogManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">LogManager.staticMetaObject</span></code></a></li>
 <li><a class="reference internal" href="#modules.log.LogManager.LogManager.get_latest_message"><code class="docutils literal notranslate"><span class="pre">LogManager.get_latest_message()</span></code></a></li>
+<li><a class="reference internal" href="#modules.log.LogManager.LogManager.get_working_dir"><code class="docutils literal notranslate"><span class="pre">LogManager.get_working_dir()</span></code></a></li>
+<li><a class="reference internal" href="#modules.log.LogManager.LogManager.get_log_file_path"><code class="docutils literal notranslate"><span class="pre">LogManager.get_log_file_path()</span></code></a></li>
+<li><a class="reference internal" href="#modules.log.LogManager.LogManager.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">LogManager.staticMetaObject</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2927,7 +2957,7 @@ Kann von der GUI genutzt werden, um den “Live”-Status zu entfernen.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1240c0c0"></script>
+</div><script src="../_static/documentation_options.js?v=d9c9500d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

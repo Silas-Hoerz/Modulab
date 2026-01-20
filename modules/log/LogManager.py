@@ -3,7 +3,7 @@ import os
 import logging # Thread sicheres logging
 import datetime
 
-from PySide6.QtCore import QObject, Signal # Nötig um Signale später an das Widget Modul zu senden
+from PySide6.QtCore import QObject, Signal, QTimer # Nötig um Signale später an das Widget Modul zu senden
 
 class LogManager(QObject):
     """
@@ -59,60 +59,111 @@ class LogManager(QObject):
         self.messages_list = []
         self.latest_message = None # Speziell für das Status Label
 
-        self.working_dir = os.path.join(os.path.expanduser('~'),'Modulab','Logs')
+        # --- Spam Protection Variablen ---
+        self._last_msg_content = None
+        self._last_msg_type = None
+        self._repeat_count = 0
+        
+        # Setup Logging (Pfad, Handler, etc. wie gehabt)
+        self.working_dir = os.path.join(os.path.expanduser('~'), 'Modulab', 'Logs')
         self.logger = None
         self.log_file_path = None
-
+        
         try:
-            os.makedirs(self.working_dir, exist_ok = True)
-
-            # Anlegen des Log Files - Jede Sitzung bekommt eigenes Log File
-            now = datetime.datetime.now()
-            log_filename = f"log_{now.strftime('%Y-%m-%d_%H-%M-%S')}.log"
-            self.log_file_path = os.path.join(self.working_dir, log_filename)
-
-            # Logger konfigurieren.
-            self.logger = logging.getLogger('ModulabLogger')
-            self.logger.setLevel(logging.DEBUG)
-
-            file_handler = logging.FileHandler(self.log_file_path, encoding= 'utf-8')
-            file_handler.setLevel(logging.DEBUG)
-
-            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            file_handler.setFormatter(formatter)
-
-            if not self.logger.hasHandlers():
-                self.logger.addHandler(file_handler)
+            self._setup_logger()
             self.debug("LogManager initialisiert.") # loggt seine eigene Initialisierung
-
         except OSError as e:
             print(f"Fehler: Das Log-Verzeichnis konnte nicht erstellt oder gelesen werden: {e}")
             self.working_dir = None
             self.log_file_path = None
             raise RuntimeError(f"LogManager konnte nicht initialisiert werden: {e}") # Fail Fast!
     
+    def _setup_logger(self):
+        """
+        Hilfsmethode zur Konfiguration des Logger-Handlers.
+        Wird aus __init__() aufgerufen um Code auszulagern.
+        """
+        os.makedirs(self.working_dir, exist_ok=True)
+        
+        # Anlegen des Log Files - Jede Sitzung bekommt eigenes Log File
+        now = datetime.datetime.now()
+        log_filename = f"log_{now.strftime('%Y-%m-%d_%H-%M-%S')}.log"
+        self.log_file_path = os.path.join(self.working_dir, log_filename)
+        
+        # Logger konfigurieren
+        self.logger = logging.getLogger('ModulabLogger')
+        self.logger.setLevel(logging.DEBUG)
+        
+        # Checken ob schon Handler da sind, um Doppel-Logging bei Reload zu vermeiden
+        if not self.logger.hasHandlers():
+            file_handler = logging.FileHandler(self.log_file_path, encoding='utf-8')
+            file_handler.setLevel(logging.DEBUG)
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            file_handler.setFormatter(formatter)
+            self.logger.addHandler(file_handler)
+    
     # --- Interne Funktionen ---- #
     def __log(self, msg_type, message):
         """
-        Interne Log-Funktion. Nicht für den externen Aufruf gedacht.
+        Interne Log-Funktion mit Spam Protection. Nicht für den externen Aufruf gedacht.
 
         Loggt die Nachricht in die Datei (via self.logger), in die 
         In-Memory-Liste (self.messages_list) und löst das 
-        `message_logged`-Signal aus.
+        `message_logged`-Signal aus. Verhindert Spam durch Duplifikat-Erkennung.
         """
         message_str = str(message) # Sicheres einlesen der Nachricht
 
+        # --- 1. SPAM PROTECTION LOGIC ---
+        # Wenn Nachricht und Typ identisch zur vorherigen sind:
+        if message_str == self._last_msg_content and msg_type == self._last_msg_type:
+            self._repeat_count += 1
+            # Wir loggen NICHTS und senden KEIN Signal.
+            # Wir warten, bis eine *andere* Nachricht kommt.
+            return
+
+        # --- 2. VORHERIGE DUPLIKATE ABARBEITEN ---
+        # Wenn wir hier sind, ist es eine NEUE Nachricht.
+        # Gab es davor Wiederholungen, die wir verschwiegen haben?
+        if self._repeat_count > 0:
+            # Wir generieren eine künstliche Log-Nachricht
+            repeat_msg = f"--- Previous message repeated {self._repeat_count} more times ---"
+            self._write_and_emit(self._last_msg_type, repeat_msg, is_meta=True)
+            self._repeat_count = 0
+
+        # --- 3. NORMALE VERARBEITUNG ---
+        # Aktuelle Nachricht speichern für den nächsten Vergleich
+        self._last_msg_content = message_str
+        self._last_msg_type = msg_type
+        
+        # Schreiben und Senden
+        self._write_and_emit(msg_type, message_str)
+
+    def _write_and_emit(self, msg_type, message_str, is_meta=False):
+        """
+        Hilfsfunktion zum tatsächlichen Schreiben und Ausstrahlen von Log-Einträgen.
+        
+        Args:
+            msg_type (str): Der Log-Typ (INFO, WARNING, ERROR, DEBUG)
+            message_str (str): Die Log-Nachricht
+            is_meta (bool): Wenn True, wird als Meta-Info (z.B. "repeated X times") behandelt
+        """
         log_entry = {
             'timestamp': datetime.datetime.now(),
             'type': msg_type,
             'message': message_str
         }
-
+        
+        # Zur Liste hinzufügen
         self.messages_list.append(log_entry)
         self.latest_message = log_entry
 
-        print(f"{log_entry['timestamp'].strftime('%H:%M:%S')} [{log_entry['type']}] {log_entry['message']}")
+        # Console Output (etwas kürzer)
+        if not is_meta:
+            print(f"LOG: [{msg_type}] {message_str}")
+        else:
+            print(f"LOG: {message_str}")
 
+        # File Logging
         if self.logger:
             if msg_type == self.INFO:
                 self.logger.info(message_str)
@@ -124,8 +175,8 @@ class LogManager(QObject):
                 self.logger.debug(message_str)
             else:
                 self.logger.info(message_str)
-                
-        # Signal an die GUI senden
+
+        # GUI Signal
         self.message_logged.emit(log_entry)
 
     # --- Öffentliche Log-Funktionen ---- #
@@ -162,7 +213,7 @@ class LogManager(QObject):
         """
         self.__log(self.WARNING, message)
 
-    def error(self, message, exc_info = True):
+    def error(self, message, exc_info=True):
         """
         Loggt einen Fehler.
 
@@ -263,6 +314,24 @@ class LogManager(QObject):
                     status_bar.showMessage(letzte_meldung['message'])
         """
         return self.latest_message
+    
+    def get_working_dir(self) -> str:
+        """
+        Gibt das Verzeichnis zurück, in dem Log-Dateien gespeichert werden.
+        
+        Returns:
+            str: Absoluter Pfad zum Log-Verzeichnis.
+        """
+        return self.working_dir
+    
+    def get_log_file_path(self) -> str:
+        """
+        Gibt den Pfad zur aktuellen Log-Datei zurück.
+        
+        Returns:
+            str: Absoluter Pfad zur aktuellen Log-Datei.
+        """
+        return self.log_file_path
 
 # --- Selbsttest ---- #
 if __name__ == "__main__":

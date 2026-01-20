@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>modules.log.LogManager - MODULAB 0.1.0 documentation</title>
+        <title>modules.log.LogManager - Modulab 1.1.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">MODULAB 0.1.0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Modulab 1.1.13 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  <span class="sidebar-brand-text">MODULAB 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">Modulab 1.1.13 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -197,6 +197,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/device_manager.html">Device Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/smu_manager.html">SMU Manager</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modulab/spectrometer_manager.html">Spectrometer Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/export_manager.html">Export Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/waterfall_manager.html">Waterfall Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modulab/live_plot_manager.html">Live Plot Manager</a></li>
 </ul>
 
 </div>
@@ -235,7 +238,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span> <span class="c1"># Thread sicheres logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Signal</span> <span class="c1"># Nötig um Signale später an das Widget Modul zu senden</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">QTimer</span> <span class="c1"># Nötig um Signale später an das Widget Modul zu senden</span>
 
 <div class="viewcode-block" id="LogManager">
 <a class="viewcode-back" href="../../../modulab/log_manager.html#modules.log.LogManager.LogManager">[docs]</a>
@@ -295,32 +298,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">messages_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_message</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Speziell für das Status Label</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span><span class="s1">&#39;Modulab&#39;</span><span class="p">,</span><span class="s1">&#39;Logs&#39;</span><span class="p">)</span>
+        <span class="c1"># --- Spam Protection Variablen ---</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_content</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repeat_count</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="c1"># Setup Logging (Pfad, Handler, etc. wie gehabt)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;Modulab&#39;</span><span class="p">,</span> <span class="s1">&#39;Logs&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="kc">None</span>
-
+        
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span><span class="p">,</span> <span class="n">exist_ok</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-
-            <span class="c1"># Anlegen des Log Files - Jede Sitzung bekommt eigenes Log File</span>
-            <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-            <span class="n">log_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;log_</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H-%M-%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.log&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span><span class="p">,</span> <span class="n">log_filename</span><span class="p">)</span>
-
-            <span class="c1"># Logger konfigurieren.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;ModulabLogger&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-
-            <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-            <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-
-            <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_logger</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;LogManager initialisiert.&quot;</span><span class="p">)</span> <span class="c1"># loggt seine eigene Initialisierung</span>
-
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fehler: Das Log-Verzeichnis konnte nicht erstellt oder gelesen werden: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">=</span> <span class="kc">None</span>
@@ -328,28 +318,92 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LogManager konnte nicht initialisiert werden: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Fail Fast!</span></div>
 
     
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hilfsmethode zur Konfiguration des Logger-Handlers.</span>
+<span class="sd">        Wird aus __init__() aufgerufen um Code auszulagern.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="c1"># Anlegen des Log Files - Jede Sitzung bekommt eigenes Log File</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">log_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;log_</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H-%M-%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.log&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span><span class="p">,</span> <span class="n">log_filename</span><span class="p">)</span>
+        
+        <span class="c1"># Logger konfigurieren</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;ModulabLogger&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        
+        <span class="c1"># Checken ob schon Handler da sind, um Doppel-Logging bei Reload zu vermeiden</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
+            <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+    
     <span class="c1"># --- Interne Funktionen ---- #</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg_type</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Interne Log-Funktion. Nicht für den externen Aufruf gedacht.</span>
+<span class="sd">        Interne Log-Funktion mit Spam Protection. Nicht für den externen Aufruf gedacht.</span>
 
 <span class="sd">        Loggt die Nachricht in die Datei (via self.logger), in die </span>
 <span class="sd">        In-Memory-Liste (self.messages_list) und löst das </span>
-<span class="sd">        `message_logged`-Signal aus.</span>
+<span class="sd">        `message_logged`-Signal aus. Verhindert Spam durch Duplifikat-Erkennung.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">message_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="c1"># Sicheres einlesen der Nachricht</span>
 
+        <span class="c1"># --- 1. SPAM PROTECTION LOGIC ---</span>
+        <span class="c1"># Wenn Nachricht und Typ identisch zur vorherigen sind:</span>
+        <span class="k">if</span> <span class="n">message_str</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_content</span> <span class="ow">and</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_type</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_repeat_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># Wir loggen NICHTS und senden KEIN Signal.</span>
+            <span class="c1"># Wir warten, bis eine *andere* Nachricht kommt.</span>
+            <span class="k">return</span>
+
+        <span class="c1"># --- 2. VORHERIGE DUPLIKATE ABARBEITEN ---</span>
+        <span class="c1"># Wenn wir hier sind, ist es eine NEUE Nachricht.</span>
+        <span class="c1"># Gab es davor Wiederholungen, die wir verschwiegen haben?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repeat_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Wir generieren eine künstliche Log-Nachricht</span>
+            <span class="n">repeat_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;--- Previous message repeated </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_repeat_count</span><span class="si">}</span><span class="s2"> more times ---&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_type</span><span class="p">,</span> <span class="n">repeat_msg</span><span class="p">,</span> <span class="n">is_meta</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_repeat_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># --- 3. NORMALE VERARBEITUNG ---</span>
+        <span class="c1"># Aktuelle Nachricht speichern für den nächsten Vergleich</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_content</span> <span class="o">=</span> <span class="n">message_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_msg_type</span> <span class="o">=</span> <span class="n">msg_type</span>
+        
+        <span class="c1"># Schreiben und Senden</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_and_emit</span><span class="p">(</span><span class="n">msg_type</span><span class="p">,</span> <span class="n">message_str</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_and_emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg_type</span><span class="p">,</span> <span class="n">message_str</span><span class="p">,</span> <span class="n">is_meta</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hilfsfunktion zum tatsächlichen Schreiben und Ausstrahlen von Log-Einträgen.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            msg_type (str): Der Log-Typ (INFO, WARNING, ERROR, DEBUG)</span>
+<span class="sd">            message_str (str): Die Log-Nachricht</span>
+<span class="sd">            is_meta (bool): Wenn True, wird als Meta-Info (z.B. &quot;repeated X times&quot;) behandelt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log_entry</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">msg_type</span><span class="p">,</span>
             <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message_str</span>
         <span class="p">}</span>
-
+        
+        <span class="c1"># Zur Liste hinzufügen</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">messages_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_entry</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latest_message</span> <span class="o">=</span> <span class="n">log_entry</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_entry</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">log_entry</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">log_entry</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Console Output (etwas kürzer)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_meta</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LOG: [</span><span class="si">{</span><span class="n">msg_type</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">message_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LOG: </span><span class="si">{</span><span class="n">message_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="c1"># File Logging</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message_str</span><span class="p">)</span>
@@ -361,8 +415,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message_str</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message_str</span><span class="p">)</span>
-                
-        <span class="c1"># Signal an die GUI senden</span>
+
+        <span class="c1"># GUI Signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message_logged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">log_entry</span><span class="p">)</span>
 
     <span class="c1"># --- Öffentliche Log-Funktionen ---- #</span>
@@ -407,7 +461,7 @@
 
 <div class="viewcode-block" id="LogManager.error">
 <a class="viewcode-back" href="../../../modulab/log_manager.html#modules.log.LogManager.LogManager.error">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loggt einen Fehler.</span>
 
@@ -517,6 +571,30 @@
 <span class="sd">                    status_bar.showMessage(letzte_meldung[&#39;message&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_message</span></div>
+
+    
+<div class="viewcode-block" id="LogManager.get_working_dir">
+<a class="viewcode-back" href="../../../modulab/log_manager.html#modules.log.LogManager.LogManager.get_working_dir">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_working_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gibt das Verzeichnis zurück, in dem Log-Dateien gespeichert werden.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Absoluter Pfad zum Log-Verzeichnis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span></div>
+
+    
+<div class="viewcode-block" id="LogManager.get_log_file_path">
+<a class="viewcode-back" href="../../../modulab/log_manager.html#modules.log.LogManager.LogManager.get_log_file_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gibt den Pfad zur aktuellen Log-Datei zurück.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Absoluter Pfad zur aktuellen Log-Datei.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_path</span></div>
 </div>
 
 
@@ -569,7 +647,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Silas Hörz
+                Copyright &#169; 2026, Silas Hörz
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -589,7 +667,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=1240c0c0"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

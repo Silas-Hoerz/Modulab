@@ -153,7 +153,13 @@ class SmuWidget(QWidget, Ui_Form):
         self.pushButton_resetB.clicked.connect(self.on_reset_B_clicked)
         self.pushButton_outputB.clicked.connect(self.on_output_B_toggled)
         self.pushButton_singleB.clicked.connect(self.on_single_B_clicked)
-
+        
+        #Enter-Taste aktiviert Apply
+        self.lineEdit_levelA.returnPressed.connect(self.on_apply_A_clicked)
+        self.lineEdit_limitA.returnPressed.connect(self.on_apply_A_clicked)
+        
+        self.lineEdit_levelB.returnPressed.connect(self.on_apply_B_clicked)
+        self.lineEdit_limitB.returnPressed.connect(self.on_apply_B_clicked)
     # --- Change Detection Logic ---
 
     def _set_warning(self, widget, is_warning: bool):
@@ -246,16 +252,26 @@ class SmuWidget(QWidget, Ui_Form):
             self.smu_mgr.set_source_level(ch, level)
             
             self.sync_ui_from_manager(ch)
+            return True
         except ValueError:
             self.log_mgr.error(f"Invalid number format in Channel {ch}")
+            return False
 
     @Slot()
     def on_apply_A_clicked(self):
+        raw_level = self.lineEdit_levelA.text()
+        raw_limit = self.lineEdit_limitA.text()
+        self.log_mgr.info(f"UI Action: Apply Channel A -> Input Level='{raw_level}', Limit='{raw_limit}'")
+
         self._apply_channel('a', self.pushButton_voltageA.isChecked(), self.pushButton_remoteA.isChecked(), 
                             self.lineEdit_levelA.text(), self.lineEdit_limitA.text())
 
     @Slot()
     def on_apply_B_clicked(self):
+        raw_level = self.lineEdit_levelB.text()
+        raw_limit = self.lineEdit_limitB.text()
+        self.log_mgr.info(f"UI Action: Apply Channel B -> Input Level='{raw_level}', Limit='{raw_limit}'")
+
         self._apply_channel('b', self.pushButton_voltageB.isChecked(), self.pushButton_remoteB.isChecked(), 
                             self.lineEdit_levelB.text(), self.lineEdit_limitB.text())
 
@@ -276,6 +292,12 @@ class SmuWidget(QWidget, Ui_Form):
     @Slot()
     def on_output_A_toggled(self):
         state = self.pushButton_outputA.isChecked()
+
+        self.log_mgr.info(f"UI Action: User toggled Output A -> {state}")
+
+        if state:
+            self.on_apply_A_clicked()
+
         self.pushButton_outputA.setText("ON" if state else "OFF")
         self.smu_mgr.set_output_state('a', state)
         self._update_output_style('a', state)
@@ -285,6 +307,12 @@ class SmuWidget(QWidget, Ui_Form):
     @Slot()
     def on_output_B_toggled(self):
         state = self.pushButton_outputB.isChecked()
+
+        self.log_mgr.info(f"UI Action: User toggled Output B -> {state}")
+
+        if state:
+            self.on_apply_B_clicked()
+
         self.pushButton_outputB.setText("ON" if state else "OFF")
         self.smu_mgr.set_output_state('b', state)
         self._update_output_style('b', state)
@@ -356,7 +384,24 @@ class SmuWidget(QWidget, Ui_Form):
         
         res = abs(volt / curr) if abs(curr) > 1e-9 else float('inf')
         s_res = self._format_si(res, "Ω") if res != float('inf') else "Open"
+
+        # --- NEU: Compliance Check (Warnung berechnen) ---
+        # Holt Limit und Modus aus dem internen State (den wir in sync_ui_from_manager aktualisieren)
+        state = self.applied_state[ch]
+        limit = state['limit']
+        func = state['func']
         
+        # Wir warnen, wenn wir 98% des Limits erreichen
+        is_compliance = False
+        if func == 'V' and abs(curr) >= (limit * 0.98): # Voltage Source -> Current Compliance
+            is_compliance = True
+        elif func == 'I' and abs(volt) >= (limit * 0.98): # Current Source -> Voltage Compliance
+            is_compliance = True
+
+        # Styles definieren
+        style_warn = "color: red; font-weight: bold;"
+        style_norm = ""
+
         if ch == 'a':
             # Charge nur integrieren, wenn Output AN
             if self.pushButton_outputA.isChecked() and self.last_time_A:
@@ -370,6 +415,15 @@ class SmuWidget(QWidget, Ui_Form):
             import statistics
             noise = statistics.stdev(self.noise_buffer_A) if len(self.noise_buffer_A) > 1 else 0.0
             s_noise = self._format_si(noise, "A_rms")
+
+            # --- NEU: Style anwenden vor dem Text-Setzen ---
+            self.label_voltageA.setStyleSheet(style_norm)
+            self.label_currentA.setStyleSheet(style_norm)
+            
+            if is_compliance:
+                # Wenn wir Voltage Source sind, ist der STROM das Limit -> Current rot färben
+                if func == 'V': self.label_currentA.setStyleSheet(style_warn)
+                else:           self.label_voltageA.setStyleSheet(style_warn)
 
             self.label_voltageA.setText(s_volt); self.label_currentA.setText(s_curr)
             self.label_statsA.setText(f"P: {s_power}  |  R: {s_res}  |  Q: {s_charge}  |  σ: {s_noise}")
@@ -389,6 +443,14 @@ class SmuWidget(QWidget, Ui_Form):
             import statistics
             noise = statistics.stdev(self.noise_buffer_B) if len(self.noise_buffer_B) > 1 else 0.0
             s_noise = self._format_si(noise, "A_rms")
+
+            # --- NEU: Style anwenden vor dem Text-Setzen (Kanal B) ---
+            self.label_voltageB.setStyleSheet(style_norm)
+            self.label_currentB.setStyleSheet(style_norm)
+            
+            if is_compliance:
+                if func == 'V': self.label_currentB.setStyleSheet(style_warn)
+                else:           self.label_voltageB.setStyleSheet(style_warn)
 
             self.label_voltageB.setText(s_volt); self.label_currentB.setText(s_curr)
             self.label_statsB.setText(f"P: {s_power}  |  R: {s_res}  |  Q: {s_charge}  |  σ: {s_noise}")

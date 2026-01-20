@@ -342,9 +342,33 @@ def _worker_sweep_routine(api, points, cfg, progress_signal):
     data_mgr = api.export_mgr
     
     ch = cfg['channel']
+    limit_val = cfg['limit']
     sess_name = cfg['session_name']
+    src_mode = cfg['source_mode'] 
     
-    log.info(f"Starting Sweep '{sess_name}' ({len(points)} pts)...")
+    # Einheiten und Typ bestimmen
+    type_str = "Voltage" if src_mode == 'V' else "Current"
+    unit_src = "V" if src_mode == 'V' else "A"
+    unit_lim = "A" if src_mode == 'V' else "V" # Limit ist immer das Gegenteil
+    
+    # Start/Ende aus den echten Punkten ermitteln (Source of Truth)
+    start_val = points[0] if len(points) > 0 else 0
+    end_val = points[-1] if len(points) > 0 else 0
+
+    log_msg = (
+        f"\n{'='*50}\n"
+        f"   SWEEP CONFIGURATION: {sess_name}\n"
+        f"{'='*50}\n"
+        f" > Channel:      {ch.upper()} ({type_str} Source)\n"
+        f" > Range:        {start_val:.4f} {unit_src}  ->  {end_val:.4f} {unit_src}\n"
+        f" > Steps:        {len(points)}\n"
+        f" > Compliance:   {limit_val:.6f} {unit_lim}\n"
+        f" > Delay:        {cfg['delay']:.3f} s\n"
+        f" > Return Zero:  {cfg['return_zero']}\n"
+        f"{'-'*50}"
+    )
+    log.info(log_msg)
+
     if not smu.is_connected(): smu.connect("DUMMY")
 
     # 1. Session starten (RAM Buffer anlegen)
